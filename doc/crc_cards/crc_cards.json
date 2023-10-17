@@ -1,0 +1,96 @@
+[
+    {
+      "name": "Item",
+      "superclasses": "",
+      "subclasses": "",
+      "type": 1,
+      "responsibilities": [
+        "Knows information about the item",
+        "Can associate with photos",
+        "Can associate with tags",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "collaborators": [
+        "Tags",
+        "ItemList",
+        "Photo",
+        "Camera",
+        "Scanner"
+      ]
+    },
+    {
+      "name": "ItemList",
+      "superclasses": "",
+      "subclasses": "",
+      "type": 1,
+      "responsibilities": [
+        "Maintains a list of items",
+        "Knows the total value of all items",
+        "Can sort the items",
+        "Can filter the items"
+      ],
+      "collaborators": [
+        "Item"
+      ]
+    },
+    {
+      "name": "Tag",
+      "superclasses": "",
+      "subclasses": "",
+      "type": 1,
+      "responsibilities": [
+        "Can associate with items"
+      ],
+      "collaborators": [
+        "Item"
+      ]
+    },
+    {
+      "name": "BarcodeScanner",
+      "superclasses": "Camera",
+      "subclasses": "",
+      "type": 1,
+      "responsibilities": [
+        "Can find a 12 digit number from a photo",
+        "Can search for information from 12 digit number"
+      ],
+      "collaborators": [
+        "Camera",
+        "Item"
+      ]
+    },
+    {
+      "name": "User",
+      "superclasses": "",
+      "subclasses": "",
+      "type": 1,
+      "responsibilities": [
+        "Has a unique identifier",
+        "Can login",
+        "Can signup"
+      ],
+      "collaborators": [
+        "ItemList",
+        "Item",
+        "Camera",
+        ""
+      ]
+    },
+    {
+      "name": "Camera",
+      "superclasses": "",
+      "subclasses": "",
+      "type": 1,
+      "responsibilities": [
+        "Takes photos",
+        "Stores photos"
+      ],
+      "collaborators": [
+        "Item"
+      ]
+    }
+  ]
