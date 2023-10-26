@@ -1,18 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/app_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/accent1"
+        android:textColor="@color/white"
+        android:text="@string/app_name"
+        android:padding="8dp"
+        android:textSize="20sp">
+    </TextView>
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="horizontal"
+        android:paddingVertical="10dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/filter_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="filter"
+            android:textSize="20sp"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_gravity="bottom"
+            android:backgroundTint="@color/grey_button" />
+
+        <Button
+            android:id="@+id/sort_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="sort"
+            android:textSize="20sp"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_gravity="bottom"
+            android:backgroundTint="@color/grey_button"/>
+
+        <Button
+            android:id="@+id/tag_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="tag"
+            android:textSize="20sp"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_gravity="bottom"
+            android:backgroundTint="@color/grey_button">
+        </Button>
+
+        <Button
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Username"
+            android:clickable="true"
+            android:focusable="true"
+            android:textSize="20sp">
+        </Button>
+
+    </LinearLayout>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:id="@+id/item_list"
+        android:paddingVertical="20dp">
+    </ListView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom">
+
+        <Button
+            android:id="@+id/select_all_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="select all"
+            android:textSize="20sp"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_gravity="bottom"
+            android:backgroundTint="@color/blue_button"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="$0"
+            android:textSize="20sp"
+            android:padding="20sp"
+            android:layout_gravity="bottom"/>
+
+        <Button
+            android:id="@+id/add_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+"
+            android:textSize="30dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_gravity="end|bottom"
+            android:backgroundTint="@color/grey_button">
+        </Button>
+
+
+
+    </LinearLayout>
+
+
+</LinearLayout>
