@@ -51,7 +51,10 @@ public class ScannerActivity extends CameraActivity implements CameraCreationLis
                 InputImage image = InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
                 Task<List<Barcode>> result = scanner.process(image)
                         .addOnSuccessListener(barcodes -> {
-                            Log.d("", "Barcode Found");
+                            //check if barcode is found
+                            if (barcodes.size() != 0) {
+                                Log.d("", "Barcode Found");
+                            }
                         })
                         .addOnFailureListener(e -> {
                         });
