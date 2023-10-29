@@ -4,6 +4,10 @@ import android.nfc.Tag;
 
 import java.util.ArrayList;
 
+/**
+ * an instance of this class represent an Item that will be put the app will add to the inventory
+ * the class uses standard setter and getter methods
+ */
 public class Item {
     private String name;
     private Date date;
@@ -16,6 +20,27 @@ public class Item {
     private ArrayList<Tag> tags;
     private ArrayList<Photo> photos;
 
+
+    /**
+     * Constructor for the item class
+     *
+     * @param name
+     * name of the item (String)
+     * @param date
+     * date of purchase or acquisition (Date)
+     * @param description
+     * brief description of item (String)
+     * @param make
+     * make of the Item (String)
+     * @param model
+     * model of the Item (String)
+     * @param serialNumber
+     * serial number for the Item (Integer)
+     * @param estimatedValue
+     * estimated value of the Item (Integer)
+     * @param comment
+     * comment(s) about the item (String)
+     */
     public Item(String name, Date date, String description, String make, String model,
                 Integer serialNumber,Integer estimatedValue, String comment){
         this.name = name;
@@ -30,6 +55,23 @@ public class Item {
         photos = new ArrayList<Photo>();
     }
 
+    /**
+     * Constructor for the Item class without a provided serialNumber
+     * @param name
+     * name of Item (String)
+     * @param date
+     * date of purchase/acquisition (Date)
+     * @param description
+     * brief description of Item (String)
+     * @param make
+     * make of Item (String)
+     * @param model
+     * model of Item (String)
+     * @param estimatedValue
+     * estimated value of the Item (Integer)
+     * @param comment
+     * comment(s) about the Item (String)
+     */
     public Item(String name, Date date, String description, String make, String model,
                 Integer estimatedValue, String comment){
         this.name = name;
@@ -124,10 +166,20 @@ public class Item {
         this.photos = photos;
     }
 
+    /**
+     * add a Tag to the Item
+     * @param t
+     * Tag to be added
+     */
     public void addTag(Tag t){
         tags.add(t);
     }
 
+    /**
+     * add a Photo to the Item
+     * @param p
+     * Photo to be added
+     */
     public  void addPhoto(Photo p){
         photos.add(p);
     }
