@@ -1,7 +1,5 @@
 package com.example.belongingsbuddy;
 
-import android.nfc.Tag;
-
 import java.util.ArrayList;
 
 /**
