@@ -5,4 +5,5 @@
     <color name="accent1">#673AB7</color>
     <color name="grey_button">#575D5E</color>
     <color name="blue_button">#BCD3EC</color>
+    <color name="login_button">#9A9999</color>
 </resources>
