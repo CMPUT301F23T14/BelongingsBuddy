@@ -39,15 +39,77 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/login_title" />
 
+    <EditText
+        android:id="@+id/username_input"
+        style="@style/EditText.Gray"
+        android:layout_width="224dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="80dp"
+        android:background="#C6C6C6"
+        android:digits="@string/username_digits"
+        android:hint="@string/username"
+        android:inputType="text"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/login_title" />
+
+    <EditText
+        android:id="@+id/password_input"
+        style="@style/EditText.Gray"
+        android:layout_width="224dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:background="#C6C6C6"
+        android:digits="@string/username_digits"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/username_input" />
+
     <Button
         android:id="@+id/create_button"
         style="@style/Button.Gray"
         android:layout_width="224dp"
         android:layout_height="50dp"
         android:text="@string/sign_up"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/login_button"
-        app:layout_constraintVertical_bias="0.092" />
+        app:layout_constraintVertical_bias="0.085" />
+
+    <Button
+        android:id="@+id/login_confirm"
+        style="@style/Button.Gray"
+        android:layout_width="224dp"
+        android:layout_height="50dp"
+        android:text="@string/login"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/password_input"
+        app:layout_constraintVertical_bias="0.248" />
+
+    <Button
+        android:id="@+id/sign_up_confirm"
+        style="@style/Button.Gray"
+        android:layout_width="224dp"
+        android:layout_height="50dp"
+        android:text="@string/sign_up"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/password_input"
+        app:layout_constraintVertical_bias="0.248" />
 </androidx.constraintlayout.widget.ConstraintLayout>

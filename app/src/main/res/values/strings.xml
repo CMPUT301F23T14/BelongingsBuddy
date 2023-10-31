@@ -3,4 +3,7 @@
     <string name="login">Login</string>
     <string name="belongings_buddy">Belongings Buddy</string>
     <string name="sign_up">Sign Up</string>
+    <string name="username_digits"><![CDATA[qwertyuiopasdfghjklzxcvbnm1234567890!#$%^&*_-+=?]]></string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
 </resources>
