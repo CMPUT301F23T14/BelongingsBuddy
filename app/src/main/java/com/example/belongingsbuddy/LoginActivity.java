@@ -4,16 +4,25 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.Firebase;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.interfaces.PBEKey;
+import javax.crypto.spec.PBEKeySpec;
 
 public class LoginActivity extends AppCompatActivity {
     private FirebaseFirestore db;
+    private CollectionReference user_collection;
     private boolean sign_up_mode;
     private Button login_button;
     private Button sign_up_button;
@@ -77,12 +86,22 @@ public class LoginActivity extends AppCompatActivity {
         return sign_up_confirm_button;
     }
 
+    public CollectionReference getUser_collection() {
+        return user_collection;
+    }
+
+
+
     private void setLogin_button(Button login_button) {
         this.login_button = login_button;
     }
 
     private void setSign_up_button(Button sign_up_button) {
         this.sign_up_button = sign_up_button;
+    }
+
+    public void setUser_collection(CollectionReference user_collection) {
+        this.user_collection = user_collection;
     }
 
     private void setUsername_input(EditText username_input) {
@@ -105,8 +124,40 @@ public class LoginActivity extends AppCompatActivity {
         this.back_button = back_button;
     }
 
+    private String byteToHex(byte b) {
+        char[] hex_characters = new char[2];
+        hex_characters[0] = Character.forDigit((b >> 4) & 0xF, 16);
+        hex_characters[1] = Character.forDigit((b & 0xF), 16);
+        return new String(hex_characters).toUpperCase();
+    }
+
+    private String getHex(byte[] bytes) {
+        StringBuffer hex_string = new StringBuffer();
+        for (int i = 0; i < bytes.length; i++) {
+            hex_string.append(byteToHex(bytes[i]));
+        }
+        return hex_string.toString();
+    }
+
+    private String generatePasswordHash(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        int iterations = 800;
+        char[] password_chars = password.toCharArray();
+        byte[] salt = getSalt();
+        PBEKeySpec key_spec = new PBEKeySpec(password_chars, salt, iterations);
+        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        byte[] hash = secretKeyFactory.generateSecret(key_spec).getEncoded();
+        return getHex(hash);
+    }
+
+    private byte[] getSalt() throws NoSuchAlgorithmException {
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+        byte[] salt = new byte[16];
+        sr.nextBytes(salt);
+        return salt;
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -143,5 +194,42 @@ public class LoginActivity extends AppCompatActivity {
                 setStartScreenVisibility();
             }
         });
+
+        View.OnClickListener signup_login_confirm_listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String username = getUsername_input().getText().toString();
+                String password = getPassword_input().getText().toString();
+                int duration = Toast.LENGTH_LONG;
+                if (username.isEmpty() && password.isEmpty()) {
+                    CharSequence text = "Username and Password cannot be empty!";
+                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+                    toast.show();
+                } else if (username.isEmpty()) {
+                    CharSequence text = "Username cannot be empty!";
+                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+                    toast.show();
+                } else if (password.isEmpty()) {
+                    CharSequence text = "Username cannot be empty!";
+                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+                    toast.show();
+                } else {
+                    try {
+                        String hashed_username = generatePasswordHash(username);
+                        String hashed_password = generatePasswordHash(password);
+                        setUser_collection(db.collection("users"));
+                        getUser_collection().document(hashed_username).set(hashed_password);
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    } catch (InvalidKeySpecException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        };
+
+        getSign_up_confirm_button().setOnClickListener(signup_login_confirm_listener);
+        getLogin_confirm_button().setOnClickListener(signup_login_confirm_listener);
     }
 }

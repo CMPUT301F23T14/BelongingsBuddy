@@ -31,6 +31,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ScannerActivity"></activity>
+        <activity android:name=".LoginActivity" android:exported="true"/>
     </application>
 
 </manifest>
