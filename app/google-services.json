@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "19290133653",
+    "project_id": "belongingsbuddy",
+    "storage_bucket": "belongingsbuddy.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:19290133653:android:cdb979449c96bcce36b79c",
+        "android_client_info": {
+          "package_name": "com.example.belongingsbuddy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDWuTysChlO3BDBoOFJPx7YySCEqxJNxw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

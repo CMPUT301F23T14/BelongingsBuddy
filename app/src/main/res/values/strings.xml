@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">BelongingsBuddy</string>
+    <string name="login">Login</string>
+    <string name="belongings_buddy">Belongings Buddy</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="username_digits"><![CDATA[qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890!@#$%^&*_-+=?.\'/`{|}~]]></string>
+    <string name="username">E-mail Address</string>
+    <string name="password">Password</string>
+    <string name="invalid_email">Enter Valid E-mail Format (i.e. ...@gmail.com, ...@outlook.com</string>
+    <string name="invalid_password">Password cannot be empty!</string>
+    <string name="invalid_username">Username cannot be empty!</string>
+    <string name="invalid_username_and_password">Username and Password cannot be empty!</string>
+    <string name="incorrect_username_or_password">Incorrect Username or Password</string>
+    <string name="item_name_string"></string>
+    <string name="item_value_string"></string>
+    <string name="item_view_make_textview_string"></string>
+    <string name="item_view_value_textview_string"></string>
+    <string name="item_view_back_button_string"></string>
+    <string name="item_view_edit_button_string"></string>
 </resources>

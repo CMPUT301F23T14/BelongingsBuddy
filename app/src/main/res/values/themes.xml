@@ -6,4 +6,20 @@
     </style>
 
     <style name="Theme.BelongingsBuddy" parent="Base.Theme.BelongingsBuddy" />
+    <style name="Button.Gray" parent="ThemeOverlay.AppCompat">
+        <item name="backgroundTint">@color/login_button</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+    <style name="EditText.Gray" parent="ThemeOverlay.AppCompat">
+        <item name="background">@color/login_button</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:selectAllOnFocus">true</item>
+        <item name="android:paddingLeft">8sp</item>
+    </style>
 </resources>
