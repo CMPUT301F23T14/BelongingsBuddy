@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity{
         //itemListView.setAdapter(itemAdapter);
 
 
-        // ADD Item implementation:
+        // ADD ITEM implementation:
         final Button addButton = findViewById(R.id.add_item);
         addButton.setOnClickListener(v -> {
             new ScanOrManual().show(getSupportFragmentManager(), "Add Item:");

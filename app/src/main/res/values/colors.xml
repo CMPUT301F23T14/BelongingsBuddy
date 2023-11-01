@@ -2,8 +2,11 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="accent1">#673AB7</color>
+    <color name="purple">#673AB7</color>
     <color name="grey_button">#575D5E</color>
     <color name="blue_button">#BCD3EC</color>
     <color name="login_button">#C6C6C6</color>
+    <color name="light_purple">#DEC8F4</color>
+    <color name="light_red">#F17878</color>
+    <color name="light_green">#B4F1BE</color>
 </resources>
