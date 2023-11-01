@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_centerVertical="true"
+    android:background="@color/blue_button"
+    android:dividerPadding="20dp"
+    android:orientation="vertical"
+    android:padding="50dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="What attribute would you like to sort by?"
+        android:paddingBottom="24dp"
+        android:textAlignment="center"
+        android:textSize="24sp">
+    </TextView>
+
+    <Button
+        android:id="@+id/sort_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/grey_button"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingHorizontal="30dp"
+        android:text="Date Range"
+        android:textSize="14sp">
+    </Button>
+
+    <Button
+        android:id="@+id/sort_keywords"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/grey_button"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingHorizontal="30dp"
+        android:text="Keywords"
+        android:textSize="14sp">
+    </Button>
+
+    <Button
+        android:id="@+id/sort_make"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/grey_button"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="Make"
+        android:textSize="14sp">
+    </Button>
+
+    <Button
+        android:id="@+id/sort_tags"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/grey_button"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingHorizontal="70dp"
+        android:text="Tags"
+        android:textSize="14sp">
+    </Button>
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:checkedButton="@+id/ascending_rb">
+
+        <RadioButton
+            android:id="@+id/ascending_rb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:checked="false"
+            android:padding="4dp"
+            android:text="Ascending"
+            android:textAlignment="center"
+            android:textSize="16dp" />
+
+        <RadioButton
+            android:id="@+id/descending_rb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:checked="false"
+            android:padding="4dp"
+            android:text="Descending"
+            android:textAlignment="center"
+            android:textSize="14dp" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/sort_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/grey_button"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingHorizontal="30dp"
+        android:text="Cancel"
+        android:textSize="14sp">
+    </Button>
+
+
+
+</LinearLayout>
