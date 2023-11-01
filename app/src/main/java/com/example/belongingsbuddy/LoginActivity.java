@@ -1,5 +1,7 @@
 package com.example.belongingsbuddy;
 
+import static com.google.firebase.FirebaseError.ERROR_EMAIL_ALREADY_IN_USE;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +18,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -196,16 +201,25 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                CharSequence text = "Successfully Signed Up!";
+                                String text = "Successfully Signed Up!";
                                 Toast toast = Toast.makeText(getApplicationContext(), text, duration);
                                 toast.show();
                                 Intent i = new Intent(LoginActivity.this, MainActivity.class);
                                 LoginActivity.this.startActivity(i);
                             } else {
-                                CharSequence text = "Failed To Authenticate User";
-                                Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-                                toast.show();
-                                setStartScreenVisibility();
+                                try {
+                                    throw task.getException();
+                                } catch (FirebaseAuthWeakPasswordException e) {
+                                    String text = "Password Too Short! Must be at least 6 characters";
+                                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+                                    toast.show();
+                                } catch(FirebaseAuthUserCollisionException e) {
+                                    String text = "Account already created with that Email";
+                                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+                                    toast.show();
+                                } catch (Exception e) {
+                                    Log.v("authError", e.getMessage());
+                                }
                             }
                         }
                     });
