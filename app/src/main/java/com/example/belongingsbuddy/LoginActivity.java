@@ -1,15 +1,28 @@
 package com.example.belongingsbuddy;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -21,9 +34,7 @@ import javax.crypto.interfaces.PBEKey;
 import javax.crypto.spec.PBEKeySpec;
 
 public class LoginActivity extends AppCompatActivity {
-    private FirebaseFirestore db;
-    private CollectionReference user_collection;
-    private boolean sign_up_mode;
+    private FirebaseAuth myAuth;
     private Button login_button;
     private Button sign_up_button;
     private EditText username_input;
@@ -32,174 +43,187 @@ public class LoginActivity extends AppCompatActivity {
     private Button sign_up_confirm_button;
     private Button back_button;
 
-    private boolean isSign_up_mode() {
-        return sign_up_mode;
-    }
-
-    private void setSign_up_mode(boolean sign_up_mode) {
-        this.sign_up_mode = sign_up_mode;
-    }
-
+    /**
+     * changes visibility of buttons and EditText features to change the view to
+     * the view seen when inputting username and password
+     */
     private void setLoginSignupVisibility() {
-        getLogin_button().setVisibility(View.GONE);
-        getSign_up_button().setVisibility(View.GONE);
-        getUsername_input().setVisibility(View.VISIBLE);
-        getPassword_input().setVisibility(View.VISIBLE);
-        getBack_button().setVisibility(View.VISIBLE);
+        login_button.setVisibility(View.GONE);
+        sign_up_button.setVisibility(View.GONE);
+        username_input.setVisibility(View.VISIBLE);
+        password_input.setVisibility(View.VISIBLE);
+        back_button.setVisibility(View.VISIBLE);
+        username_input.setText("");
+        password_input.setText("");
     }
 
+    /**
+     * changes visibility of buttons and EditText features to "reset" the view back to
+     * the initial login screen
+     */
     private void setStartScreenVisibility() {
-        getLogin_button().setVisibility(View.VISIBLE);
-        getSign_up_button().setVisibility(View.VISIBLE);
-        getUsername_input().setVisibility(View.GONE);
-        getPassword_input().setVisibility(View.GONE);
-        getBack_button().setVisibility(View.GONE);
-        getLogin_confirm_button().setVisibility(View.GONE);
-        getSign_up_confirm_button().setVisibility(View.GONE);
+        login_button.setVisibility(View.VISIBLE);
+        sign_up_button.setVisibility(View.VISIBLE);
+        username_input.setVisibility(View.GONE);
+        password_input.setVisibility(View.GONE);
+        back_button.setVisibility(View.GONE);
+        login_confirm_button.setVisibility(View.GONE);
+        sign_up_confirm_button.setVisibility(View.GONE);
+        username_input.setText("");
+        password_input.setText("");
     }
 
-    private Button getLogin_button() {
-        return login_button;
+    /**
+     * displays a toast informing user the entered username or password did not match any stored
+     * username/password combos in our database
+     */
+    private void toastIncorrectLogin() {
+        int duration = Toast.LENGTH_LONG;
+        String text = getString(R.string.incorrect_username_or_password);
+        Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+        toast.show();
     }
 
-    private Button getSign_up_button() {
-        return sign_up_button;
-    }
-
-    private EditText getUsername_input() {
-        return username_input;
-    }
-
-    private EditText getPassword_input() {
-        return password_input;
-    }
-
-    private Button getBack_button() {
-        return back_button;
-    }
-
-    private Button getLogin_confirm_button() {
-        return login_confirm_button;
-    }
-
-    private Button getSign_up_confirm_button() {
-        return sign_up_confirm_button;
-    }
-
-    public CollectionReference getUser_collection() {
-        return user_collection;
-    }
-
-
-
-    private void setLogin_button(Button login_button) {
-        this.login_button = login_button;
-    }
-
-    private void setSign_up_button(Button sign_up_button) {
-        this.sign_up_button = sign_up_button;
-    }
-
-    public void setUser_collection(CollectionReference user_collection) {
-        this.user_collection = user_collection;
-    }
-
-    private void setUsername_input(EditText username_input) {
-        this.username_input = username_input;
-    }
-
-    private void setPassword_input(EditText password_input) {
-        this.password_input = password_input;
-    }
-
-    private void setLogin_confirm_button(Button login_confirm_button) {
-        this.login_confirm_button = login_confirm_button;
-    }
-
-    private void setSign_up_confirm_button(Button sign_up_confirm_button) {
-        this.sign_up_confirm_button = sign_up_confirm_button;
-    }
-
-    private void setBack_button(Button back_button) {
-        this.back_button = back_button;
-    }
-
-    private String byteToHex(byte b) {
-        char[] hex_characters = new char[2];
-        hex_characters[0] = Character.forDigit((b >> 4) & 0xF, 16);
-        hex_characters[1] = Character.forDigit((b & 0xF), 16);
-        return new String(hex_characters).toUpperCase();
-    }
-
-    private String getHex(byte[] bytes) {
-        StringBuffer hex_string = new StringBuffer();
-        for (int i = 0; i < bytes.length; i++) {
-            hex_string.append(byteToHex(bytes[i]));
+    /**
+     * Takes an e-mail and checks the given email for format correctness, returns the boolean result
+     * @param etMail
+     *      a string representing the email to be checked for format correctness
+     * @return
+     *      returns boolean representing whether etMail (the given string) is in suitable e-mail format
+     */
+    public boolean emailValidator(String etMail) {
+        boolean is_email = false;
+        if (!etMail.isEmpty() && Patterns.EMAIL_ADDRESS.matcher(etMail).matches()) {
+            is_email = true;
         }
-        return hex_string.toString();
+        return is_email;
     }
 
-    private String generatePasswordHash(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        int iterations = 800;
-        char[] password_chars = password.toCharArray();
-        byte[] salt = getSalt();
-        PBEKeySpec key_spec = new PBEKeySpec(password_chars, salt, iterations);
-        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        byte[] hash = secretKeyFactory.generateSecret(key_spec).getEncoded();
-        return getHex(hash);
-    }
-
-    private byte[] getSalt() throws NoSuchAlgorithmException {
-        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-        byte[] salt = new byte[16];
-        sr.nextBytes(salt);
-        return salt;
-    }
-
+    /**
+     * Initializes the activity when it is created
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        db = FirebaseFirestore.getInstance();
-        setLogin_button(findViewById(R.id.login_button));
-        setSign_up_button(findViewById(R.id.create_button));
-        setUsername_input(findViewById(R.id.username_input));
-        setPassword_input(findViewById(R.id.password_input));
-        setBack_button(findViewById(R.id.back_button));
-        setSign_up_confirm_button(findViewById(R.id.sign_up_confirm));
-        setLogin_confirm_button(findViewById(R.id.login_confirm));
+        login_button = findViewById(R.id.login_button);
+        sign_up_button = findViewById(R.id.create_button);
+        username_input = findViewById(R.id.username_input);
+        password_input = findViewById(R.id.password_input);
+        back_button = findViewById(R.id.back_button);
+        sign_up_confirm_button = findViewById(R.id.sign_up_confirm);
+        login_confirm_button = findViewById(R.id.login_confirm);
 
-        getLogin_button().setOnClickListener(new View.OnClickListener() {
+        login_button.setOnClickListener(new View.OnClickListener() {
+            /**
+             * calls setLoginSignupVisibility changing the view to the screen where
+             * the username and password inputs are visible
+             * also makes the login confirm button visible
+             * @param v The login button that was clicked
+             */
             @Override
             public void onClick(View v) {
                 setLoginSignupVisibility();
-                getLogin_confirm_button().setVisibility(View.VISIBLE);
-                setSign_up_mode(false);
+                login_confirm_button.setVisibility(View.VISIBLE);
             }
         });
 
-        getSign_up_button().setOnClickListener(new View.OnClickListener() {
+        sign_up_button.setOnClickListener(new View.OnClickListener() {
+            /**
+             * calls setLoginSignupVisibility changing the view to the screen where
+             * the username and password inputs are visible
+             * also makes the sign up confirm button visible
+             * @param v The signup button that was clicked
+             */
             @Override
             public void onClick(View v) {
                 setLoginSignupVisibility();
-                getSign_up_confirm_button().setVisibility(View.VISIBLE);
-                setSign_up_mode(true);
+                sign_up_confirm_button.setVisibility(View.VISIBLE);
             }
         });
 
-        getBack_button().setOnClickListener(new View.OnClickListener() {
+        back_button.setOnClickListener(new View.OnClickListener() {
+            /**
+             * reverts the screen back to the initial LoginActivity screen
+             * (calls setStartScreenVisibility)
+             * @param v The back_button that was clicked
+             */
             @Override
             public void onClick(View v) {
                 setStartScreenVisibility();
             }
         });
 
-        View.OnClickListener signup_login_confirm_listener = new View.OnClickListener() {
+        sign_up_confirm_button.setOnClickListener(new View.OnClickListener() {
+            /**
+             * receives the username (email) and password inputted by user
+             * creates and authenticates the new account in the FirestoreAuthentication system using the user input
+             * prevents invalid user input (empty username/password) (invalid username (not email format))
+             * switches to the main activity once new account created and signed into
+             * @param v The signup button that was clicked
+             */
             @Override
             public void onClick(View v) {
-                String username = getUsername_input().getText().toString();
-                String password = getPassword_input().getText().toString();
+                String username = username_input.getText().toString();
+                String password = password_input.getText().toString();
+                myAuth = FirebaseAuth.getInstance();
+                int duration = Toast.LENGTH_LONG;
+                if (username.isEmpty() && password.isEmpty()) {
+                    String text = getString(R.string.invalid_username_and_password);
+                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+                    toast.show();
+                } else if (username.isEmpty()) {
+                    String text = getString(R.string.invalid_username);
+                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+                    toast.show();
+                } else if (password.isEmpty()) {
+                    String text = getString(R.string.invalid_password);
+                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+                    toast.show();
+                } else if (!emailValidator(username)) {
+                    String text = getString(R.string.invalid_email);
+                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+                    toast.show();
+                } else {
+                    myAuth.createUserWithEmailAndPassword(username, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                CharSequence text = "Successfully Signed Up!";
+                                Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+                                toast.show();
+                                Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                                LoginActivity.this.startActivity(i);
+                            } else {
+                                CharSequence text = "Failed To Authenticate User";
+                                Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+                                toast.show();
+                                setStartScreenVisibility();
+                            }
+                        }
+                    });
+                    myAuth.createUserWithEmailAndPassword(username, password);
+                }
+            }
+        });
+        login_confirm_button.setOnClickListener(new View.OnClickListener() {
+            /**
+             * receives the username (email) and password inputted by user
+             * compares the user input to the (automatically) encrypted accounts stored in the FirebaseAuthentication system
+             * prevents invalid user input (empty username/password) (invalid username (not email format))
+             * switches to the main activity if user input matches existing account
+             * returns to initial login activity if user input does not match
+             * @param v The login button that was clicked
+             */
+            @Override
+            public void onClick(View v) {
+                String username = username_input.getText().toString();
+                String password = password_input.getText().toString();
+                myAuth = FirebaseAuth.getInstance();
                 int duration = Toast.LENGTH_LONG;
                 if (username.isEmpty() && password.isEmpty()) {
                     CharSequence text = "Username and Password cannot be empty!";
@@ -210,26 +234,29 @@ public class LoginActivity extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), text, duration);
                     toast.show();
                 } else if (password.isEmpty()) {
-                    CharSequence text = "Username cannot be empty!";
+                    CharSequence text = "Password cannot be empty!";
+                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+                    toast.show();
+                } else if (!emailValidator(username)) {
+                    CharSequence text = "Enter Valid E-mail Format (i.e. ...@gmail.com, ...@outlook.com";
                     Toast toast = Toast.makeText(getApplicationContext(), text, duration);
                     toast.show();
                 } else {
-                    try {
-                        String hashed_username = generatePasswordHash(username);
-                        String hashed_password = generatePasswordHash(password);
-                        setUser_collection(db.collection("users"));
-                        getUser_collection().document(hashed_username).set(hashed_password);
-                    } catch (NoSuchAlgorithmException e) {
-                        e.printStackTrace();
-                    } catch (InvalidKeySpecException e) {
-                        e.printStackTrace();
-                    }
-
+                    myAuth.signInWithEmailAndPassword(username, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                                i.putExtra("username", username);
+                                LoginActivity.this.startActivity(i);
+                            } else {
+                                toastIncorrectLogin();
+                            }
+                        }
+                    });
+                    myAuth.signInWithEmailAndPassword(username, password);
                 }
             }
-        };
-
-        getSign_up_confirm_button().setOnClickListener(signup_login_confirm_listener);
-        getLogin_confirm_button().setOnClickListener(signup_login_confirm_listener);
+        });
     }
 }

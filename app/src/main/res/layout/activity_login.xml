@@ -48,7 +48,7 @@
         android:background="#C6C6C6"
         android:digits="@string/username_digits"
         android:hint="@string/username"
-        android:inputType="text"
+        android:inputType="textEmailAddress"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
