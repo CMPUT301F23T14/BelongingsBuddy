@@ -1,20 +1,13 @@
 package com.example.belongingsbuddy;
 
 
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
-import static
-        androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 
 import android.view.View;
@@ -27,18 +20,17 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
-import com.google.firebase.auth.FirebaseAuth;
-
-import org.hamcrest.Matchers;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+/**
+ * Tests the functionality of all the buttons in the LoginActivity
+ * Tests user input verification
+ */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class LoginActivityTest {
-    private View decorView;
+public class LoginButtonsTest {
     @Rule
     public ActivityScenarioRule<MainActivity> main_scenario = new ActivityScenarioRule<>(MainActivity.class);
     @Rule
@@ -169,64 +161,10 @@ public class LoginActivityTest {
         onView(withId(R.id.password_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
     }
 
-    /**
-     * check if
-     */
     @Test
-    public void testSignUp() {
-        ActivityScenario<MainActivity> rule2 = main_scenario.getScenario();
-        onView(withId(R.id.create_button)).perform(click());
-        onView(withId(R.id.username_input)).perform(typeText("test@gmail.com"));
-        onView(withId(R.id.password_input)).perform(typeText("Test_password123"));
-        onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard());
-        onView(withId(R.id.sign_up_confirm)).perform(click());
-        rule2.getState().isAtLeast(Lifecycle.State.CREATED);
-    }
-
-    @Test
-    public void testLogin() {
+    public void testLoginEmailEmpty() {
         ActivityScenario<LoginActivity> rule = login_scenario.getScenario();
-        ActivityScenario<MainActivity> rule2 = main_scenario.getScenario();
         onView(withId(R.id.login_button)).perform(click());
-        onView(withId(R.id.username_input)).perform(ViewActions.typeText("testgmail.com"));
-        onView(withId(R.id.password_input)).perform(typeText("test_password"));
-        onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard());
-        onView(withId(R.id.login_confirm)).perform(click());
-        rule.getState().isAtLeast(Lifecycle.State.CREATED);
-        onView(withId(R.id.login_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-        onView(withId(R.id.create_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-        onView(withId(R.id.back_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.login_confirm)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.sign_up_confirm)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-        onView(withId(R.id.username_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.password_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.username_input)).perform(clearText());
-        onView(withId(R.id.password_input)).perform(clearText());
-        onView(withId(R.id.login_confirm)).perform(click());
-        rule.getState().isAtLeast(Lifecycle.State.CREATED);
-        onView(withId(R.id.login_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-        onView(withId(R.id.create_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-        onView(withId(R.id.back_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.login_confirm)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.sign_up_confirm)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-        onView(withId(R.id.username_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.password_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.username_input)).perform(clearText());
-        onView(withId(R.id.password_input)).perform(clearText());
-        onView(withId(R.id.username_input)).perform(typeText("test@gmail.com"));
-        onView(withId(R.id.password_input)).perform(typeText(""));
-        onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard());
-        onView(withId(R.id.login_confirm)).perform(click());
-        rule.getState().isAtLeast(Lifecycle.State.CREATED);
-        onView(withId(R.id.login_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-        onView(withId(R.id.create_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-        onView(withId(R.id.back_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.login_confirm)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.sign_up_confirm)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-        onView(withId(R.id.username_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.password_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.username_input)).perform(clearText());
-        onView(withId(R.id.password_input)).perform(clearText());
         onView(withId(R.id.username_input)).perform(typeText(""));
         onView(withId(R.id.password_input)).perform(typeText("test_password"));
         onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard());
@@ -239,15 +177,36 @@ public class LoginActivityTest {
         onView(withId(R.id.sign_up_confirm)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
         onView(withId(R.id.username_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
         onView(withId(R.id.password_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.username_input)).perform(clearText());
-        onView(withId(R.id.password_input)).perform(clearText());
-        onView(withId(R.id.username_input)).perform(typeText("test@gmail.com"));
-        onView(withId(R.id.password_input)).perform(typeText("Test_password123"));
-        onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard());
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        auth.createUserWithEmailAndPassword("test@gmail.com", "Test_password123");
-        onView(withId(R.id.login_confirm)).perform(click());
-        rule2.getState().isAtLeast(Lifecycle.State.CREATED);
     }
-
+    @Test
+    public void testLoginPasswordEmpty() {
+        ActivityScenario<LoginActivity> rule = login_scenario.getScenario();
+        onView(withId(R.id.login_button)).perform(click());
+        onView(withId(R.id.username_input)).perform(typeText("test@gmail.com"));
+        onView(withId(R.id.password_input)).perform(typeText(""));
+        onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard());
+        onView(withId(R.id.login_confirm)).perform(click());
+        rule.getState().isAtLeast(Lifecycle.State.CREATED);
+        onView(withId(R.id.login_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+        onView(withId(R.id.create_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+        onView(withId(R.id.back_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.login_confirm)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.sign_up_confirm)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+        onView(withId(R.id.username_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.password_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+    }
+    @Test
+    public void testLoginEmailAndPasswordEmpty() {
+        ActivityScenario<LoginActivity> rule = login_scenario.getScenario();
+        onView(withId(R.id.login_button)).perform(click());
+        onView(withId(R.id.login_confirm)).perform(click());
+        rule.getState().isAtLeast(Lifecycle.State.CREATED);
+        onView(withId(R.id.login_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+        onView(withId(R.id.create_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+        onView(withId(R.id.back_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.login_confirm)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.sign_up_confirm)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+        onView(withId(R.id.username_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.password_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+    }
 }

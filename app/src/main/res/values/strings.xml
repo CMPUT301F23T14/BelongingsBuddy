@@ -11,4 +11,10 @@
     <string name="invalid_username">Username cannot be empty!</string>
     <string name="invalid_username_and_password">Username and Password cannot be empty!</string>
     <string name="incorrect_username_or_password">Incorrect Username or Password</string>
+    <string name="item_name_string"></string>
+    <string name="item_value_string"></string>
+    <string name="item_view_make_textview_string"></string>
+    <string name="item_view_value_textview_string"></string>
+    <string name="item_view_back_button_string"></string>
+    <string name="item_view_edit_button_string"></string>
 </resources>

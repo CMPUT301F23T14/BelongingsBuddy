@@ -28,10 +28,12 @@ public class UsernameDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        // receive passed data and view
         Bundle myArg = getArguments();
         String username = myArg.getString("username");
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_username, null);
 
+        // format username in dialog
         TextView title = new TextView(getActivity());
         title.setText(username);
         title.setPadding(10, 80, 10, 10);
@@ -45,6 +47,7 @@ public class UsernameDialogFragment extends DialogFragment {
                 .setCustomTitle(title)
                 .setNegativeButton("Cancel", null)
                 .setPositiveButton("Sign Out", (dialog, which) -> {
+                    // sign out of account on FirebaseAuth and switch activity to Login Activity
                     FirebaseAuth.getInstance().signOut();
                     Intent i = new Intent(getActivity(), LoginActivity.class);
                     startActivity(i);

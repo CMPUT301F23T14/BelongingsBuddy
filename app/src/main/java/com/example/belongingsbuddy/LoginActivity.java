@@ -171,6 +171,8 @@ public class LoginActivity extends AppCompatActivity {
                 String username = username_input.getText().toString();
                 String password = password_input.getText().toString();
                 myAuth = FirebaseAuth.getInstance();
+
+                // user input validation
                 int duration = Toast.LENGTH_LONG;
                 if (username.isEmpty() && password.isEmpty()) {
                     String text = getString(R.string.invalid_username_and_password);
@@ -189,6 +191,7 @@ public class LoginActivity extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), text, duration);
                     toast.show();
                 } else {
+                    // create new account in FirebaseAuth using user input
                     myAuth.createUserWithEmailAndPassword(username, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -225,6 +228,7 @@ public class LoginActivity extends AppCompatActivity {
                 String password = password_input.getText().toString();
                 myAuth = FirebaseAuth.getInstance();
                 int duration = Toast.LENGTH_LONG;
+                // user input validation
                 if (username.isEmpty() && password.isEmpty()) {
                     CharSequence text = "Username and Password cannot be empty!";
                     Toast toast = Toast.makeText(getApplicationContext(), text, duration);
@@ -242,6 +246,7 @@ public class LoginActivity extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), text, duration);
                     toast.show();
                 } else {
+                    //Attempt to login to existing account in FirebaseAuth
                     myAuth.signInWithEmailAndPassword(username, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
