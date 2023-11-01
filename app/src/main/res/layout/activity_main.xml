@@ -11,7 +11,7 @@
         android:id="@+id/app_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/accent1"
+        android:background="@color/purple"
         android:textColor="@color/white"
         android:text="@string/app_name"
         android:padding="8dp"
