@@ -8,30 +8,35 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 
+import java.util.Objects;
+
 /**
- * Displays a dialog with three buttons and a prompt
+ * Displays a dialog with three buttons and a prompt;
  *
  * the "Scan barcode" Button will start an activity where the user
- * can scan barcode of an item they want to add to inventory
+ * can scan barcode of an item they want to add to inventory;
  *
  * the "Input manually" Button will start an activity where the user
- * has to manually input the  information for a new item
+ * has to manually input the  information for a new item;
  *
- * the "Cancel" button will close the Dialog
+ * the "Cancel" button will close the Dialog;
  */
 public class ScanOrManual extends DialogFragment {
     View view;
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        // get the view
-        view = LayoutInflater.from(getActivity()).inflate(R.layout.scan_or_manual, null);
-        final Dialog dialog = new Dialog(this.getContext());
+        // get the View
+        view = View.inflate(getContext(), R.layout.scan_or_manual, null);
+        // view = LayoutInflater.from(getActivity()).inflate(R.layout.scan_or_manual, null);
+        final Dialog dialog = new Dialog(this.requireContext());
+        //final Dialog dialog = new Dialog(this.getContext());
         dialog.setContentView(view);
 
         // SCAN BARCODE implementation:
@@ -48,7 +53,9 @@ public class ScanOrManual extends DialogFragment {
         manual.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                dialog.dismiss();
+                Intent intent = new Intent(getActivity(), AddItemActivity.class);
+                startActivity(intent);
             }
         });
 
