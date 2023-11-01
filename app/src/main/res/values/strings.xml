@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">BelongingsBuddy</string>
+    <string name="item_name_string">Name</string>
+    <string name="item_value_string">Value</string>
+    <string name="item_view_back_button_string">Back</string>
+    <string name="item_view_edit_button_string">Edit</string>
+    <string name="item_view_make_textview_string">Make</string>
+    <string name="item_view_value_textview_string">Value</string>
 </resources>
