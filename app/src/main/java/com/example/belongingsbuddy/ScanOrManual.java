@@ -29,6 +29,7 @@ import java.util.Objects;
  */
 public class ScanOrManual extends DialogFragment {
     View view;
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -44,7 +45,8 @@ public class ScanOrManual extends DialogFragment {
         scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(getActivity(), ScannerActivity.class);
+                getActivity().startActivity(intent);
             }
         });
 
