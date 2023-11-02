@@ -213,12 +213,18 @@ public class LoginActivity extends AppCompatActivity {
                                     String text = "Password Too Short! Must be at least 6 characters";
                                     Toast toast = Toast.makeText(getApplicationContext(), text, duration);
                                     toast.show();
+                                    myAuth.getCurrentUser().delete();
                                 } catch(FirebaseAuthUserCollisionException e) {
                                     String text = "Account already created with that Email";
                                     Toast toast = Toast.makeText(getApplicationContext(), text, duration);
                                     toast.show();
+                                    myAuth.getCurrentUser().delete();
                                 } catch (Exception e) {
                                     Log.v("authError", e.getMessage());
+                                    String text = "Unable to Authorize User";
+                                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+                                    toast.show();
+                                    myAuth.getCurrentUser().delete();
                                 }
                             }
                         }
