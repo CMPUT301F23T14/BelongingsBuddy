@@ -12,9 +12,21 @@
     <string name="username_digits"><![CDATA[qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890!@#$%^&*_-+=?.\'/`{|}~]]></string>
     <string name="username">E-mail Address</string>
     <string name="password">Password</string>
-    <string name="invalid_email">Enter Valid E-mail Format (i.e. ...@gmail.com, ...@outlook.com</string>
+    <string name="invalid_email">Enter Valid E-mail Format (i.e. …@gmail.com, …@outlook.com)</string>
     <string name="invalid_password">Password cannot be empty!</string>
-    <string name="invalid_username">Username cannot be empty!</string>
-    <string name="invalid_username_and_password">Username and Password cannot be empty!</string>
-    <string name="incorrect_username_or_password">Incorrect Username or Password</string>
+    <string name="invalid_username">Email cannot be empty!</string>
+    <string name="invalid_username_and_password">Email and Password cannot be empty!</string>
+    <string name="incorrect_username_or_password">Incorrect Email or Password</string>
+    <string name="successfully_signed_up">Successfully Signed Up!</string>
+    <string name="weak_password">Password Too Short! Must be at least 6 characters</string>
+    <string name="account_collision">Account already created with that Email</string>
+    <string name="internal_login_error">Unable to Authorize User</string>
+    <string name="failed_attempts_timeout">Too many failed attempts, try again later</string>
+    <string name="network_error_code">com.google.firebase.FirebaseNetworkException: A network error (such as timeout, interrupted connection or unreachable host) has occurred.</string>
+    <string name="network_error">Network Error</string>
+    <string name="autherror">authError</string>
+    <string name="error_invalid_email">ERROR_INVALID_EMAIL</string>
+    <string name="invalid_login_credentials">An internal error has occurred. [ INVALID_LOGIN_CREDENTIALS ]</string>
+    <string name="failed_login_overload">We have blocked all requests from this device due to unusual activity. Try again later. [ Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later. ]</string>
+    <string name="internalerror">internalError</string>
 </resources>
