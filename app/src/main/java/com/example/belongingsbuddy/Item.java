@@ -1,12 +1,13 @@
 package com.example.belongingsbuddy;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * an instance of this class represent an Item that will be put the app will add to the inventory
  * the class uses standard setter and getter methods
  */
-public class Item {
+public class Item implements Serializable {
     private String name;
     private Date date;
     private String description;

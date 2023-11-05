@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.Objects;
 
@@ -28,13 +29,24 @@ import java.util.Objects;
  * the "Cancel" button will close the Dialog;
  */
 public class ScanOrManual extends DialogFragment {
-    View view;
+    private FinishedAdd end;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        // set up the listener
+        end = (FinishedAdd) context;
+    }
+
+    public interface FinishedAdd {
+        public void returnItem(Item i);
+    }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         // get the View
-        view = View.inflate(getContext(), R.layout.scan_or_manual, null);
+        View view = View.inflate(getContext(), R.layout.scan_or_manual, null);
         // view = LayoutInflater.from(getActivity()).inflate(R.layout.scan_or_manual, null);
         final Dialog dialog = new Dialog(this.requireContext());
         //final Dialog dialog = new Dialog(this.getContext());
@@ -46,7 +58,11 @@ public class ScanOrManual extends DialogFragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), ScannerActivity.class);
-                getActivity().startActivity(intent);
+                requireActivity().startActivity(intent);
+                Item item = (Item) intent.getSerializableExtra("added item");
+                end.returnItem(item);
+                dialog.dismiss();
+
             }
         });
 
@@ -58,6 +74,8 @@ public class ScanOrManual extends DialogFragment {
                 dialog.dismiss();
                 Intent intent = new Intent(getActivity(), AddItemActivity.class);
                 startActivity(intent);
+
+
             }
         });
 

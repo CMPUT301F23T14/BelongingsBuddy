@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -20,7 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements ScanOrManual.FinishedAdd{
     private ArrayList<Item> dataList;
     private ListView itemListView;
     private ArrayAdapter<Item> itemAdapter;
@@ -93,12 +94,12 @@ public class MainActivity extends AppCompatActivity{
         });
 
         // ADD ITEM implementation:
-
         final Button addButton = findViewById(R.id.add_item);
         addButton.setOnClickListener(v -> {
             new ScanOrManual().show(getSupportFragmentManager(), "Add Item:");
             itemAdapter.notifyDataSetChanged();
         });
+
         // click listener for sort:
         final Button sortButton = findViewById(R.id.sort_button);
         sortButton.setOnClickListener(v -> {
@@ -117,5 +118,12 @@ public class MainActivity extends AppCompatActivity{
                 newFragment.show(getSupportFragmentManager(), "User Control");
             }
         });
+    }
+
+    @Override
+    public void returnItem(Item i){
+        dataList.add(i);
+        Toast.makeText(this, i.getName(), Toast.LENGTH_SHORT).show();
+        itemAdapter.notifyDataSetChanged();
     }
 }
