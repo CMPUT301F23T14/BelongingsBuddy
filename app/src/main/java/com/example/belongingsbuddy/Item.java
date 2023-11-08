@@ -14,7 +14,7 @@ public class Item implements Serializable {
     private String make;
     private String model;
     private Integer serialNumber;
-    private Integer estimatedValue;
+    private Float estimatedValue;
     private String comment;
     private ArrayList<Tag> tags;
     private ArrayList<Photo> photos;
@@ -36,12 +36,12 @@ public class Item implements Serializable {
      * @param serialNumber
      * serial number for the Item (Integer)
      * @param estimatedValue
-     * estimated value of the Item (Integer)
+     * estimated value of the Item (Float)
      * @param comment
      * comment(s) about the item (String)
      */
     public Item(String name, Date date, String description, String make, String model,
-                Integer serialNumber,Integer estimatedValue, String comment){
+                Integer serialNumber,Float estimatedValue, String comment){
         this.name = name;
         this.date = date;
         this.description = description;
@@ -67,12 +67,12 @@ public class Item implements Serializable {
      * @param model
      * model of Item (String)
      * @param estimatedValue
-     * estimated value of the Item (Integer)
+     * estimated value of the Item (Float)
      * @param comment
      * comment(s) about the Item (String)
      */
     public Item(String name, Date date, String description, String make, String model,
-                Integer estimatedValue, String comment){
+                Float estimatedValue, String comment){
         this.name = name;
         this.date = date;
         this.description = description;
@@ -85,6 +85,38 @@ public class Item implements Serializable {
         photos = new ArrayList<Photo>();
     }
 
+    /**
+     * Constructor for Item class with a serial number provided
+     * @param name
+     * name of Item (String)
+     * @param date
+     * date of purchase/acquisition (Date)
+     * @param description
+     * brief description of Item (String)
+     * @param make
+     * make of Item (String)
+     * @param model
+     * model of Item (String)
+     * @param estimatedValue
+     * estimated value of the Item (Float)
+     * @param comment
+     * comment(s) about the Item (String)
+     * @param serialNumber
+     * serial number of item (Integer)
+     */
+    public Item(String name, Date date, String description, String make, String model,
+                Float estimatedValue, String comment, Integer serialNumber){
+        this.name = name;
+        this.date = date;
+        this.description = description;
+        this.make = make;
+        this.model = model;
+        this.serialNumber = serialNumber;
+        this.estimatedValue = estimatedValue;
+        this.comment = comment;
+        tags = new ArrayList<Tag>();
+        photos = new ArrayList<Photo>();
+    }
     public String getName() {
         return name;
     }
@@ -133,11 +165,11 @@ public class Item implements Serializable {
         this.serialNumber = serialNumber;
     }
 
-    public Integer getEstimatedValue() {
+    public Float getEstimatedValue() {
         return estimatedValue;
     }
 
-    public void setEstimatedValue(Integer estimatedValue) {
+    public void setEstimatedValue(Float estimatedValue) {
         this.estimatedValue = estimatedValue;
     }
 

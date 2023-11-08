@@ -2,9 +2,12 @@ package com.example.belongingsbuddy;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.processing.SurfaceProcessorNode;
 import androidx.fragment.app.DialogFragment;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -21,13 +24,16 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements ScanOrManual.FinishedAdd{
+public class MainActivity extends AppCompatActivity implements Listener{
     private ArrayList<Item> dataList;
     private ListView itemListView;
     private ArrayAdapter<Item> itemAdapter;
     private TextView total;
     private FirebaseFirestore db;
     private String username;
+
+    public final static int REQUEST_CODE_ADD = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,11 +66,11 @@ public class MainActivity extends AppCompatActivity implements ScanOrManual.Fini
         dataList = new ArrayList<Item>();
 
         Item testItem1 = new Item("Chair", new Date(), "A chair",
-                "Hermann Miller", "Chair 9000", 200,  "I like this chair");
+                "Hermann Miller", "Chair 9000", (float)200,  "I like this chair");
         Item testItem2 = new Item("Table", new Date(), "A table",
-                "Ikea", "Table 9000", 400,  "I like this table");
+                "Ikea", "Table 9000", (float)400,  "I like this table");
         Item testItem3 = new Item("Lamp", new Date(), "A lamp",
-                "Amazon", "Lamp 9000", 50,  "I like this lamp");
+                "Amazon", "Lamp 9000", (float)50,  "I like this lamp");
         itemListView = findViewById(R.id.item_list);
         dataList.add(testItem1);
         dataList.add(testItem2);
@@ -96,8 +102,9 @@ public class MainActivity extends AppCompatActivity implements ScanOrManual.Fini
         // ADD ITEM implementation:
         final Button addButton = findViewById(R.id.add_item);
         addButton.setOnClickListener(v -> {
-            new ScanOrManual().show(getSupportFragmentManager(), "Add Item:");
-            itemAdapter.notifyDataSetChanged();
+            ScanOrManual dialog = new ScanOrManual();
+            dialog.show(getSupportFragmentManager(), "Add Item:");
+
         });
 
         // click listener for sort:
@@ -121,9 +128,42 @@ public class MainActivity extends AppCompatActivity implements ScanOrManual.Fini
     }
 
     @Override
-    public void returnItem(Item i){
-        dataList.add(i);
-        Toast.makeText(this, i.getName(), Toast.LENGTH_SHORT).show();
-        itemAdapter.notifyDataSetChanged();
+    public void inputManually(){
+        Intent i = new Intent(MainActivity.this, AddItemActivity.class);
+        startActivityForResult(i, REQUEST_CODE_ADD);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_ADD) {
+            if(resultCode == Activity.RESULT_OK){
+                // get all the data given by user
+                String name = data.getStringExtra("name");
+                String description = data.getStringExtra("description");
+                String make = data.getStringExtra("make");
+                String model = data.getStringExtra("model");
+                Float value = data.getFloatExtra("value", 0);
+                String comment = data.getStringExtra("comment");
+                int serialNumber = data.getIntExtra("serial number", 0);
+                int day = data.getIntExtra("day",0);
+                int month = data.getIntExtra("month", 0);
+                int  year = data.getIntExtra("year", 0);
+                // construct a Date object
+                Date date = new Date(day, month, year);
+                if (serialNumber == 0){
+                    Item item = new Item(name, date, description, make, model, value, comment);
+                    dataList.add(item);
+                } else{
+                    Item item = new Item(name, date, description, make, model, value, comment, serialNumber);
+                    dataList.add(item);
+                }
+                itemAdapter.notifyDataSetChanged();
+            }
+
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // user hit the "cancel" button, nothing to do
+            }
+        }
     }
 }

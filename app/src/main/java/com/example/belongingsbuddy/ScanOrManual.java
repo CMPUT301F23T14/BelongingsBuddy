@@ -1,5 +1,6 @@
 package com.example.belongingsbuddy;
 
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -28,23 +29,23 @@ import java.util.Objects;
  *
  * the "Cancel" button will close the Dialog;
  */
-public class ScanOrManual extends DialogFragment {
-    private FinishedAdd end;
+public class ScanOrManual extends DialogFragment{
+    public Listener listener;
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         // set up the listener
-        end = (FinishedAdd) context;
+        if (context instanceof Listener) {
+            listener = (Listener) context;
+        } else {
+            throw new RuntimeException(context.toString() + "OnFragmentInteractionListener is not implemented");
+        }
     }
-
-    public interface FinishedAdd {
-        public void returnItem(Item i);
-    }
-
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+
         // get the View
         View view = View.inflate(getContext(), R.layout.scan_or_manual, null);
         // view = LayoutInflater.from(getActivity()).inflate(R.layout.scan_or_manual, null);
@@ -59,8 +60,6 @@ public class ScanOrManual extends DialogFragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), ScannerActivity.class);
                 requireActivity().startActivity(intent);
-                Item item = (Item) intent.getSerializableExtra("added item");
-                end.returnItem(item);
                 dialog.dismiss();
 
             }
@@ -71,11 +70,8 @@ public class ScanOrManual extends DialogFragment {
         manual.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                listener.inputManually();
                 dialog.dismiss();
-                Intent intent = new Intent(getActivity(), AddItemActivity.class);
-                startActivity(intent);
-
-
             }
         });
 

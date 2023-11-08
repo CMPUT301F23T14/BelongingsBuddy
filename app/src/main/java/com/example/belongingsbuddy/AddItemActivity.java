@@ -1,11 +1,14 @@
 package com.example.belongingsbuddy;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.processing.SurfaceProcessorNode;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.icu.util.RangeValueIterator;
@@ -22,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddItemActivity extends AppCompatActivity{
+    private Item item;
     private String name;
     private EditText name_text;
     private Date date;
@@ -34,35 +38,17 @@ public class AddItemActivity extends AppCompatActivity{
     private EditText model_text;
     private Integer serialNumber;
     private EditText serialNumber_text;
-    private Integer value;
+    private Float value;
     private EditText value_text;
     private String comment;
     private EditText comment_text;
     private ArrayList<Tag> tags;
     private ArrayList<Photo> photos;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item);
-        /*
-        View view = getLayoutInflater().inflate(R.layout.activity_add_item, null, false);
-        //View view = View.inflate(this, R.layout.activity_add_item, null);
-        // get relevant EditTexts form view
-
-        name_text = view.findViewById(R.id.add_name);
-        date_text = view.findViewById(R.id.add_date);
-        description_text = view.findViewById(R.id.add_description);
-        make_text = view.findViewById(R.id.add_make);
-        model_text = view.findViewById(R.id.add_model);
-        value_text = view.findViewById(R.id.add_value);
-        serialNumber_text = view.findViewById(R.id.add_serial_number);
-        comment_text = view.findViewById(R.id.add_comment);
-        // tags
-        // photos
-
-         */
-
-
         // SET DATE implementation
         Button setDate = findViewById(R.id.add_pick_date_button);
         setDate.setOnClickListener(new View.OnClickListener() {
@@ -91,7 +77,10 @@ public class AddItemActivity extends AppCompatActivity{
 
                 // reset prompts and valid flag
                 boolean valid = true;
-                resetPrompts();
+                TextView[] prompts = {findViewById(R.id.name_prompt), findViewById(R.id.description_prompt),
+                        findViewById(R.id.make_prompt), findViewById(R.id.model_prompt), findViewById(R.id.value_prompt),
+                        findViewById(R.id.date_prompt)};
+                resetPrompts(prompts);
 
                 // initialize an array of all the required fields
                 ArrayList<EditText> required = new ArrayList<EditText>();
@@ -100,16 +89,12 @@ public class AddItemActivity extends AppCompatActivity{
                 required.add(make_text);
                 required.add(model_text);
                 required.add(value_text);
-                TextView[] prompts = {findViewById(R.id.name_prompt), findViewById(R.id.description_prompt),
-                                        findViewById(R.id.make_prompt), findViewById(R.id.model_prompt), findViewById(R.id.value_prompt),
-                                        findViewById(R.id.date_prompt)};
 
                 // assert all required fields are filled out
                 for (int i = 0; i < required.size(); i++){
                     if (required.get(i).getText().toString().trim().length() == 0){
                         if (valid){
                             Toast.makeText(AddItemActivity.this, "Missing required fields", Toast.LENGTH_SHORT).show();
-                            Toast.makeText(AddItemActivity.this, prompts[i].getText().toString(), Toast.LENGTH_SHORT).show();
                         }
                         prompts[i].setBackgroundColor(getResources().getColor(R.color.light_red));
                         valid = false;
@@ -121,7 +106,6 @@ public class AddItemActivity extends AppCompatActivity{
                     TextView prompt = prompts[5];
                     if (valid){
                         Toast.makeText(AddItemActivity.this, "Missing required fields", Toast.LENGTH_SHORT).show();
-                        Toast.makeText(AddItemActivity.this, prompt.getText().toString(), Toast.LENGTH_SHORT).show();
                     }
                     prompt.setBackgroundColor(getResources().getColor(R.color.light_red));
                     valid = false;
@@ -135,11 +119,34 @@ public class AddItemActivity extends AppCompatActivity{
                     description = description_text.getText().toString();
                     make = make_text.getText().toString();
                     model = model_text.getText().toString();
-                    value = Integer.parseInt(value_text.getText().toString());
-                    serialNumber = Integer.parseInt(serialNumber_text.getText().toString());
-                    comment = comment_text.getText().toString();
-                    Item item = new Item(name, date, description, make, model, serialNumber, value, comment);
-                    getIntent().putExtra("added item", item);
+                    value = Float.parseFloat(value_text.getText().toString());
+                    // comment is optional
+                    if (TextUtils.isEmpty(comment_text.getText().toString())){
+                        comment = "NA";
+                    } else{
+                        comment = comment_text.getText().toString();
+                    }
+                    // serial number is optional
+                    if (TextUtils.isEmpty(serialNumber_text.getText().toString())){
+                        // use the constructor without a serial number
+                        serialNumber = null;
+                        //item = new Item(name, date, description, make, model, value, comment);
+                    } else {
+                        serialNumber = Integer.parseInt(serialNumber_text.getText().toString());
+                        //item = new Item(name, date, description, make, model, serialNumber, value, comment);
+                    }
+                    Intent returnIntent = new Intent();
+                    returnIntent.putExtra("name", name);
+                    returnIntent.putExtra("description", description);
+                    returnIntent.putExtra("make", make);
+                    returnIntent.putExtra("model", model);
+                    returnIntent.putExtra("value", value);
+                    returnIntent.putExtra("comment", comment);
+                    returnIntent.putExtra("serial number", serialNumber);
+                    returnIntent.putExtra("day", date.getDay());
+                    returnIntent.putExtra("month", date.getMonth());
+                    returnIntent.putExtra("year", date.getYear());
+                    setResult(Activity.RESULT_OK,returnIntent);
                     finish();
                 }
             }
@@ -150,15 +157,15 @@ public class AddItemActivity extends AppCompatActivity{
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent returnIntent = new Intent();
+                setResult(Activity.RESULT_CANCELED, returnIntent);
                 finish();
             }
         });
 
     }
 
-    private void resetPrompts(){
-        TextView[] prompts = {findViewById(R.id.name_prompt), findViewById(R.id.description_prompt),
-                findViewById(R.id.make_prompt), findViewById(R.id.model_prompt), findViewById(R.id.value_prompt)};
+    private void resetPrompts(TextView[] prompts){
         for (TextView p: prompts)
             p.setBackgroundColor(getResources().getColor(R.color.light_purple));
     }
