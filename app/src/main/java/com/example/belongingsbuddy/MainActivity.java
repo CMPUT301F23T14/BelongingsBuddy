@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
         // total
         totalTextView = findViewById(R.id.total);
         float totalFloat = ((CustomList) itemAdapter).getTotal();
-        totalTextView.setText(String.valueOf(totalFloat));
+        totalTextView.setText(String.format("$%.2f", totalFloat));
         total = totalFloat;
 
         // get ui objects for sort
@@ -254,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     // update total
                     totalTextView = findViewById(R.id.total);
                     total += value;
-                    totalTextView.setText(String.valueOf(total));
+                    totalTextView.setText(String.format("$%.2f", total));
                 }
                 break;
             case REQUEST_CODE_VIEW:
@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     // update total
                     totalTextView = findViewById(R.id.total);
                     total -= value;
-                    totalTextView.setText(String.valueOf(total));
+                    totalTextView.setText(String.format("$%.2f", total));
                 }
         }
     }
