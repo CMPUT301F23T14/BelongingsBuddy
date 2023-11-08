@@ -341,6 +341,19 @@
                 </Button>
 
                 <Button
+                    android:id="@+id/view_belete"
+                    android:clickable="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DELETE"
+                    android:backgroundTint="@color/light_red"
+                    android:textColor="@color/black"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.5"
+                    android:focusable="true">
+                </Button>
+
+                <Button
                     android:id="@+id/view_edit"
                     android:clickable="true"
                     android:layout_width="wrap_content"

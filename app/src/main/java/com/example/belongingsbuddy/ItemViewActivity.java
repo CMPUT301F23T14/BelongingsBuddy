@@ -2,6 +2,7 @@ package com.example.belongingsbuddy;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,6 +18,9 @@ import org.w3c.dom.Text;
  * I figured to include it ¯\_(ツ)_/¯
  */
 public class ItemViewActivity extends AppCompatActivity {
+    public final static int REQUEST_CODE_BACK = 1;
+    public final static int REQUEST_CODE_EDIT = 2;
+    public final static int REQUEST_CODE_DELETE = 3;
     private TextView name;
     private TextView date;
     private TextView description;
@@ -62,7 +66,35 @@ public class ItemViewActivity extends AppCompatActivity {
         final Button backButton = findViewById(R.id.view_back);
         backButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ItemViewActivity.this.finish();
+                Intent returnIntent = new Intent();
+                setResult(REQUEST_CODE_BACK, returnIntent);
+                finish();
+            }
+        });
+
+        // EDIT button implementation
+        final Button editButton = findViewById(R.id.view_edit);
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle extras = getIntent().getExtras();
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("item", extras);
+                setResult(REQUEST_CODE_EDIT, returnIntent);
+                finish();
+            }
+        });
+
+        // DELETE button implementation
+        final Button deleteButton = findViewById(R.id.view_belete);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Integer i = getIntent().getIntExtra("index", 0);
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("position", i);
+                setResult(REQUEST_CODE_DELETE, returnIntent);
+                finish();
             }
         });
     }

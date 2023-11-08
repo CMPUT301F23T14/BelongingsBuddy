@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements Listener{
     private String username;
 
     public final static int REQUEST_CODE_ADD = 1;
+    public final static int REQUEST_CODE_VIEW = 2;
+
 
 
     @Override
@@ -103,7 +105,8 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 intent.putExtra("value", i.getEstimatedValue());
                 intent.putExtra("serialNum", i.getSerialNumber());
                 intent.putExtra("comment", i.getComment());
-                MainActivity.this.startActivity(intent);
+                intent.putExtra("index", position);
+                startActivityForResult(intent, REQUEST_CODE_VIEW);
             }
         });
 
@@ -144,34 +147,41 @@ public class MainActivity extends AppCompatActivity implements Listener{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_ADD) {
-            if(resultCode == Activity.RESULT_OK){
-                // get all the data given by user
-                String name = data.getStringExtra("name");
-                String description = data.getStringExtra("description");
-                String make = data.getStringExtra("make");
-                String model = data.getStringExtra("model");
-                Float value = data.getFloatExtra("value", 0);
-                String comment = data.getStringExtra("comment");
-                int serialNumber = data.getIntExtra("serial number", 0);
-                int day = data.getIntExtra("day",0);
-                int month = data.getIntExtra("month", 0);
-                int  year = data.getIntExtra("year", 0);
-                // construct a Date object
-                Date date = new Date(day, month, year);
-                if (serialNumber == 0){
-                    Item item = new Item(name, date, description, make, model, value, comment);
-                    dataList.add(item);
-                } else{
-                    Item item = new Item(name, date, description, make, model, value, comment, serialNumber);
-                    dataList.add(item);
+        switch (requestCode){
+            case REQUEST_CODE_ADD:
+                if(resultCode == Activity.RESULT_OK) {
+                    // get all the data given by user
+                    String name = data.getStringExtra("name");
+                    String description = data.getStringExtra("description");
+                    String make = data.getStringExtra("make");
+                    String model = data.getStringExtra("model");
+                    Float value = data.getFloatExtra("value", 0);
+                    String comment = data.getStringExtra("comment");
+                    int serialNumber = data.getIntExtra("serial number", 0);
+                    int day = data.getIntExtra("day", 0);
+                    int month = data.getIntExtra("month", 0);
+                    int year = data.getIntExtra("year", 0);
+                    // construct a Date object
+                    Date date = new Date(day, month, year);
+                    if (serialNumber == 0) {
+                        Item item = new Item(name, date, description, make, model, value, comment);
+                        dataList.add(item);
+                    } else {
+                        Item item = new Item(name, date, description, make, model, value, comment, serialNumber);
+                        dataList.add(item);
+                    }
+                    itemAdapter.notifyDataSetChanged();
                 }
-                itemAdapter.notifyDataSetChanged();
-            }
+                break;
+            case REQUEST_CODE_VIEW:
+                if (resultCode == ItemViewActivity.REQUEST_CODE_EDIT) {
+                    Toast.makeText(this, "clicked edit", Toast.LENGTH_SHORT).show();
+                } else if (resultCode == ItemViewActivity.REQUEST_CODE_DELETE) {
+                    int position = data.getIntExtra("position", 0);
+                    dataList.remove(position);
+                    itemAdapter.notifyDataSetChanged();
 
-            if (resultCode == Activity.RESULT_CANCELED) {
-                // user hit the "cancel" button, nothing to do
-            }
+                }
         }
     }
 }
