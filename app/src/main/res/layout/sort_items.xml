@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="What attribute would you like to sort by?"
+        android:text="What attribute would you like to sort your items by?"
         android:paddingBottom="24dp"
         android:textAlignment="center"
         android:textSize="24sp">
@@ -27,12 +27,12 @@
         android:clickable="true"
         android:focusable="true"
         android:paddingHorizontal="30dp"
-        android:text="Date Range"
+        android:text="Date"
         android:textSize="14sp">
     </Button>
 
     <Button
-        android:id="@+id/sort_keywords"
+        android:id="@+id/sort_desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -40,7 +40,7 @@
         android:clickable="true"
         android:focusable="true"
         android:paddingHorizontal="30dp"
-        android:text="Keywords"
+        android:text="Description"
         android:textSize="14sp">
     </Button>
 
@@ -57,7 +57,7 @@
     </Button>
 
     <Button
-        android:id="@+id/sort_tags"
+        android:id="@+id/sort_value"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -65,7 +65,7 @@
         android:clickable="true"
         android:focusable="true"
         android:paddingHorizontal="70dp"
-        android:text="Tags"
+        android:text="Estimated Value"
         android:textSize="14sp">
     </Button>
 
@@ -100,22 +100,43 @@
             android:padding="4dp"
             android:text="Descending"
             android:textAlignment="center"
-            android:textSize="14dp" />
+            android:textSize="16dp" />
     </RadioGroup>
 
-    <Button
-        android:id="@+id/sort_cancel"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:backgroundTint="@color/grey_button"
-        android:clickable="true"
-        android:focusable="true"
-        android:paddingHorizontal="30dp"
-        android:text="Cancel"
-        android:textSize="14sp">
-    </Button>
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="20dp">
 
+        <Button
+            android:id="@+id/sort_cancel"
+            android:clickable="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CANCEL"
+
+            android:backgroundTint="@color/light_red"
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            android:layout_weight="0.5"
+            android:focusable="true">
+        </Button>
+
+        <Button
+            android:id="@+id/sort_ok"
+            android:clickable="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CONFIRM"
+            android:backgroundTint="@color/light_green"
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            android:layout_weight="0.5"
+            android:focusable="true">
+        </Button>
+
+    </LinearLayout>
 
 
 </LinearLayout>

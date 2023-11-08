@@ -10,7 +10,7 @@ import java.util.List;
  * Date represents a date on the calendar by its year, month, and day;
  * The Class uses standerd getter and setter methods
  */
-public class Date {
+public class Date implements Comparable<Date> {
     private int day;
     private int month;
     private int year;
@@ -91,5 +91,21 @@ public class Date {
 
     public void setYear(int year) {
         this.year = year;
+    }
+
+    @Override
+    public int compareTo(Date anotherDate) {
+        // years
+        int yearComp = Integer.compare(this.year, anotherDate.year);
+        if (yearComp != 0) {
+            return yearComp;
+        }
+        // if years same, compare months
+        int monthComp = Integer.compare(this.month, anotherDate.month);
+        if (monthComp != 0) {
+            return monthComp;
+        }
+        // if years and months same, compare days
+        return Integer.compare(this.day, anotherDate.day);
     }
 }
