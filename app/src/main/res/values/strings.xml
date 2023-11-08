@@ -29,4 +29,6 @@
     <string name="invalid_login_credentials">An internal error has occurred. [ INVALID_LOGIN_CREDENTIALS ]</string>
     <string name="failed_login_overload">We have blocked all requests from this device due to unusual activity. Try again later. [ Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later. ]</string>
     <string name="internalerror">internalError</string>
+    <string name="test_email">test@gmail.com</string>
+    <string name="test_password">test_password</string>
 </resources>

@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
         // access username button
         final Button username_button = findViewById(R.id.username);
         // initialize username variable with placeholder value
-        username = "username";
+        username = "test";
 
         // receive intent from Login Activity activity switch
         Intent intent = getIntent();
@@ -54,6 +54,9 @@ public class MainActivity extends AppCompatActivity implements Listener{
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() != null) {
             username = auth.getCurrentUser().getEmail().split("@")[0];
+        } else {
+            // testing user
+            auth.signInWithEmailAndPassword(getString(R.string.test_email), getString(R.string.test_password));
         }
         username_button.setText(username);
 
