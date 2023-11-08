@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements Listener{
@@ -90,12 +91,19 @@ public class MainActivity extends AppCompatActivity implements Listener{
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // get the name of item
-                String value = itemAdapter.getItem(position).toString();
-                // start up new activity
-                Intent myIntent = new Intent(MainActivity.this, ItemViewActivity.class);
-                myIntent.putExtra("key", value); //Optional parameters
-                MainActivity.this.startActivity(myIntent);
+                // get the Item being clicked
+                Item i = itemAdapter.getItem(position);
+                // setup the ItemView Activity
+                Intent intent = new Intent(MainActivity.this, ItemViewActivity.class);
+                intent.putExtra("name", i.getName());
+                intent.putExtra("date", i.getDate().getString());
+                intent.putExtra("description", i.getDescription());
+                intent.putExtra("make", i.getMake());
+                intent.putExtra("model", i.getModel());
+                intent.putExtra("value", i.getEstimatedValue());
+                intent.putExtra("serialNum", i.getSerialNumber());
+                intent.putExtra("comment", i.getComment());
+                MainActivity.this.startActivity(intent);
             }
         });
 
