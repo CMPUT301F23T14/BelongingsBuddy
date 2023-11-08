@@ -37,7 +37,6 @@
                 android:layout_marginHorizontal="20dp">
 
                 <TextView
-                    android:id="@+id/name_prompt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Name: "
@@ -48,14 +47,14 @@
                     android:textColor="@color/black">
                 </TextView>
 
-                <EditText
-                    android:id="@+id/add_name"
+                <TextView
+                    android:id="@+id/view_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="25sp"
                     android:background="@color/light_purple"
                     android:paddingVertical="10dp">
-                </EditText>
+                </TextView>
             </LinearLayout>
 
             <LinearLayout
@@ -67,7 +66,6 @@
                 android:layout_marginHorizontal="20dp">
 
                 <TextView
-                    android:id="@+id/date_prompt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Date of Purchase: "
@@ -80,7 +78,7 @@
                 </TextView>
 
                 <TextView
-                    android:id="@+id/add_date"
+                    android:id="@+id/view_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="yyyy-mm-dd"
@@ -90,17 +88,6 @@
                     android:layout_gravity="center"
                     android:layout_weight="0.5">
                 </TextView>
-
-                <Button
-                    android:id="@+id/add_pick_date_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:text="SET"
-                    android:layout_gravity="end|center_vertical"
-                    android:layout_weight="0.5">
-                </Button>
             </LinearLayout>
 
             <LinearLayout
@@ -112,7 +99,6 @@
                 android:layout_marginHorizontal="20dp">
 
                 <TextView
-                    android:id="@+id/description_prompt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Description:"
@@ -124,8 +110,8 @@
                     android:layout_gravity="center">
                 </TextView>
 
-                <EditText
-                    android:id="@+id/add_description"
+                <TextView
+                    android:id="@+id/view_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text=""
@@ -134,7 +120,7 @@
                     android:paddingVertical="10dp"
                     android:layout_gravity="center"
                     android:layout_weight="0.5">
-                </EditText>
+                </TextView>
             </LinearLayout>
 
             <LinearLayout
@@ -146,7 +132,6 @@
                 android:layout_marginHorizontal="20dp">
 
                 <TextView
-                    android:id="@+id/make_prompt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Make: "
@@ -157,15 +142,14 @@
                     android:textColor="@color/black">
                 </TextView>
 
-                <EditText
-                    android:id="@+id/add_make"
+                <TextView
+                    android:id="@+id/view_make"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint=""
                     android:textSize="25sp"
                     android:background="@color/light_purple"
                     android:paddingVertical="10dp">
-                </EditText>
+                </TextView>
             </LinearLayout>
 
             <LinearLayout
@@ -177,7 +161,6 @@
                 android:layout_marginHorizontal="20dp">
 
                 <TextView
-                    android:id="@+id/model_prompt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Model: "
@@ -188,15 +171,14 @@
                     android:textColor="@color/black">
                 </TextView>
 
-                <EditText
-                    android:id="@+id/add_model"
+                <TextView
+                    android:id="@+id/view_model"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint=""
                     android:textSize="25sp"
                     android:background="@color/light_purple"
                     android:paddingVertical="10dp">
-                </EditText>
+                </TextView>
             </LinearLayout>
 
             <LinearLayout
@@ -208,7 +190,6 @@
                 android:layout_marginHorizontal="20dp">
 
                 <TextView
-                    android:id="@+id/value_prompt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Value: "
@@ -219,16 +200,15 @@
                     android:textColor="@color/black">
                 </TextView>
 
-                <EditText
-                    android:id="@+id/add_value"
+                <TextView
+                    android:id="@+id/view_value"
                     android:inputType="numberDecimal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="$0.00"
                     android:textSize="25sp"
                     android:background="@color/light_purple"
                     android:paddingVertical="10dp">
-                </EditText>
+                </TextView>
             </LinearLayout>
 
 
@@ -241,7 +221,6 @@
                 android:layout_marginHorizontal="20dp">
 
                 <TextView
-                    android:id="@+id/serial_prompt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Serial Number: "
@@ -252,28 +231,16 @@
                     android:textColor="@color/black">
                 </TextView>
 
-                <EditText
-                    android:id="@+id/add_serial_number"
+                <TextView
+                    android:id="@+id/view_serial_number"
                     android:inputType="number"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint=""
                     android:textSize="25sp"
                     android:background="@color/light_purple"
                     android:paddingVertical="10dp"
                     android:layout_weight="1">
-                </EditText>
-
-                <Button
-                    android:id="@+id/add_serial_camera"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="15sp"
-                    android:text="CAM"
-                    android:layout_gravity="center"
-                    android:layout_weight="0"
-                    android:clickable="true">
-                </Button>
+                </TextView>
             </LinearLayout>
 
             <LinearLayout
@@ -295,15 +262,14 @@
                     android:textColor="@color/black">
                 </TextView>
 
-                <EditText
-                    android:id="@+id/add_comment"
+                <TextView
+                    android:id="@+id/view_comment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint=""
                     android:textSize="25sp"
                     android:background="@color/light_purple"
                     android:paddingVertical="10dp">
-                </EditText>
+                </TextView>
             </LinearLayout>
 
             <LinearLayout
@@ -325,15 +291,14 @@
                     android:textColor="@color/black">
                 </TextView>
 
-                <EditText
-                    android:id="@+id/add_tags"
+                <TextView
+                    android:id="@+id/view_tags"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint=""
                     android:textSize="25sp"
                     android:background="@color/light_purple"
                     android:paddingVertical="10dp">
-                </EditText>
+                </TextView>
             </LinearLayout>
 
             <LinearLayout
@@ -354,14 +319,6 @@
                     android:paddingStart="10dp"
                     android:textColor="@color/black">
                 </TextView>
-
-                <Button
-                    android:id="@+id/add_photo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="+">
-                </Button>
-
             </LinearLayout>
 
             <LinearLayout
@@ -371,11 +328,24 @@
                 android:layout_marginHorizontal="20dp">
 
                 <Button
-                    android:id="@+id/add_cancel"
+                    android:id="@+id/view_back"
                     android:clickable="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="CANCEL"
+                    android:text="BACK"
+                    android:backgroundTint="@color/blue_button"
+                    android:textColor="@color/black"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.5"
+                    android:focusable="true">
+                </Button>
+
+                <Button
+                    android:id="@+id/view_belete"
+                    android:clickable="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DELETE"
                     android:backgroundTint="@color/light_red"
                     android:textColor="@color/black"
                     android:layout_gravity="center"
@@ -384,11 +354,11 @@
                 </Button>
 
                 <Button
-                    android:id="@+id/add_confirm"
+                    android:id="@+id/view_edit"
                     android:clickable="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="CONFIRM"
+                    android:text="EDIT"
                     android:backgroundTint="@color/light_green"
                     android:textColor="@color/black"
                     android:layout_gravity="center"

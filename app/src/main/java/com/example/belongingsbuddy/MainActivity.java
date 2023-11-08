@@ -2,9 +2,12 @@ package com.example.belongingsbuddy;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.processing.SurfaceProcessorNode;
 import androidx.fragment.app.DialogFragment;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -13,20 +16,27 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements Listener{
     private ArrayList<Item> dataList;
     private ListView itemListView;
     private ArrayAdapter<Item> itemAdapter;
     private TextView total;
     private FirebaseFirestore db;
     private String username;
+
+    public final static int REQUEST_CODE_ADD = 1;
+    public final static int REQUEST_CODE_VIEW = 2;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,11 +69,11 @@ public class MainActivity extends AppCompatActivity{
         dataList = new ArrayList<Item>();
 
         Item testItem1 = new Item("Chair", new Date(), "A chair",
-                "Hermann Miller", "Chair 9000", 200,  "I like this chair");
+                "Hermann Miller", "Chair 9000", (float)200,  "I like this chair");
         Item testItem2 = new Item("Table", new Date(), "A table",
-                "Ikea", "Table 9000", 400,  "I like this table");
+                "Ikea", "Table 9000", (float)400,  "I like this table");
         Item testItem3 = new Item("Lamp", new Date(), "A lamp",
-                "Amazon", "Lamp 9000", 50,  "I like this lamp");
+                "Amazon", "Lamp 9000", (float)50,  "I like this lamp");
         itemListView = findViewById(R.id.item_list);
         dataList.add(testItem1);
         dataList.add(testItem2);
@@ -83,22 +93,31 @@ public class MainActivity extends AppCompatActivity{
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // get the name of item
-                String value = itemAdapter.getItem(position).toString();
-                // start up new activity
-                Intent myIntent = new Intent(MainActivity.this, ItemViewActivity.class);
-                myIntent.putExtra("key", value); //Optional parameters
-                MainActivity.this.startActivity(myIntent);
+                // get the Item being clicked
+                Item i = itemAdapter.getItem(position);
+                // setup the ItemView Activity
+                Intent intent = new Intent(MainActivity.this, ItemViewActivity.class);
+                intent.putExtra("name", i.getName());
+                intent.putExtra("date", i.getDate().getString());
+                intent.putExtra("description", i.getDescription());
+                intent.putExtra("make", i.getMake());
+                intent.putExtra("model", i.getModel());
+                intent.putExtra("value", i.getEstimatedValue());
+                intent.putExtra("serialNum", i.getSerialNumber());
+                intent.putExtra("comment", i.getComment());
+                intent.putExtra("index", position);
+                startActivityForResult(intent, REQUEST_CODE_VIEW);
             }
         });
 
         // ADD ITEM implementation:
-
         final Button addButton = findViewById(R.id.add_item);
         addButton.setOnClickListener(v -> {
-            new ScanOrManual().show(getSupportFragmentManager(), "Add Item:");
-            itemAdapter.notifyDataSetChanged();
+            ScanOrManual dialog = new ScanOrManual();
+            dialog.show(getSupportFragmentManager(), "Add Item:");
+
         });
+
         // click listener for sort:
         final Button sortButton = findViewById(R.id.sort_button);
         sortButton.setOnClickListener(v -> {
@@ -117,5 +136,52 @@ public class MainActivity extends AppCompatActivity{
                 newFragment.show(getSupportFragmentManager(), "User Control");
             }
         });
+    }
+
+    @Override
+    public void inputManually(){
+        Intent i = new Intent(MainActivity.this, AddItemActivity.class);
+        startActivityForResult(i, REQUEST_CODE_ADD);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case REQUEST_CODE_ADD:
+                if(resultCode == Activity.RESULT_OK) {
+                    // get all the data given by user
+                    String name = data.getStringExtra("name");
+                    String description = data.getStringExtra("description");
+                    String make = data.getStringExtra("make");
+                    String model = data.getStringExtra("model");
+                    Float value = data.getFloatExtra("value", 0);
+                    String comment = data.getStringExtra("comment");
+                    int serialNumber = data.getIntExtra("serial number", 0);
+                    int day = data.getIntExtra("day", 0);
+                    int month = data.getIntExtra("month", 0);
+                    int year = data.getIntExtra("year", 0);
+                    // construct a Date object
+                    Date date = new Date(day, month, year);
+                    if (serialNumber == 0) {
+                        Item item = new Item(name, date, description, make, model, value, comment);
+                        dataList.add(item);
+                    } else {
+                        Item item = new Item(name, date, description, make, model, value, comment, serialNumber);
+                        dataList.add(item);
+                    }
+                    itemAdapter.notifyDataSetChanged();
+                }
+                break;
+            case REQUEST_CODE_VIEW:
+                if (resultCode == ItemViewActivity.REQUEST_CODE_EDIT) {
+                    Toast.makeText(this, "clicked edit", Toast.LENGTH_SHORT).show();
+                } else if (resultCode == ItemViewActivity.REQUEST_CODE_DELETE) {
+                    int position = data.getIntExtra("position", 0);
+                    dataList.remove(position);
+                    itemAdapter.notifyDataSetChanged();
+
+                }
+        }
     }
 }
