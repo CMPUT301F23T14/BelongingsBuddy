@@ -117,5 +117,12 @@ public class MainActivity extends AppCompatActivity{
                 newFragment.show(getSupportFragmentManager(), "User Control");
             }
         });
+
+        //Create Fragment by clicking tag
+        Button openTagsButton = findViewById(R.id.tag_button);
+        openTagsButton.setOnClickListener(v -> {
+            TagActivity TagFragment = new TagActivity();
+            TagFragment.show(getSupportFragmentManager(), "dialog");
+        });
     }
 }
