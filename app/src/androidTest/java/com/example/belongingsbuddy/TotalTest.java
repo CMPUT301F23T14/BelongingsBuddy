@@ -3,6 +3,7 @@ package com.example.belongingsbuddy;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.pressKey;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -78,6 +79,16 @@ public class TotalTest {
         onView(withId(R.id.view_belete)).perform(click());
         // check total update
         onView(withId(R.id.total)).check(matches(withText("$450.00")));
+    }
+    @Test
+    public void testTotalDeleteLongPress() {
+        onData(is(instanceOf(Item.class))).atPosition(0).perform(longClick());
+        onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.checkbox)).perform(click());
+        onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.checkbox)).perform(click());
+//        onView(withId(R.id.delete_button_multiple)).perform(scrollTo());
+        onView(withId(R.id.delete_button_multiple)).perform(click());
+//        // check total update
+        onView(withId(R.id.total)).check(matches(withText("$50.00")));
     }
 
     @Test
