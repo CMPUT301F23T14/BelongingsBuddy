@@ -20,24 +20,11 @@ import java.util.ArrayList;
 public class CustomList extends ArrayAdapter<Item> {
     private final Context context;
     private ArrayList<Item> items;
-    private int total;
     // constructor
     public CustomList(Context context, ArrayList<Item> dataList) {
         super(context, 0, dataList);
         this.items = dataList;
         this.context = context;
-        this.total = sumValues(dataList);
-    }
-    public int getTotal() {
-        return total;
-    }
-    // there could be a better way maybe?
-    private int sumValues(@NonNull ArrayList<Item> dataList) {
-        int sum = 0;
-        for(int i = 0; i < dataList.size(); i++)
-            sum += dataList.get(i).getEstimatedValue();
-
-        return sum;
     }
     @NonNull
     @Override

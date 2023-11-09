@@ -30,14 +30,12 @@ public class MainActivity extends AppCompatActivity implements Listener{
     private TextView totalTextView;
     private FirebaseFirestore db;
     private String username;
-    private float total;
     private LinearLayout sortTypeLayout;
     private TextView sortTypeTextView;
 
     public final static int REQUEST_CODE_ADD = 1;
     public final static int REQUEST_CODE_VIEW = 2;
     public final static int REQUEST_CODE_EDIT = 3;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,9 +82,6 @@ public class MainActivity extends AppCompatActivity implements Listener{
         dataList.add(testItem3);
 
         // setup dataList copy
-        // since copy is in onCreate, user can forget to clear prev sort and itll rollback properly
-        // NOTE: when add method is complete, it will need to update this list in some onOkPressed method
-        // otherwise it will seemingly "delete" any user added entries
         originalOrderDataList = new ArrayList<Item>();
         originalOrderDataList.addAll(dataList);
 
@@ -96,14 +91,11 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
         // total
         totalTextView = findViewById(R.id.total);
-        float totalFloat = ((CustomList) itemAdapter).getTotal();
-        totalTextView.setText(String.format("$%.2f", totalFloat));
-        total = totalFloat;
+        totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
 
         // get ui objects for sort
         sortTypeLayout = findViewById(R.id.sort_type_layout);
         sortTypeTextView = findViewById(R.id.sort_type_textview);
-
 
         // click listener for items in ListView
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -256,9 +248,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     originalOrderDataList.clear();
                     originalOrderDataList.addAll(dataList);
                     // update total
-                    totalTextView = findViewById(R.id.total);
-                    total += value;
-                    totalTextView.setText(String.format("$%.2f", total));
+                    totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
                 }
                 break;
 
@@ -277,9 +267,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     originalOrderDataList.clear();
                     originalOrderDataList.addAll(dataList);
                     // update total
-                    totalTextView = findViewById(R.id.total);
-                    total -= value;
-                    totalTextView.setText(String.format("$%.2f", total));
+                    totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
                 }
             case REQUEST_CODE_EDIT:
                 if (resultCode == Activity.RESULT_OK){
@@ -306,11 +294,15 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     originalOrderDataList.clear();
                     originalOrderDataList.addAll(dataList);
                     // update total
-                    totalTextView = findViewById(R.id.total);
-                    total -= oldValue;
-                    total += item.getEstimatedValue();
-                    totalTextView.setText(String.format("$%.2f", total));
+                    totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
                 }
         }
+    }
+    private float sumItems(ArrayList<Item> dataList) {
+        float sum = 0f;
+        for (Item item: dataList) {
+            sum += item.getEstimatedValue();
+        }
+        return sum;
     }
 }
