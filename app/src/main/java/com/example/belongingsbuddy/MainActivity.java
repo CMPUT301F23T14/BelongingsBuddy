@@ -1,19 +1,16 @@
 package com.example.belongingsbuddy;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.core.processing.SurfaceProcessorNode;
 import androidx.fragment.app.DialogFragment;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,21 +19,24 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class MainActivity extends AppCompatActivity implements Listener{
     private ArrayList<Item> dataList;
+    private ArrayList<Item> originalOrderDataList;
     private ListView itemListView;
     private ArrayAdapter<Item> itemAdapter;
-    private TextView total;
+    private TextView totalTextView;
     private FirebaseFirestore db;
     private String username;
+    private float total;
+    private LinearLayout sortTypeLayout;
+    private TextView sortTypeTextView;
 
     public final static int REQUEST_CODE_ADD = 1;
     public final static int REQUEST_CODE_VIEW = 2;
     public final static int REQUEST_CODE_EDIT = 3;
-
 
 
     @Override
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
         // access username button
         final Button username_button = findViewById(R.id.username);
         // initialize username variable with placeholder value
-        username = "username";
+        username = "test";
 
         // receive intent from Login Activity activity switch
         Intent intent = getIntent();
@@ -55,6 +55,9 @@ public class MainActivity extends AppCompatActivity implements Listener{
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() != null) {
             username = auth.getCurrentUser().getEmail().split("@")[0];
+        } else {
+            // testing user
+            auth.signInWithEmailAndPassword(getString(R.string.test_email), getString(R.string.test_password));
         }
         username_button.setText(username);
 
@@ -79,15 +82,27 @@ public class MainActivity extends AppCompatActivity implements Listener{
         dataList.add(testItem1);
         dataList.add(testItem2);
         dataList.add(testItem3);
+
+        // setup dataList copy
+        // since copy is in onCreate, user can forget to clear prev sort and itll rollback properly
+        // NOTE: when add method is complete, it will need to update this list in some onOkPressed method
+        // otherwise it will seemingly "delete" any user added entries
+        originalOrderDataList = new ArrayList<Item>();
+        originalOrderDataList.addAll(dataList);
+
         // set up itemAdapter and itemListView
         itemAdapter = new CustomList(this, dataList);
         itemListView.setAdapter(itemAdapter);
 
         // total
-        total = findViewById(R.id.total);
-        int totalInt = ((CustomList) itemAdapter).getTotal();
+        totalTextView = findViewById(R.id.total);
+        float totalFloat = ((CustomList) itemAdapter).getTotal();
+        totalTextView.setText(String.format("$%.2f", totalFloat));
+        total = totalFloat;
 
-        total.setText(String.valueOf(totalInt));
+        // get ui objects for sort
+        sortTypeLayout = findViewById(R.id.sort_type_layout);
+        sortTypeTextView = findViewById(R.id.sort_type_textview);
 
 
         // click listener for items in ListView
@@ -119,10 +134,21 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
         });
 
+        // click listener sort type rollback
+        final Button rollback = findViewById(R.id.sort_type_rollback);
+        rollback.setOnClickListener(v -> {
+            // hide selected sorts
+            sortTypeLayout.setVisibility(View.GONE);
+            // rollback to original sort ordering
+            dataList.clear();
+            dataList.addAll(originalOrderDataList);
+            itemAdapter.notifyDataSetChanged();
+        });
+
         // click listener for sort:
         final Button sortButton = findViewById(R.id.sort_button);
         sortButton.setOnClickListener(v -> {
-            new SortItems().show(getSupportFragmentManager(), "Sort Item:");
+            new SortItemsFragment().show(getSupportFragmentManager(), "Sort Item:");
         });
 
         // create dialog from clicking username
@@ -138,6 +164,60 @@ public class MainActivity extends AppCompatActivity implements Listener{
             }
         });
     }
+    @Override
+    public void onSortOKPressed(String sortType, Boolean isAscending) {
+        sortTypeLayout.setVisibility(View.VISIBLE);
+        switch (sortType) {
+            case "date":
+                if (isAscending) {
+                    Toast.makeText(this, "SORT BY date ASC", Toast.LENGTH_SHORT).show();
+                    dataList.sort(Comparator.comparing(Item::getDate));
+                } else {
+                    Toast.makeText(this, "SORT BY date DESC", Toast.LENGTH_SHORT).show();
+                    dataList.sort(Comparator.comparing(Item::getDate).reversed());
+                }
+                sortTypeTextView.setText("Date");
+                itemAdapter.notifyDataSetChanged();
+                break;
+            case "desc":
+                if (isAscending) {
+                    Toast.makeText(this, "SORT BY desc ASC", Toast.LENGTH_SHORT).show();
+                    dataList.sort(Comparator.comparing(Item::getDescription));
+                } else {
+                    Toast.makeText(this, "SORT BY desc DESC", Toast.LENGTH_SHORT).show();
+                    dataList.sort(Comparator.comparing(Item::getDescription).reversed());
+                }
+                sortTypeTextView.setText("Description");
+                itemAdapter.notifyDataSetChanged();
+                break;
+            case "make":
+                if (isAscending) {
+                    Toast.makeText(this, "SORT BY make ASC", Toast.LENGTH_SHORT).show();
+                    dataList.sort(Comparator.comparing(Item::getMake));
+                } else {
+                    Toast.makeText(this, "SORT BY make DESC", Toast.LENGTH_SHORT).show();
+                    dataList.sort(Comparator.comparing(Item::getMake).reversed());
+                }
+                sortTypeTextView.setText("Make");
+                itemAdapter.notifyDataSetChanged();
+                break;
+            case "value":
+                if (isAscending) {
+                    Toast.makeText(this, "SORT BY value ASC", Toast.LENGTH_SHORT).show();
+                    dataList.sort(Comparator.comparing(Item::getEstimatedValue));
+                } else {
+                    Toast.makeText(this, "SORT BY value DESC", Toast.LENGTH_SHORT).show();
+                    dataList.sort(Comparator.comparing(Item::getEstimatedValue).reversed());
+                }
+                sortTypeTextView.setText("Estimated Value");
+                itemAdapter.notifyDataSetChanged();
+                break;
+            case "NONE":
+                Toast.makeText(this, "No selection", Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
 
     @Override
     public void inputManually(){
@@ -172,6 +252,13 @@ public class MainActivity extends AppCompatActivity implements Listener{
                         dataList.add(item);
                     }
                     itemAdapter.notifyDataSetChanged();
+                    // update datalist backup
+                    originalOrderDataList.clear();
+                    originalOrderDataList.addAll(dataList);
+                    // update total
+                    totalTextView = findViewById(R.id.total);
+                    total += value;
+                    totalTextView.setText(String.format("$%.2f", total));
                 }
                 break;
 
@@ -183,8 +270,16 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     startActivityForResult(startIntent, REQUEST_CODE_EDIT);
                 } else if (resultCode == ItemViewActivity.REQUEST_CODE_DELETE) {
                     int position = data.getIntExtra("position", 0);
+                    float value = dataList.get(position).getEstimatedValue();
                     dataList.remove(position);
                     itemAdapter.notifyDataSetChanged();
+                    // update datalist backup
+                    originalOrderDataList.clear();
+                    originalOrderDataList.addAll(dataList);
+                    // update total
+                    totalTextView = findViewById(R.id.total);
+                    total -= value;
+                    totalTextView.setText(String.format("$%.2f", total));
                 }
             case REQUEST_CODE_EDIT:
                 if (resultCode == Activity.RESULT_OK){
