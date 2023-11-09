@@ -1,8 +1,13 @@
 package com.example.belongingsbuddy;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.OptIn;
 import androidx.camera.core.ExperimentalGetImage;
@@ -12,8 +17,13 @@ import com.google.mlkit.vision.barcode.BarcodeScanning;
 import com.google.mlkit.vision.barcode.common.Barcode;
 import com.google.mlkit.vision.common.InputImage;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Executors;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * An activity used for scanning barcodes using a camera.
@@ -25,6 +35,10 @@ public class ScannerActivity extends CameraActivity implements CameraCreationLis
      *     previously being shut down then this Bundle contains the data it most
      *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
      */
+    boolean isRequestInProgress = false;
+    private Handler handler = new Handler();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //CameraActivity needs these fields set
@@ -53,7 +67,39 @@ public class ScannerActivity extends CameraActivity implements CameraCreationLis
                         .addOnSuccessListener(barcodes -> {
                             //check if barcode is found
                             if (barcodes.size() != 0) {
-                                Log.d("", "Barcode Found");
+                                //Stops us from having 2 concurrent api calls
+                                if (!isRequestInProgress) {
+                                    isRequestInProgress = true;
+                                    //Use a new thread to avoid errors
+                                    new Thread(() -> {
+                                        //setup for api call
+                                        OkHttpClient client = new OkHttpClient();
+                                        String code = barcodes.get(0).getDisplayValue();
+                                        Request request = new Request.Builder()
+                                                .url("https://barcode.monster/api/" + code)
+                                                .get()
+                                                .build();
+                                        try {
+                                            Response response = client.newCall(request).execute();
+                                            //get info from the succesful response
+                                            String jsonContent = response.body().string();
+                                            Intent intent = new Intent();
+                                            intent.putExtra("result", jsonContent);
+                                            setResult(Activity.RESULT_OK, intent);
+                                            finish();
+                                        } catch (IOException e) {
+                                            //Sometimes barcode monster fails to respond
+                                            Looper.prepare();
+                                            Toast.makeText(this, "Failed to connect to api", Toast.LENGTH_SHORT).show();
+                                        } finally {
+                                            // The request is complete, so set the flag to false to allow future requests
+                                            isRequestInProgress = false;
+                                        }
+                                    }).start();
+                                } else {
+                                    // A request is already in progress; you can choose to skip or queue this request, or handle it in another way.
+                                    System.out.println("Request in progress. Skipping this request.");
+                                }
                             }
                         })
                         .addOnFailureListener(e -> {

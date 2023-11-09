@@ -58,10 +58,8 @@ public class ScanOrManual extends DialogFragment{
         scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ScannerActivity.class);
-                requireActivity().startActivity(intent);
+                listener.inputBarcode();
                 dialog.dismiss();
-
             }
         });
 
