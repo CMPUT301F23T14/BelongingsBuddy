@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
     public final static int REQUEST_CODE_ADD = 1;
     public final static int REQUEST_CODE_VIEW = 2;
+    public final static int REQUEST_CODE_EDIT = 3;
 
 
     @Override
@@ -260,9 +261,13 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     totalTextView.setText(String.format("$%.2f", total));
                 }
                 break;
+
             case REQUEST_CODE_VIEW:
                 if (resultCode == ItemViewActivity.REQUEST_CODE_EDIT) {
-                    Toast.makeText(this, "clicked edit", Toast.LENGTH_SHORT).show();
+                    Intent startIntent = new Intent(MainActivity.this, EditItemActivity.class);
+                    Bundle itemInfo = data.getBundleExtra("item");
+                    startIntent.putExtra("item", itemInfo);
+                    startActivityForResult(startIntent, REQUEST_CODE_EDIT);
                 } else if (resultCode == ItemViewActivity.REQUEST_CODE_DELETE) {
                     int position = data.getIntExtra("position", 0);
                     float value = dataList.get(position).getEstimatedValue();
@@ -275,6 +280,25 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     totalTextView = findViewById(R.id.total);
                     total -= value;
                     totalTextView.setText(String.format("$%.2f", total));
+                }
+            case REQUEST_CODE_EDIT:
+                if (resultCode == Activity.RESULT_OK){
+                    Bundle info = data.getExtras();
+                    // get correct Item to edit
+                    Integer index = info.getInt("index");
+                    // update info about the edited Item
+                    Item item = dataList.get(index);
+                    item.setName(info.getString("name"));
+                    item.getDate().setDay(info.getInt("day"));
+                    item.getDate().setMonth(info.getInt("month"));
+                    item.getDate().setYear(info.getInt("year"));
+                    item.setDescription(info.getString("description"));
+                    item.setMake(info.getString("make"));
+                    item.setModel(info.getString("model"));
+                    item.setEstimatedValue(info.getFloat("value"));
+                    item.setSerialNumber(info.getInt("serial number"));
+                    item.setComment(info.getString("comment"));
+                    itemAdapter.notifyDataSetChanged();
                 }
         }
     }
