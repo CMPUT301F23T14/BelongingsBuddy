@@ -1,5 +1,7 @@
 package com.example.belongingsbuddy;
 
+import static com.google.firebase.FirebaseError.ERROR_EMAIL_ALREADY_IN_USE;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,8 +16,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthEmailException;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
+import com.google.firebase.auth.FirebaseAuthWebException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -28,6 +38,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Objects;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.interfaces.PBEKey;
@@ -42,6 +53,17 @@ public class LoginActivity extends AppCompatActivity {
     private Button login_confirm_button;
     private Button sign_up_confirm_button;
     private Button back_button;
+
+    /**
+     * toasts a given text on the current activity screen
+     * @param text
+     *      a string that will be the message in the toast
+     */
+    private void toastFunction(String text) {
+        int duration = Toast.LENGTH_LONG;
+        Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+        toast.show();
+    }
 
     /**
      * changes visibility of buttons and EditText features to change the view to
@@ -71,32 +93,6 @@ public class LoginActivity extends AppCompatActivity {
         sign_up_confirm_button.setVisibility(View.GONE);
         username_input.setText("");
         password_input.setText("");
-    }
-
-    /**
-     * displays a toast informing user the entered username or password did not match any stored
-     * username/password combos in our database
-     */
-    private void toastIncorrectLogin() {
-        int duration = Toast.LENGTH_LONG;
-        String text = getString(R.string.incorrect_username_or_password);
-        Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-        toast.show();
-    }
-
-    /**
-     * Takes an e-mail and checks the given email for format correctness, returns the boolean result
-     * @param etMail
-     *      a string representing the email to be checked for format correctness
-     * @return
-     *      returns boolean representing whether etMail (the given string) is in suitable e-mail format
-     */
-    public boolean emailValidator(String etMail) {
-        boolean is_email = false;
-        if (!etMail.isEmpty() && Patterns.EMAIL_ADDRESS.matcher(etMail).matches()) {
-            is_email = true;
-        }
-        return is_email;
     }
 
     /**
@@ -173,39 +169,59 @@ public class LoginActivity extends AppCompatActivity {
                 myAuth = FirebaseAuth.getInstance();
 
                 // user input validation
-                int duration = Toast.LENGTH_LONG;
                 if (username.isEmpty() && password.isEmpty()) {
-                    String text = getString(R.string.invalid_username_and_password);
-                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-                    toast.show();
+                    toastFunction(getString(R.string.invalid_username_and_password));
                 } else if (username.isEmpty()) {
-                    String text = getString(R.string.invalid_username);
-                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-                    toast.show();
+                    toastFunction(getString(R.string.invalid_email));
                 } else if (password.isEmpty()) {
-                    String text = getString(R.string.invalid_password);
-                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-                    toast.show();
-                } else if (!emailValidator(username)) {
-                    String text = getString(R.string.invalid_email);
-                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-                    toast.show();
+                    toastFunction(getString(R.string.invalid_password));
                 } else {
                     // create new account in FirebaseAuth using user input
                     myAuth.createUserWithEmailAndPassword(username, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                CharSequence text = "Successfully Signed Up!";
-                                Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-                                toast.show();
+                                toastFunction(getString(R.string.successfully_signed_up));
                                 Intent i = new Intent(LoginActivity.this, MainActivity.class);
                                 LoginActivity.this.startActivity(i);
                             } else {
-                                CharSequence text = "Failed To Authenticate User";
-                                Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-                                toast.show();
-                                setStartScreenVisibility();
+                                try {
+                                    throw ((FirebaseAuthException) task.getException());
+                                } catch (FirebaseAuthWeakPasswordException e) {
+                                    toastFunction(getString(R.string.weak_password));
+                                    if (myAuth.getCurrentUser() != null) {
+                                        myAuth.getCurrentUser().delete();
+                                    }
+                                } catch(FirebaseAuthUserCollisionException e) {
+                                    toastFunction(getString(R.string.account_collision));
+                                    if (myAuth.getCurrentUser() != null) {
+                                        myAuth.getCurrentUser().delete();
+                                    }
+                                } catch (FirebaseAuthInvalidCredentialsException e) {
+                                    if (e.getErrorCode().equals(getString(R.string.error_invalid_email))) {
+                                        toastFunction(getString(R.string.invalid_email));
+                                    }
+                                    if (myAuth.getCurrentUser() != null) {
+                                        myAuth.getCurrentUser().delete();
+                                    }
+                                } catch(FirebaseAuthException e) {
+                                    Log.v(getString(R.string.autherror), e.getMessage());
+                                    toastFunction(getString(R.string.internal_login_error));
+                                    if (myAuth.getCurrentUser() != null) {
+                                        myAuth.getCurrentUser().delete();
+                                    }
+                                } catch (Exception e) {
+                                    if (e.getMessage().equals(getString(R.string.network_error_code))) {
+                                        toastFunction(getString(R.string.network_error));
+
+                                    } else {
+                                        Log.v(getString(R.string.autherror), e.getMessage());
+                                        toastFunction(getString(R.string.internal_login_error));
+                                    }
+                                    if (myAuth.getCurrentUser() != null) {
+                                        myAuth.getCurrentUser().delete();
+                                    }
+                                }
                             }
                         }
                     });
@@ -227,24 +243,13 @@ public class LoginActivity extends AppCompatActivity {
                 String username = username_input.getText().toString();
                 String password = password_input.getText().toString();
                 myAuth = FirebaseAuth.getInstance();
-                int duration = Toast.LENGTH_LONG;
                 // user input validation
                 if (username.isEmpty() && password.isEmpty()) {
-                    CharSequence text = "Username and Password cannot be empty!";
-                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-                    toast.show();
+                    toastFunction(getString(R.string.invalid_username_and_password));
                 } else if (username.isEmpty()) {
-                    CharSequence text = "Username cannot be empty!";
-                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-                    toast.show();
+                    toastFunction(getString(R.string.invalid_username));
                 } else if (password.isEmpty()) {
-                    CharSequence text = "Password cannot be empty!";
-                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-                    toast.show();
-                } else if (!emailValidator(username)) {
-                    CharSequence text = "Enter Valid E-mail Format (i.e. ...@gmail.com, ...@outlook.com";
-                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-                    toast.show();
+                    toastFunction(getString(R.string.invalid_password));
                 } else {
                     //Attempt to login to existing account in FirebaseAuth
                     myAuth.signInWithEmailAndPassword(username, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
@@ -252,10 +257,26 @@ public class LoginActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                                i.putExtra("username", username);
                                 LoginActivity.this.startActivity(i);
                             } else {
-                                toastIncorrectLogin();
+                                try {
+                                    throw task.getException();
+                                } catch (FirebaseAuthInvalidCredentialsException e) {
+                                    if (e.getErrorCode().equals(getString(R.string.error_invalid_email))) {
+                                        toastFunction(getString(R.string.invalid_email));
+                                    }
+                                } catch (FirebaseException e) {
+                                    if (e.getMessage().equals(getString(R.string.invalid_login_credentials))) {
+                                        toastFunction(getString(R.string.incorrect_username_or_password));
+                                    } else if (e.getMessage().equals(getString(R.string.failed_login_overload))) {
+                                        toastFunction(getString(R.string.failed_attempts_timeout));
+                                    } else {
+                                        toastFunction(getString(R.string.internal_login_error));
+                                    }
+                                } catch (Exception e) {
+                                    Log.v(getString(R.string.internalerror), e.getMessage());
+                                    toastFunction(getString(R.string.internal_login_error));
+                                }
                             }
                         }
                     });

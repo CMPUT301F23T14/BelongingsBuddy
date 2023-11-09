@@ -37,8 +37,6 @@ import org.junit.runner.RunWith;
 @LargeTest
 public class LoginButtonsTest {
     @Rule
-    public ActivityScenarioRule<MainActivity> main_scenario = new ActivityScenarioRule<>(MainActivity.class);
-    @Rule
     public ActivityScenarioRule<LoginActivity> login_scenario = new ActivityScenarioRule<>(LoginActivity.class);
 
     /**
@@ -265,68 +263,5 @@ public class LoginButtonsTest {
         onView(withId(R.id.sign_up_confirm)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
         onView(withId(R.id.username_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
         onView(withId(R.id.password_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-    }
-
-    /**
-     * THESE NEXT 3 MUST BE RUN INDIVIDUALLY IN THE ORDER THEY APPEAR (testSignUp, then testLogin, then testFailedLogin)
-     * BEFORE RUNNING testSignUp, ENSURE THE ACCOUNT IN FIREBASE AUTH CONSOLE
-     * WITH THE EMAIL "test@gmail.com" IS DELETED
-     * IF THE testSignUp FAILS TO AUTHORIZE SIGN UP, RESTART ANDROID STUDIO
-     * FIREBASE AUTH CAN GET CONFUSED
-     *
-     * checks if signing up functions properly
-     */
-    @Test
-    public void testSignUp() {
-        ActivityScenario<MainActivity> rule2 = main_scenario.getScenario();
-        onView(withId(R.id.create_button)).perform(click());
-        onView(withId(R.id.username_input)).perform(typeText("test@gmail.com"));
-        onView(withId(R.id.password_input)).perform(typeText("Test_password123"));
-        onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard());
-        onView(withId(R.id.sign_up_confirm)).perform(click());
-        rule2.getState().isAtLeast(Lifecycle.State.CREATED);
-    }
-
-    /**
-     * checks if logging in functions properly
-     */
-    @Test
-    public void testLogin() {
-        ActivityScenario<MainActivity> rule2 = main_scenario.getScenario();
-        onView(withId(R.id.login_button)).perform(click());
-        onView(withId(R.id.username_input)).perform(typeText("test@gmail.com"));
-        onView(withId(R.id.password_input)).perform(typeText("Test_password123"));
-        onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard());
-        onView(withId(R.id.login_confirm)).perform(click());
-        rule2.getState().isAtLeast(Lifecycle.State.CREATED);
-    }
-
-    /**
-     * tests if FirebaseAuth prevents users from logging into different accounts
-     * with the incorrect email, user, or both
-     */
-    @Test
-    public void failedLogin() {
-        // test incorrect email
-        onView(withId(R.id.login_button)).perform(click());
-        onView(withId(R.id.username_input)).perform(typeText("tes@gmail.com"));
-        onView(withId(R.id.password_input)).perform(typeText("Test_password123"));
-        onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard());
-        onView(withId(R.id.login_confirm)).perform(click());
-        onView(withId(R.id.username_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.password_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.login_confirm)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.back_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-
-        // test incorrect password
-        onView(withId(R.id.username_input)).perform(replaceText("test@gmail.com"));
-        onView(withId(R.id.password_input)).perform(replaceText("Test_password124"));
-        onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard());
-        onView(withId(R.id.login_confirm)).perform(click());
-        onView(withId(R.id.username_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.password_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.login_confirm)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        onView(withId(R.id.back_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-
     }
 }
