@@ -394,7 +394,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 startActivityForResult(intent, REQUEST_CODE_ADD);
         }
     }
-    private float sumItems(ArrayList<Item> dataList) {
+    public float sumItems(ArrayList<Item> dataList) {
         float sum = 0f;
         for (Item item: dataList) {
             sum += item.getEstimatedValue();

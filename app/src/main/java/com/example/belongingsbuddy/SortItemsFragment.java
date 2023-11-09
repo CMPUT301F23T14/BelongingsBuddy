@@ -25,9 +25,6 @@ public class SortItemsFragment extends DialogFragment {
     private Boolean isAscending = true;
     public Listener listener;
     // so we can communicate with main activity
-    public interface OnFragmentInteractionListener {
-        void onSortOKPressed(String date, Boolean isAscending);
-    }
     /**
      * Called when the fragment is attached to its host activity.
      * This method checks if the hosting activity implements the {@link Listener} interface.
