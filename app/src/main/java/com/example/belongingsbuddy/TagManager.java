@@ -18,6 +18,11 @@ public class TagManager {
         }
     }
 
+    public TagManager() {
+        tags = new HashSet<>();
+        ManagedItems = new HashMap<Item, Set<Tag>>();
+    }
+
     public void addTag(Tag tag) {
         tags.add(tag);
     }
@@ -52,4 +57,5 @@ public class TagManager {
     public Set<Tag> getTags() {
         return tags;
     }
+
 }
