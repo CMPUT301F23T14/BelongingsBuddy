@@ -145,5 +145,31 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end">
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:textSize="20sp"
+            android:clickable="true"
+            android:focusable="true"
+            android:backgroundTint="@color/grey_button"
+            android:visibility="gone" />
+        <Button
+            android:id="@+id/delete_button_multiple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete"
+            android:textSize="20sp"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginStart="16dp"
+            android:visibility="gone" />
+    </LinearLayout>
 
 </LinearLayout>
