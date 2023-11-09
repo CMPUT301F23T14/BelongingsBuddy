@@ -29,9 +29,10 @@ import org.junit.runner.RunWith;
 /**
  * Tests the functionality of all the buttons in the LoginActivity
  * Tests user input verification
- * TEST ALL FUNCTIONS INDIVIDUALLY AS testSignUp and testLogin need to be tested individually
  * with testSignUp being tested first and the account on the Firebase Authentication
  * Console with the email test@gmail.com must be deleted before hand
+ * UNIT TESTING COULD NOT BE DONE FOR THIS ACTIVITY AS FIRESTORE AUTH DOES NOT ALLOW
+ * THE USE OF FIREBASE AUTH IN TESTING ENVIRONMENTS, AND CANNOT BE MOCKED BY MOCKITO
  */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
