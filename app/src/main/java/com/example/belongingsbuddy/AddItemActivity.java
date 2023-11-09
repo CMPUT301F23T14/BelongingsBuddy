@@ -1,28 +1,21 @@
 package com.example.belongingsbuddy;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.core.processing.SurfaceProcessorNode;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.icu.util.RangeValueIterator;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
-import java.util.List;
 
 public class AddItemActivity extends AppCompatActivity{
     private Item item;
@@ -52,6 +45,24 @@ public class AddItemActivity extends AppCompatActivity{
 
         // SET DATE implementation
         Button setDate = findViewById(R.id.add_pick_date_button);
+
+        //Check if there is any info from barcodes
+        String productInfo = getIntent().getStringExtra("productInfo");
+        if (productInfo != null) {
+            try {
+                JSONObject productJSON = new JSONObject(productInfo);
+                description_text = findViewById(R.id.add_description);
+
+                if (productJSON.has("description")) {
+                    String initialText = productJSON.getString("description");
+                    description_text.setText(initialText.replace(" (from barcode.monster)", ""));
+                }
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+
         setDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
