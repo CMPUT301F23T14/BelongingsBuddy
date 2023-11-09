@@ -180,76 +180,81 @@ public class MainActivity extends AppCompatActivity implements Listener{
         });
 
 
-        private void hideMultiSelectButtons () {
-            Button selectAllButton = findViewById(R.id.select_all_button);
-            TextView totalTextView = findViewById(R.id.total);
-            Button addButton = findViewById(R.id.add_item);
-            Button cancelButton = findViewById(R.id.cancel_button);
-            Button deleteButton = findViewById(R.id.delete_button_multiple);
 
-
-            selectAllButton.setVisibility(View.GONE);
-            totalTextView.setVisibility(View.GONE);
-            addButton.setVisibility(View.GONE);
-
-
-            cancelButton.setVisibility(View.VISIBLE);
-            deleteButton.setVisibility(View.VISIBLE);
-            deleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ArrayList<Item> selectedItems = ((CustomList) itemAdapter).getSelectedItems();
-
-
-                    // Implement logic to remove selected items from your dataList
-                    dataList.removeAll(selectedItems);
-
-
-                    // Notify the adapter that the data has changed
-                    itemAdapter.notifyDataSetChanged();
-                    ((CustomList) itemAdapter).clearSelectedItems();
-
-
-                    // Recalculate the total
-                    int totalInt = calculateTotal(dataList);
-                    total.setText(String.valueOf(totalInt));
-
-                    // Clear the selected items list
-
-
-                    // Exit multi-select mode and show the original buttons
-                    ((CustomList) itemAdapter).setMultiSelectMode(false);
-                    showMultiSelectButtons();
-                }
-            });
-
-
-            cancelButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ((CustomList) itemAdapter).setMultiSelectMode(false); // Exit multi-select mode
-                    showMultiSelectButtons(); // Show the original buttons
-                }
-            });
-        }
-
-
-        private void showMultiSelectButtons() {
-            Button selectAllButton = findViewById(R.id.select_all_button);
-            TextView totalTextView = findViewById(R.id.total);
-            Button addButton = findViewById(R.id.add_item);
-            Button cancelButton = findViewById(R.id.cancel_button);
-            Button deleteButton = findViewById(R.id.delete_button_multiple);
-
-
-            selectAllButton.setVisibility(View.VISIBLE);
-            totalTextView.setVisibility(View.VISIBLE);
-            addButton.setVisibility(View.VISIBLE);
-            cancelButton.setVisibility(View.GONE);
-            deleteButton.setVisibility(View.GONE);
-        }
 
     }
+
+    private void hideMultiSelectButtons() {
+        Button selectAllButton = findViewById(R.id.select_all_button);
+        TextView totalTextView = findViewById(R.id.total);
+        Button addButton = findViewById(R.id.add_item);
+        Button cancelButton = findViewById(R.id.cancel_button);
+        Button deleteButton = findViewById(R.id.delete_button_multiple);
+
+        selectAllButton.setVisibility(View.GONE);
+        totalTextView.setVisibility(View.GONE);
+        addButton.setVisibility(View.GONE);
+
+        cancelButton.setVisibility(View.VISIBLE);
+        deleteButton.setVisibility(View.VISIBLE);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<Item> selectedItems = ((CustomList) itemAdapter).getSelectedItems();
+
+                // Implement logic to remove selected items from your dataList
+                dataList.removeAll(selectedItems);
+
+                // Notify the adapter that the data has changed
+                itemAdapter.notifyDataSetChanged();
+                ((CustomList) itemAdapter).clearSelectedItems();
+
+                // Recalculate the total
+                //Float value = data.getFloatExtra("value", 0);
+                float newTotal = 0;
+                for (Item item : dataList) {
+                    newTotal += item.getEstimatedValue();
+                }
+
+                // Update the total TextView
+                totalTextView.setText(String.format("$%.2f", newTotal));
+
+                // Update the total variable
+                total = newTotal;
+
+
+                // Clear the selected items list
+
+                // Exit multi-select mode and show the original buttons
+                ((CustomList) itemAdapter).setMultiSelectMode(false);
+                showMultiSelectButtons();
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((CustomList) itemAdapter).setMultiSelectMode(false); // Exit multi-select mode
+                showMultiSelectButtons(); // Show the original buttons
+            }
+        });
+    }
+
+    private void showMultiSelectButtons() {
+        Button selectAllButton = findViewById(R.id.select_all_button);
+        TextView totalTextView = findViewById(R.id.total);
+        Button addButton = findViewById(R.id.add_item);
+        Button cancelButton = findViewById(R.id.cancel_button);
+        Button deleteButton = findViewById(R.id.delete_button_multiple);
+
+        selectAllButton.setVisibility(View.VISIBLE);
+        totalTextView.setVisibility(View.VISIBLE);
+        addButton.setVisibility(View.VISIBLE);
+        cancelButton.setVisibility(View.GONE);
+        deleteButton.setVisibility(View.GONE);
+    }
+
+
     @Override
     public void onSortOKPressed(String sortType, Boolean isAscending) {
         sortTypeLayout.setVisibility(View.VISIBLE);
@@ -342,6 +347,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     originalOrderDataList.clear();
                     originalOrderDataList.addAll(dataList);
                     // update total
+
                     totalTextView = findViewById(R.id.total);
                     total += value;
                     totalTextView.setText(String.format("$%.2f", total));

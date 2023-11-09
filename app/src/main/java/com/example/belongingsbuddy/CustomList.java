@@ -23,6 +23,7 @@ public class CustomList extends ArrayAdapter<Item> {
     private ArrayList<Item> items;
     private boolean multiSelectMode;
     private ArrayList<Item> selectedItems;
+    //
     private int total;
     // constructor
     public CustomList(Context context, ArrayList<Item> dataList) {
