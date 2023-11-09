@@ -38,7 +38,7 @@ import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-// CANNOT be run all at once for some reason (seems to be firestore problems)
+// CANNOT be run all at once, seems like firestore sync issues, but can be run individually
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -48,60 +48,82 @@ public class ListViewTest {
 
     @Test
     public void testAddDisplays() {
-        // enter add
+        // Click on the "Add" button
         onView(withId(R.id.add_item)).perform(click());
+
+        // Click on "Input Manually" option
         onView(withId(R.id.input_manually)).perform(click());
-        // Interact with the date picker
+
+        // Interact with the date picker and set a specific date
         onView(withId(R.id.add_pick_date_button)).perform(click());
         onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(1989, 8, 25));
         onView(withText("OK")).perform(click());
-        // value
+
+        // Enter values for item details
         onView(withId(R.id.add_value)).perform(ViewActions.typeText("22"));
-        // strings
         onView(withId(R.id.add_description)).perform(ViewActions.typeText("TEST"));
         onView(withId(R.id.add_make)).perform(ViewActions.typeText("TEST"));
         onView(withId(R.id.add_model)).perform(ViewActions.typeText("TEST"));
+
+        // Scroll to the "Name" field and enter a name
         onView(withId(R.id.add_name)).perform(scrollTo());
         onView(withId(R.id.add_name)).perform(ViewActions.typeText("APPL*E"));
-        // exit add
+
+        // Close the keyboard and click on the "Confirm" button
         onView(withId(R.id.add_model)).perform(ViewActions.closeSoftKeyboard());
         onView(withId(R.id.add_confirm)).perform(scrollTo());
         onView(withId(R.id.add_confirm)).perform(click());
-        // check if anything says APPLE
+
+        // Check if the added item with the name "APPL*E" is displayed
         onView(withText("APPL*E"));
     }
+
+    // Test method for editing and displaying items
     @Test
-    public void testEditDiplays() {
+    public void testEditDisplays() {
+        // Click on an item in the list
         onData(is(instanceOf(Item.class))).atPosition(0).perform(click());
+
+        // Click on the "Edit" button
         onView(withId(R.id.view_edit)).perform(scrollTo());
         onView(withId(R.id.view_edit)).perform(click());
+
+        // Scroll to the "Name" field, edit the name, and confirm the changes
         onView(withId(R.id.edit_name)).perform(scrollTo());
-//        for (int i = 0; i < 10; i++) {
-//            onView(withId(R.id.edit_name)).perform(pressKey(KeyEvent.KEYCODE_DEL));
-//        }
         onView(withId(R.id.edit_name)).perform(ViewActions.typeText("CHEESE"));
         onView(withId(R.id.edit_model)).perform(ViewActions.closeSoftKeyboard());
         onView(withId(R.id.edit_confirm)).perform(scrollTo());
         onView(withId(R.id.edit_confirm)).perform(click());
-        // check if anything says CHEESE
-        onView(withText("CHEESE"));
 
+        // Check if the edited item with the name "CHEESE" is displayed
+        onView(withText("CHEESE"));
     }
+
+    // Test method for deleting items
     @Test
-    public void testDeleteDiplays() {
+    public void testDeleteDisplays() {
+        // Click on an item in the list
         onData(is(instanceOf(Item.class))).atPosition(0).perform(click());
+
+        // Click on the "Delete" button
         onView(withId(R.id.view_belete)).perform(scrollTo());
         onView(withId(R.id.view_belete)).perform(click());
-        // check if Chair still there
-        onView(withText("Chair")).check(doesNotExist());
 
+        // Check if the deleted item with the name "Chair" is no longer displayed
+        onView(withText("Chair")).check(doesNotExist());
     }
+
+    // Test method for deleting items with long press
     @Test
-    public void testDeleteLongPressDiplays() {
+    public void testDeleteLongPressDisplays() {
+        // Long press on an item in the list
         onData(is(instanceOf(Item.class))).atPosition(0).perform(longClick());
+
+        // Click on the checkbox and then on the "Delete" button
         onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.checkbox)).perform(click());
         onView(withId(R.id.delete_button_multiple)).perform(click());
-        // check if Chair still there
+
+        // Check if the deleted item with the name "Chair" is no longer displayed
         onView(withText("Chair")).check(doesNotExist());
     }
 }

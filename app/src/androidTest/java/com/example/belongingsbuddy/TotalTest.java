@@ -44,55 +44,71 @@ import org.junit.runner.RunWith;
 public class TotalTest {
     @Rule
     public ActivityScenarioRule<MainActivity> scenario1 = new ActivityScenarioRule<>(MainActivity.class);
+
+    // Test method for checking if the initial total is displayed correctly
     @Test
     public void testIsTotalThere() {
         onView(withId(R.id.total)).check(matches(withText("$650.00")));
     }
+
+    // Test method for adding an item and checking if the total updates
     @Test
     public void testTotalAdd() {
-        // enter add
+        // Enter the add screen
         onView(withId(R.id.add_item)).perform(click());
         onView(withId(R.id.input_manually)).perform(click());
-        // Interact with the date picker
+
+        // Interact with the date picker and set a specific date
         onView(withId(R.id.add_pick_date_button)).perform(click());
         onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(1989, 8, 25));
         onView(withText("OK")).perform(click());
-        // value
+
+        // Enter values for item details
         onView(withId(R.id.add_value)).perform(ViewActions.typeText("22"));
-        // strings
         onView(withId(R.id.add_description)).perform(ViewActions.typeText("TEST"));
         onView(withId(R.id.add_make)).perform(ViewActions.typeText("TEST"));
         onView(withId(R.id.add_model)).perform(ViewActions.typeText("TEST"));
         onView(withId(R.id.add_name)).perform(scrollTo());
         onView(withId(R.id.add_name)).perform(ViewActions.typeText("TEST"));
-        // exit add
+
+        // Close the keyboard and confirm the addition
         onView(withId(R.id.add_model)).perform(ViewActions.closeSoftKeyboard());
         onView(withId(R.id.add_confirm)).perform(scrollTo());
         onView(withId(R.id.add_confirm)).perform(click());
-        // check total update
+
+        // Check if the total updates correctly after adding the item
         onView(withId(R.id.total)).check(matches(withText("$672.00")));
     }
+
+    // Test method for deleting an item and checking if the total updates
     @Test
     public void testTotalDelete() {
+        // Click on an item in the list and then click on the "Delete" button
         onData(is(instanceOf(Item.class))).atPosition(0).perform(click());
         onView(withId(R.id.view_belete)).perform(scrollTo());
         onView(withId(R.id.view_belete)).perform(click());
-        // check total update
+
+        // Check if the total updates correctly after deleting the item
         onView(withId(R.id.total)).check(matches(withText("$450.00")));
     }
+
+    // Test method for deleting multiple items and checking if the total updates
     @Test
     public void testTotalDeleteLongPress() {
+        // Long press on an item, click on checkboxes, and then click on the "Delete" button
         onData(is(instanceOf(Item.class))).atPosition(0).perform(longClick());
         onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.checkbox)).perform(click());
         onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.checkbox)).perform(click());
-//        onView(withId(R.id.delete_button_multiple)).perform(scrollTo());
         onView(withId(R.id.delete_button_multiple)).perform(click());
-//        // check total update
+
+        // Check if the total updates correctly after deleting multiple items
         onView(withId(R.id.total)).check(matches(withText("$50.00")));
     }
 
+    // Test method for editing an item and checking if the total updates
     @Test
     public void testTotalEdit() {
+        // Click on an item, click on the "Edit" button, edit the value, and confirm the changes
         onData(is(instanceOf(Item.class))).atPosition(0).perform(click());
         onView(withId(R.id.view_edit)).perform(scrollTo());
         onView(withId(R.id.view_edit)).perform(click());
@@ -102,8 +118,8 @@ public class TotalTest {
         onView(withId(R.id.edit_model)).perform(ViewActions.closeSoftKeyboard());
         onView(withId(R.id.edit_confirm)).perform(scrollTo());
         onView(withId(R.id.edit_confirm)).perform(click());
-        // check total update
-        onView(withId(R.id.total)).check(matches(withText("$650.01")));
 
+        // Check if the total updates correctly after editing the item
+        onView(withId(R.id.total)).check(matches(withText("$650.01")));
     }
 }
