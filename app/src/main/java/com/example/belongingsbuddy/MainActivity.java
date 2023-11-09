@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
     public final static int REQUEST_CODE_ADD = 1;
     public final static int REQUEST_CODE_VIEW = 2;
     public final static int REQUEST_CODE_EDIT = 3;
+    public final static int REQUEST_CODE_BARCODE = 10;
 
 
     @Override
@@ -225,6 +226,15 @@ public class MainActivity extends AppCompatActivity implements Listener{
         startActivityForResult(i, REQUEST_CODE_ADD);
     }
 
+    /**
+     * Creates a Scanner Activity and gives a result
+     */
+    @Override
+    public void inputBarcode(){
+        Intent i = new Intent(MainActivity.this, ScannerActivity.class);
+        startActivityForResult(i, REQUEST_CODE_BARCODE);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -311,6 +321,13 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     total += item.getEstimatedValue();
                     totalTextView.setText(String.format("$%.2f", total));
                 }
+                break;
+            case REQUEST_CODE_BARCODE:
+                //Add the rest of the item manually in case of incomplete data
+                String productInfo = data.getStringExtra("result");
+                Intent intent = new Intent(MainActivity.this, AddItemActivity.class);
+                intent.putExtra("productInfo", productInfo);
+                startActivityForResult(intent, REQUEST_CODE_ADD);
         }
     }
 }
