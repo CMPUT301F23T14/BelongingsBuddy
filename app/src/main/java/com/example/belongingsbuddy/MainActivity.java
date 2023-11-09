@@ -288,6 +288,9 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     Integer index = info.getInt("index");
                     // update info about the edited Item
                     Item item = dataList.get(index);
+                    // get old value
+                    float oldValue = item.getEstimatedValue();
+                    // update info about the edited Item
                     item.setName(info.getString("name"));
                     item.getDate().setDay(info.getInt("day"));
                     item.getDate().setMonth(info.getInt("month"));
@@ -299,6 +302,14 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     item.setSerialNumber(info.getInt("serial number"));
                     item.setComment(info.getString("comment"));
                     itemAdapter.notifyDataSetChanged();
+                    // update datalist backup
+                    originalOrderDataList.clear();
+                    originalOrderDataList.addAll(dataList);
+                    // update total
+                    totalTextView = findViewById(R.id.total);
+                    total -= oldValue;
+                    total += item.getEstimatedValue();
+                    totalTextView.setText(String.format("$%.2f", total));
                 }
         }
     }
