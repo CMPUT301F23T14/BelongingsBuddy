@@ -14,10 +14,10 @@ import android.widget.Button;
 import android.widget.RadioGroup;
 
 /**
- * Displays a dialog with 4 buttons and a radio group of 2
- * the user can select which type of sorting they'd like to perform
- * which will lead to another interface or will close the dialogue.
- * They can also return to main page with the cancel button.
+ * Displays a dialog with 4 selection buttons, cancel and confirm, and a radio group of 2
+ * Whatever button is clicked last before hitting confirm will be the sort type to be performed.
+ * Default order is ascending (alphabetical no other reason).
+ * If the us presses cancel dialogue is dismissed, else they return to main and see sorted list.
  */
 public class SortItemsFragment extends DialogFragment {
 //    private OnFragmentInteractionListener listener;
@@ -25,9 +25,17 @@ public class SortItemsFragment extends DialogFragment {
     private Boolean isAscending = true;
     public Listener listener;
     // so we can communicate with main activity
-    public interface OnFragmentInteractionListener {
-        void onSortOKPressed(String date, Boolean isAscending);
-    }
+    /**
+     * Called when the fragment is attached to its host activity.
+     * This method checks if the hosting activity implements the {@link Listener} interface.
+     * If it does, it assigns the activity as the listener for communication.
+     * If not, a {@link RuntimeException} is thrown.
+     *
+     * @param context context fragement uses (should be main activity)
+     * @throws RuntimeException if the activity does not implement the {@link Listener} interface
+     *
+     * @see Listener
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -38,6 +46,19 @@ public class SortItemsFragment extends DialogFragment {
             throw new RuntimeException("MUST IMPLEMENT Listener");
         }
     }
+    /**
+     * Creates and returns a sorting dialog for the BelongingsBuddy application.
+     * The dialog allows the user to choose the sorting criteria (date, description, make, or value)
+     * and specify the sorting order (ascending or descending).
+     *
+     * @param savedInstanceState The bundle with the saved state of the fragment, or null if not available
+     * @return a new instance of a dialogue for sorting items
+     *
+     * @see View
+     * @see Dialog
+     * @see Button
+     * @see RadioGroup
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
