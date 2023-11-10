@@ -38,13 +38,26 @@ import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-// CANNOT be run all at once, seems like firestore sync issues, but can be run individually
+// Must use testAll method otherwise firestore errors and designed to run that way
+// often the first time you try to run a test youll have firestore sync errots on first run after building app
+// run it again and it should not error out
 
+/**
+ * Runs a series of tests related to adding, editing, and deleting items in the ListView.
+ */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class ListViewTest {
     @Rule
     public ActivityScenarioRule<MainActivity> scenario1 = new ActivityScenarioRule<>(MainActivity.class);
+
+    @Test
+    public void testAllListView() {
+        testAddDisplays();
+        testEditDisplays();
+        testDeleteDisplays();
+        testDeleteLongPressDisplays();
+    }
 
     @Test
     public void testAddDisplays() {
@@ -110,7 +123,7 @@ public class ListViewTest {
         onView(withId(R.id.view_belete)).perform(click());
 
         // Check if the deleted item with the name "Chair" is no longer displayed
-        onView(withText("Chair")).check(doesNotExist());
+        onView(withText("CHEESE")).check(doesNotExist());
     }
 
     // Test method for deleting items with long press
@@ -124,6 +137,6 @@ public class ListViewTest {
         onView(withId(R.id.delete_button_multiple)).perform(click());
 
         // Check if the deleted item with the name "Chair" is no longer displayed
-        onView(withText("Chair")).check(doesNotExist());
+        onView(withText("Table")).check(doesNotExist());
     }
 }

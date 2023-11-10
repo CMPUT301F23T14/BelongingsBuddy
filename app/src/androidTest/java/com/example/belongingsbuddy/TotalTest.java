@@ -41,6 +41,9 @@ import org.junit.runner.RunWith;
 // sometimes it errors with firestore sync issues on first run after building app
 // run it again and it should not error out
 
+/**
+ * Runs a series of tests related to adding, editing, and deleting items and its affect on total
+ */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class TotalTest {

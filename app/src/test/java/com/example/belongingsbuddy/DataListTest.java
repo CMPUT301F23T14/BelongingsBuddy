@@ -10,10 +10,13 @@ import java.util.ArrayList;
 
 
 /**
- * Tests the functionality of the SumItems method
+ * Tests the functionality of the sumItems method and dataList
  */
-public class SumItemsTest {
+public class DataListTest {
     @Test
+    /**
+     Testing the sumItems method
+     */
     public void testSumItems() {
         // set up dataList
         ArrayList<Item> dataList = new ArrayList<>();
@@ -45,6 +48,9 @@ public class SumItemsTest {
     }
 
     @Test
+    /**
+    Testing the type dataList holds is correct
+     */
     public void testDataListType() {
         // set up dataList
         ArrayList<Item> dataList = new ArrayList<>();

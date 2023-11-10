@@ -44,6 +44,9 @@ import org.junit.runner.RunWith;
 // often the first time you try to run a test youll have firestore sync errots on first run after building app
 // run it again and it should not error out
 
+/**
+ * Runs a series of tests related to sorting items
+ */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class SortingTesting {
