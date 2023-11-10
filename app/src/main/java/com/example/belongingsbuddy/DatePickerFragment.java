@@ -17,8 +17,19 @@ import org.w3c.dom.Text;
 import java.util.Calendar;
 import java.util.Objects;
 
+/**
+ * Intuitive Dialog from which the user may select a date from the calendar
+ */
 public class DatePickerFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
+
+    /**
+     * Create a calendar Dialog set to the current date
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return interactive Dialog in the form of a calendar form which the user may select a date
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -31,10 +42,21 @@ public class DatePickerFragment extends DialogFragment
 
         // Create a new instance of DatePickerDialog and return it.
         DatePickerDialog date = new DatePickerDialog(requireContext(), this, year, month, day);
+        // set the MaxDate to the current dat, so that users cannot choose dates in the future
         date.getDatePicker().setMaxDate(System.currentTimeMillis());
         return date;
     }
 
+    /**
+     * Create a String representing the chosen date and set the appropriate TextView in the calling
+     * activity to this string
+     * @param view the picker associated with the dialog
+     * @param year the selected year
+     * @param month the selected month (0-11 for compatibility with
+     *              {@link Calendar#MONTH})
+     * @param day the selected day of the month (1-31, depending on
+     *                   month)
+     */
     public void onDateSet(DatePicker view, int year, int month, int day) {
         // Do something with the date the user picks.
         Date date = new Date(day, month, year);
@@ -43,6 +65,4 @@ public class DatePickerFragment extends DialogFragment
         Objects.requireNonNull(getDialog()).dismiss();
 
     }
-
-
 }

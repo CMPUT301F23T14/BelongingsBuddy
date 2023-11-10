@@ -1,0 +1,303 @@
+Fork me on GitHub
+CRC Card Maker
+Tip: The header/buttons are hidden when printing!
+
+New cardRemove allShare linkExport
+Export JSON
+[
+  {
+    "name": "Item",
+    "superclasses": "",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Knows information about the item",
+      "Can associate with photos",
+      "Can associate with tags",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "collaborators": [
+      "Tags",
+      "Photo",
+      "Camera",
+      "ScannerActivity",
+      "CustomList"
+    ]
+  },
+  {
+    "name": "Tag",
+    "superclasses": "",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Can associate with items"
+    ],
+    "collaborators": [
+      "Item"
+    ]
+  },
+  {
+    "name": "Camera",
+    "superclasses": "",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Takes photos",
+      "Stores photos"
+    ],
+    "collaborators": [
+      "Item"
+    ]
+  },
+  {
+    "name": "MainActivity",
+    "superclasses": "AppCompatActivity",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Display a list of items",
+      "Handle user interactions, such as adding, editing, and deleting items",
+      "Manage user authentication and retrieve the current user's username",
+      "Communicate with Firebase Firestore to store and retrieve data",
+      "Implement sorting functionality for the displayed list",
+      "Support multi-select mode for bulk item deletion"
+    ],
+    "collaborators": [
+      "Item",
+      "FirebaseAuth",
+      "FirebaseFirestore",
+      "CustomList",
+      "ScanOrManual",
+      "SortItemsFragment",
+      "UsernameDialogFragment",
+      "ItemViewActivity",
+      "EditItemActivity",
+      "AddItemActivity",
+      "ScannerActivity",
+      "Listener"
+    ]
+  },
+  {
+    "name": "AddItemActivity",
+    "superclasses": "AppCompatActivity",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Allow users to add new items to the inventory",
+      "Handle user input for item details",
+      "Display prompts for missing or invalid input",
+      "Provide the option to set the item's date using a date picker",
+      "Parse and handle barcode information if available",
+      "Confirm and cancel new item addition",
+      "Return the entered item details"
+    ],
+    "collaborators": [
+      "Item",
+      "ScanOrManual",
+      "DatePickerFragment",
+      "Tag",
+      "Photo",
+      "CustomList"
+    ]
+  },
+  {
+    "name": "EditItemActivity",
+    "superclasses": "AppCompatActivity",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "User can edit items",
+      "Handle user interaction and UI elements associated with editing",
+      "Validates user input",
+      "Sends edited item details back to the calling activity"
+    ],
+    "collaborators": [
+      "Date",
+      "DatePickerFragment",
+      "Item",
+      "CustomList"
+    ]
+  },
+  {
+    "name": "CameraActivity",
+    "superclasses": "AppCompatActivity",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Requests and checks for camera permission",
+      "Creates the camera after obtaining permission",
+      "Sets up the camera controller",
+      "Communicates success or failure of camera creatiom"
+    ],
+    "collaborators": [
+      "Item",
+      "Photo",
+      "CustomList",
+      "ScanOrManual"
+    ]
+  },
+  {
+    "name": "CustomList ",
+    "superclasses": "ArrayAdapter",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Manages a custom ArrayAdapter for displaying a list of items",
+      "Supports bulk selection",
+      "Handles the display of checkboxes for bulk selection",
+      "Maintains a list of selected items",
+      "Clears the list of selected items when needed"
+    ],
+    "collaborators": [
+      "Item",
+      "MainActivity"
+    ]
+  },
+  {
+    "name": "Date",
+    "superclasses": "",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Represents dates for use in Item class",
+      "Dates are comparable"
+    ],
+    "collaborators": [
+      "Item"
+    ]
+  },
+  {
+    "name": "DatePickerFragment",
+    "superclasses": "DialogFragment",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Allows user to pick a date",
+      "Restricts the maximum date to the current date",
+      "Can dismiss dialogue",
+      "Can return date to other dialogue or activity",
+      ""
+    ],
+    "collaborators": [
+      "Date"
+    ]
+  },
+  {
+    "name": "ItemViewActivity",
+    "superclasses": "AppCompatActivity",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Allows user to view item details",
+      "Manages UI elements associated with viewing",
+      "Allows user to enter edit mode",
+      "Allows user to delete item",
+      "Sends information back to the calling activity based on user actions (delete or edit)"
+    ],
+    "collaborators": [
+      "Item",
+      "CustomList",
+      "ItemEditActivity",
+      "MainActivity"
+    ]
+  },
+  {
+    "name": "Listener",
+    "superclasses": "",
+    "subclasses": "",
+    "type": 3,
+    "responsibilities": [
+      "Provides callback methods for communicating between fragments and main activity",
+      "Involved in sorting and input operations"
+    ],
+    "collaborators": [
+      "MainActivity",
+      "AddItemActivity",
+      "EditItemActivity",
+      "SortItems"
+    ]
+  },
+  {
+    "name": "LoginActivity",
+    "superclasses": "AppCompatActivity",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Allows users to login or signup",
+      "Validates user input",
+      "Displays toasts to help user",
+      "Communicates with Firestone"
+    ],
+    "collaborators": [
+      "FirebaseFirestore",
+      "FirestoreAuth",
+      "MainActivity"
+    ]
+  },
+  {
+    "name": "ScannerActivity",
+    "superclasses": "AppCompatActivity",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Scans barcodes using user camera",
+      "Makes API calls to barcode monster",
+      "Handles response from barcode monster"
+    ],
+    "collaborators": [
+      "ScanOrManual",
+      "BarcodeScanner"
+    ]
+  },
+  {
+    "name": "ScanOrManual",
+    "superclasses": "DialogFragment",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Allows user to choose to scan barcode to input item or input manually",
+      "Allows user to cancel and dismiss dialogue",
+      "Communicate with the hosting activity using the Listener interface"
+    ],
+    "collaborators": [
+      "Listener",
+      "MainActivity",
+      ""
+    ]
+  },
+  {
+    "name": "SortItemsFragment",
+    "superclasses": "DialogFragment",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Allows user to select what attribute to sort items by",
+      "Allows user to select whether sort is asc or desc",
+      "User can cancel and dismiss dialogue",
+      "Communicate with the hosting activity using the Listener interface"
+    ],
+    "collaborators": [
+      "Listener",
+      "MainActivity"
+    ]
+  },
+  {
+    "name": "UsernameDialogFragment",
+    "superclasses": "DialogFragment",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Displays username as a dialogue",
+      "Allows user to sign out"
+    ],
+    "collaborators": [
+      "MainActivity",
+      "LoginActivity",
+      "FirebaseAuth"
+    ]
+  }
+]

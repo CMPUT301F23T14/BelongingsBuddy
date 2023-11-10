@@ -1,6 +1,7 @@
 package com.example.belongingsbuddy;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.processing.SurfaceProcessorNode;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -12,45 +13,42 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.Serializable;
-import org.json.JSONException;
-import org.json.JSONObject;
 import java.util.ArrayList;
 
 /**
- * Activity for adding an Item to the user's dataList.
- * This class gets all the necessary input from the user to construct a new Item and then returns that
- * data to the calling activity (MainActivity)
+ *  Activity for editing an Item from the user's dataList.
+ *  This class gets all the necessary input from the user and then returns that
+ *  data to the calling activity (MainActivity)
  */
-public class AddItemActivity extends AppCompatActivity{
-    private Item item;
-    private String name;
+public class EditItemActivity extends AppCompatActivity{
     private EditText name_text;
-    private Date date;
+    private String name;
     private TextView date_text;
-    private String description;
+    private Date date;
     private EditText description_text;
-    private String make;
+    private String description;
     private EditText make_text;
-    private String model;
+    private String make;
     private EditText model_text;
-    private Integer serialNumber;
-    private EditText serialNumber_text;
-    private Float value;
+    private String model;
     private EditText value_text;
-    private String comment;
+    private  Float new_val;
+    private EditText serialNum_text;
+    private Integer serialNum;
     private EditText comment_text;
-    private ArrayList<Tag> tags = new ArrayList<>();
-    private ArrayList<Photo> photos;
+    private String comment;
+
+    private Integer day = null;
+    private Integer month = null;
+    private Integer year = null;
 
     /**
-     * Display the activity_add_item View and wait for user input.
+     * Display the activity_edit_item View and wait for user input.
      * If the user clicks the "Cancel" button, end the activity.
      * If the user clicks "Confirm," this class verifies that all the required fields were filled out by
      * the user, and then returns that data to the calling activity (MainActivity)
      * NOTE: if invalid input is given and the user clicks the "Confirm" button, then this class will
      * notify the user about any issues and wait for new user input
-     *
      * @param savedInstanceState If the activity is being re-initialized after
      *     previously being shut down then this Bundle contains the data it most
      *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
@@ -59,26 +57,40 @@ public class AddItemActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_item);
-
-        //Check if there is any info from barcodes
-        String productInfo = getIntent().getStringExtra("productInfo");
-        if (productInfo != null) {
-            try {
-                JSONObject productJSON = new JSONObject(productInfo);
-                description_text = findViewById(R.id.add_description);
-
-                if (productJSON.has("description")) {
-                    String initialText = productJSON.getString("description");
-                    description_text.setText(initialText.replace(" (from barcode.monster)", ""));
-                }
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
+        setContentView(R.layout.activity_edit_item);
+        Bundle itemInfo = getIntent().getBundleExtra("item");
+        // setup the view with information about the Item being edited
+        // name:
+        name_text = this.findViewById(R.id.edit_name);
+        name_text.setText(itemInfo.getString("name", "NA"));
+        // date:
+        date_text = this.findViewById(R.id.add_date);
+        date_text.setText(itemInfo.getString("date"));
+        // description:
+        description_text = this.findViewById(R.id.edit_description);
+        description_text.setText(itemInfo.getString("description"));
+        // make:
+        make_text = this.findViewById(R.id.edit_make);
+        make_text.setText(itemInfo.getString("make"));;
+        // model:
+        model_text = this.findViewById(R.id.edit_model);
+        model_text.setText(itemInfo.getString("model"));
+        // value:
+        value_text =this.findViewById(R.id.edit_value);
+        Float value = itemInfo.getFloat("value");
+        value_text.setText(value.toString());
+        // serial number:
+        serialNum_text = this.findViewById(R.id.edit_serial_number);
+        Integer serial = itemInfo.getInt("serialNum");
+        if (serial != 0){
+            serialNum_text.setText(serial.toString());
         }
+        //comment
+        comment_text = this.findViewById(R.id.edit_comment);
+        comment_text.setText(itemInfo.getString("comment"));
 
         // SET DATE implementation
-        Button setDate = findViewById(R.id.add_pick_date_button);
+        Button setDate = findViewById(R.id.edit_pick_date_button);
         setDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,31 +99,11 @@ public class AddItemActivity extends AppCompatActivity{
             }
         });
 
-        //Set Tags Implementation Dialog Frame Window
-        Button openTagsButton = findViewById(R.id.add_tags_button);
-        openTagsButton.setOnClickListener(v -> {
-            Bundle arg = new Bundle();
-            arg.putSerializable("tagManager", getIntent().getSerializableExtra("Manager"));
-            arg.putSerializable("selectedTags", tags);
-            TagActivity TagFragment = new TagActivity();
-            TagFragment.setArguments(arg);
-            TagFragment.show(getSupportFragmentManager(), "dialog");
-        });
-
         // CONFIRM implementation:
-        Button confirm = findViewById(R.id.add_confirm);
+        Button confirm = findViewById(R.id.edit_confirm);
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // get needed EditText views
-                name_text = findViewById(R.id.add_name);
-                date_text = findViewById(R.id.add_date);
-                description_text = findViewById(R.id.add_description);
-                make_text = findViewById(R.id.add_make);
-                model_text = findViewById(R.id.add_model);
-                value_text = findViewById(R.id.add_value);
-                serialNumber_text = findViewById(R.id.add_serial_number);
-                comment_text = findViewById(R.id.add_comment);
 
                 // reset prompts and valid flag
                 boolean valid = true;
@@ -129,11 +121,11 @@ public class AddItemActivity extends AppCompatActivity{
                 required.add(value_text);
 
                 // assert all required fields are filled out
-                // if not, alert the user and set valid flag to false
+                // if they are not all filled out, alert the user and set valid to false
                 for (int i = 0; i < required.size(); i++){
                     if (required.get(i).getText().toString().trim().length() == 0){
                         if (valid){
-                            Toast.makeText(AddItemActivity.this, "Missing required fields", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(EditItemActivity.this, "Missing required fields", Toast.LENGTH_SHORT).show();
                         }
                         prompts[i].setBackgroundColor(getResources().getColor(R.color.light_red));
                         valid = false;
@@ -141,11 +133,11 @@ public class AddItemActivity extends AppCompatActivity{
                 }
 
                 //assert a Date has been provided
-                // if it has not been provided, alert the user and set value to false
+                // if it has not been provided, alert the user and set valid to false
                 if (date_text.getText().toString().equals("yyyy-mm-dd")){
                     TextView prompt = prompts[5];
                     if (valid){
-                        Toast.makeText(AddItemActivity.this, "Missing required fields", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(EditItemActivity.this, "Missing required fields", Toast.LENGTH_SHORT).show();
                     }
                     prompt.setBackgroundColor(getResources().getColor(R.color.light_red));
                     valid = false;
@@ -153,15 +145,14 @@ public class AddItemActivity extends AppCompatActivity{
                     // a date has been provided
                     date = new Date(date_text.getText().toString());
                 }
-
-                // If valid is true, then all the required fields have been filled out
-                // get user input, and pass necessary info as extras in the returnIntent
+                // all required fields have been filled out
                 if (valid){
+                    // get the updated item info
                     name = name_text.getText().toString();
                     description = description_text.getText().toString();
                     make = make_text.getText().toString();
                     model = model_text.getText().toString();
-                    value = Float.parseFloat(value_text.getText().toString());
+                    new_val = Float.parseFloat(value_text.getText().toString());
                     // comment is optional
                     if (TextUtils.isEmpty(comment_text.getText().toString())){
                         comment = "NA";
@@ -169,11 +160,11 @@ public class AddItemActivity extends AppCompatActivity{
                         comment = comment_text.getText().toString();
                     }
                     // serial number is optional
-                    if (TextUtils.isEmpty(serialNumber_text.getText().toString())){
+                    if (TextUtils.isEmpty(serialNum_text.getText().toString())){
                         // use the constructor without a serial number
-                        serialNumber = null;
+                        serialNum = null;
                     } else {
-                        serialNumber = Integer.parseInt(serialNumber_text.getText().toString());
+                        serialNum = Integer.parseInt(serialNum_text.getText().toString());
                     }
                     // create returnIntent and pass needed data as extras
                     Intent returnIntent = new Intent();
@@ -181,17 +172,13 @@ public class AddItemActivity extends AppCompatActivity{
                     returnIntent.putExtra("description", description);
                     returnIntent.putExtra("make", make);
                     returnIntent.putExtra("model", model);
-                    returnIntent.putExtra("value", value);
+                    returnIntent.putExtra("value", new_val);
                     returnIntent.putExtra("comment", comment);
-                    returnIntent.putExtra("serial number", serialNumber);
+                    returnIntent.putExtra("serial number", serialNum);
                     returnIntent.putExtra("day", date.getDay());
                     returnIntent.putExtra("month", date.getMonth());
                     returnIntent.putExtra("year", date.getYear());
-
-                    Bundle args = new Bundle();
-                    args.putSerializable("tagList",tags);
-                    returnIntent.putExtra("BUNDLE",args);
-
+                    returnIntent.putExtra("index", itemInfo.getInt("index"));
                     setResult(Activity.RESULT_OK,returnIntent);
                     finish();
                 }
@@ -199,7 +186,7 @@ public class AddItemActivity extends AppCompatActivity{
         });
 
         // CANCEL implementation:
-        Button cancel = findViewById(R.id.add_cancel);
+        Button cancel = findViewById(R.id.edit_cancel);
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -208,9 +195,7 @@ public class AddItemActivity extends AppCompatActivity{
                 finish();
             }
         });
-
     }
-
     /**
      * Sets the background color of the given TextView(s) back to their original color.
      * This is needed because they may have been previously set to red to alert the user of missing input
@@ -219,9 +204,5 @@ public class AddItemActivity extends AppCompatActivity{
     private void resetPrompts(TextView[] prompts){
         for (TextView p: prompts)
             p.setBackgroundColor(getResources().getColor(R.color.light_purple));
-    }
-
-    public void setTagList(ArrayList<Tag> tagList) {
-        tags = tagList;
     }
 }
