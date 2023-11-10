@@ -30,13 +30,14 @@ public class MainActivity extends AppCompatActivity implements Listener{
     private TextView totalTextView;
     private FirebaseFirestore db;
     private String username;
-        private LinearLayout sortTypeLayout;
+    private LinearLayout sortTypeLayout;
     private TextView sortTypeTextView;
-
     public final static int REQUEST_CODE_ADD = 1;
     public final static int REQUEST_CODE_VIEW = 2;
     public final static int REQUEST_CODE_EDIT = 3;
-public final static int REQUEST_CODE_BARCODE = 10;
+    public final static int REQUEST_CODE_BARCODE = 10;
+    public static Integer lastResult = 1000;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -335,12 +336,13 @@ public final static int REQUEST_CODE_BARCODE = 10;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        lastResult = resultCode;
         switch (requestCode){
             case REQUEST_CODE_ADD:
-// There are 2 possible outcomes when the REQUEST_CODE_ADD requestCode is received
+                // There are 2 possible outcomes when the REQUEST_CODE_ADD requestCode is received
                 // Only RESULT_OK requires further work from ActivityMain
                 if(resultCode == Activity.RESULT_OK) {
-// RESULT_OK indicates that all the required fields were correctly filled out
+                    // RESULT_OK indicates that all the required fields were correctly filled out
                     // and the user clicked "confirm"
                     // get all the data given by user
                     String name = data.getStringExtra("name");
@@ -372,30 +374,30 @@ public final static int REQUEST_CODE_BARCODE = 10;
                 break;
 
             case REQUEST_CODE_VIEW:
-// there are 3 possible outcomes when a REQUEST_CODE_VIEW requestCode is received
+                // there are 3 possible outcomes when a REQUEST_CODE_VIEW requestCode is received
                 // only two of them require further work from MainActivity
                 if (resultCode == ItemViewActivity.REQUEST_CODE_EDIT) {
-// CASE 1: User clicked the "Edit" button from the ItemViewActivity screen
+                    // CASE 1: User clicked the "Edit" button from the ItemViewActivity screen
                     // start an EditItemActivity for the Item originally clicked
                     Intent startIntent = new Intent(MainActivity.this, EditItemActivity.class);
                     Bundle itemInfo = data.getBundleExtra("item");
                     startIntent.putExtra("item", itemInfo);
                     startActivityForResult(startIntent, REQUEST_CODE_EDIT);
                 } else if (resultCode == ItemViewActivity.REQUEST_CODE_DELETE) {
-// CASE 2: User clicked the "Delete" button from the ItemViewActivity screen
+                    // CASE 2: User clicked the "Delete" button from the ItemViewActivity screen
                     // delete the Item from the dataLIst and make other necessary changes
                     int position = data.getIntExtra("position", 0);
                     float value = dataList.get(position).getEstimatedValue();
                     dataList.remove(position);
-                                        itemAdapter.notifyDataSetChanged();
-// update datalist backup
+                    itemAdapter.notifyDataSetChanged();
+                    // update datalist backup
                     originalOrderDataList.clear();
                     originalOrderDataList.addAll(dataList);
                     // update total
                     totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
                 }
             case REQUEST_CODE_EDIT:
-// there are 2 possible outcomes when the REQUEST_CODE_EDIT requestCode is received
+                // there are 2 possible outcomes when the REQUEST_CODE_EDIT requestCode is received
                 // only one of them requires further work from ActivityMain
                 if (resultCode == Activity.RESULT_OK){
                     Bundle info = data.getExtras();
@@ -403,7 +405,7 @@ public final static int REQUEST_CODE_BARCODE = 10;
                     Integer index = info.getInt("index");
                     // update info about the edited Item
                     Item item = dataList.get(index);
-// get old value
+                    // get old value
                     float oldValue = item.getEstimatedValue();
                     // update info about the edited Item
                     item.setName(info.getString("name"));
@@ -417,7 +419,7 @@ public final static int REQUEST_CODE_BARCODE = 10;
                     item.setSerialNumber(info.getInt("serial number"));
                     item.setComment(info.getString("comment"));
                     itemAdapter.notifyDataSetChanged();
-                // update datalist backup
+                    // update datalist backup
                     originalOrderDataList.clear();
                     originalOrderDataList.addAll(dataList);
                     // update total
