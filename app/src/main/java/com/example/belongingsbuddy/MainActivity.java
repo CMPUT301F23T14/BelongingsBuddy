@@ -30,14 +30,13 @@ public class MainActivity extends AppCompatActivity implements Listener{
     private TextView totalTextView;
     private FirebaseFirestore db;
     private String username;
-    private float total;
     private LinearLayout sortTypeLayout;
     private TextView sortTypeTextView;
 
     public final static int REQUEST_CODE_ADD = 1;
     public final static int REQUEST_CODE_VIEW = 2;
     public final static int REQUEST_CODE_EDIT = 3;
-
+    public final static int REQUEST_CODE_BARCODE = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,20 +72,17 @@ public class MainActivity extends AppCompatActivity implements Listener{
         dataList = new ArrayList<Item>();
 
         Item testItem1 = new Item("Chair", new Date(), "A chair",
-                "Hermann Miller", "Chair 9000", (float)200,  "I like this chair");
+                "Hermann Miller", "Chair 9000", (float) 200, "I like this chair");
         Item testItem2 = new Item("Table", new Date(), "A table",
-                "Ikea", "Table 9000", (float)400,  "I like this table");
+                "Ikea", "Table 9000", (float) 400, "I like this table");
         Item testItem3 = new Item("Lamp", new Date(), "A lamp",
-                "Amazon", "Lamp 9000", (float)50,  "I like this lamp");
+                "Amazon", "Lamp 9000", (float) 50, "I like this lamp");
         itemListView = findViewById(R.id.item_list);
         dataList.add(testItem1);
         dataList.add(testItem2);
         dataList.add(testItem3);
 
         // setup dataList copy
-        // since copy is in onCreate, user can forget to clear prev sort and itll rollback properly
-        // NOTE: when add method is complete, it will need to update this list in some onOkPressed method
-        // otherwise it will seemingly "delete" any user added entries
         originalOrderDataList = new ArrayList<Item>();
         originalOrderDataList.addAll(dataList);
 
@@ -96,14 +92,11 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
         // total
         totalTextView = findViewById(R.id.total);
-        float totalFloat = ((CustomList) itemAdapter).getTotal();
-        totalTextView.setText(String.format("$%.2f", totalFloat));
-        total = totalFloat;
+        totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
 
         // get ui objects for sort
         sortTypeLayout = findViewById(R.id.sort_type_layout);
         sortTypeTextView = findViewById(R.id.sort_type_textview);
-
 
         // click listener for items in ListView
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -163,7 +156,86 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 newFragment.show(getSupportFragmentManager(), "User Control");
             }
         });
+
+        // Set long-click listener to enter multi-select mode
+        itemListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                ((CustomList) itemAdapter).setMultiSelectMode(true); // Enter multi-select mode
+                hideMultiSelectButtons(); // Hide multi-select buttons
+
+
+                // Set an onClickListener for the delete button
+
+
+                return true;
+            }
+        });
+
+
+
+
     }
+
+    private void hideMultiSelectButtons() {
+        Button selectAllButton = findViewById(R.id.select_all_button);
+        TextView totalTextView = findViewById(R.id.total);
+        Button addButton = findViewById(R.id.add_item);
+        Button cancelButton = findViewById(R.id.cancel_button);
+        Button deleteButton = findViewById(R.id.delete_button_multiple);
+
+        selectAllButton.setVisibility(View.GONE);
+        totalTextView.setVisibility(View.GONE);
+        addButton.setVisibility(View.GONE);
+
+        cancelButton.setVisibility(View.VISIBLE);
+        deleteButton.setVisibility(View.VISIBLE);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<Item> selectedItems = ((CustomList) itemAdapter).getSelectedItems();
+
+                // Implement logic to remove selected items from your dataList
+                dataList.removeAll(selectedItems);
+
+                // Notify the adapter that the data has changed
+                itemAdapter.notifyDataSetChanged();
+                ((CustomList) itemAdapter).clearSelectedItems();
+
+                // Update the total TextView
+                totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
+
+                // Clear the selected items list
+                // Exit multi-select mode and show the original buttons
+                ((CustomList) itemAdapter).setMultiSelectMode(false);
+                showMultiSelectButtons();
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((CustomList) itemAdapter).setMultiSelectMode(false); // Exit multi-select mode
+                showMultiSelectButtons(); // Show the original buttons
+            }
+        });
+    }
+
+    private void showMultiSelectButtons() {
+        Button selectAllButton = findViewById(R.id.select_all_button);
+        TextView totalTextView = findViewById(R.id.total);
+        Button addButton = findViewById(R.id.add_item);
+        Button cancelButton = findViewById(R.id.cancel_button);
+        Button deleteButton = findViewById(R.id.delete_button_multiple);
+
+        selectAllButton.setVisibility(View.VISIBLE);
+        totalTextView.setVisibility(View.VISIBLE);
+        addButton.setVisibility(View.VISIBLE);
+        cancelButton.setVisibility(View.GONE);
+        deleteButton.setVisibility(View.GONE);
+    }
+
+
     @Override
     public void onSortOKPressed(String sortType, Boolean isAscending) {
         sortTypeLayout.setVisibility(View.VISIBLE);
@@ -225,6 +297,15 @@ public class MainActivity extends AppCompatActivity implements Listener{
         startActivityForResult(i, REQUEST_CODE_ADD);
     }
 
+    /**
+     * Creates a Scanner Activity and gives a result
+     */
+    @Override
+    public void inputBarcode(){
+        Intent i = new Intent(MainActivity.this, ScannerActivity.class);
+        startActivityForResult(i, REQUEST_CODE_BARCODE);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -256,9 +337,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     originalOrderDataList.clear();
                     originalOrderDataList.addAll(dataList);
                     // update total
-                    totalTextView = findViewById(R.id.total);
-                    total += value;
-                    totalTextView.setText(String.format("$%.2f", total));
+                    totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
                 }
                 break;
 
@@ -277,9 +356,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     originalOrderDataList.clear();
                     originalOrderDataList.addAll(dataList);
                     // update total
-                    totalTextView = findViewById(R.id.total);
-                    total -= value;
-                    totalTextView.setText(String.format("$%.2f", total));
+                    totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
                 }
             case REQUEST_CODE_EDIT:
                 if (resultCode == Activity.RESULT_OK){
@@ -306,11 +383,22 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     originalOrderDataList.clear();
                     originalOrderDataList.addAll(dataList);
                     // update total
-                    totalTextView = findViewById(R.id.total);
-                    total -= oldValue;
-                    total += item.getEstimatedValue();
-                    totalTextView.setText(String.format("$%.2f", total));
+                    totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
                 }
+                break;
+            case REQUEST_CODE_BARCODE:
+                //Add the rest of the item manually in case of incomplete data
+                String productInfo = data.getStringExtra("result");
+                Intent intent = new Intent(MainActivity.this, AddItemActivity.class);
+                intent.putExtra("productInfo", productInfo);
+                startActivityForResult(intent, REQUEST_CODE_ADD);
         }
+    }
+    public float sumItems(ArrayList<Item> dataList) {
+        float sum = 0f;
+        for (Item item: dataList) {
+            sum += item.getEstimatedValue();
+        }
+        return sum;
     }
 }
