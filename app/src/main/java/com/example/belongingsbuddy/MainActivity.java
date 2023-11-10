@@ -252,10 +252,10 @@ public final static int REQUEST_CODE_BARCODE = 10;
         switch (sortType) {
             case "date":
                 if (isAscending) {
-                    Toast.makeText(this, "SORT BY date ASC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY date ASC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getDate));
                 } else {
-                    Toast.makeText(this, "SORT BY date DESC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY date DESC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getDate).reversed());
                 }
                 sortTypeTextView.setText("Date");
@@ -263,10 +263,10 @@ public final static int REQUEST_CODE_BARCODE = 10;
                 break;
             case "desc":
                 if (isAscending) {
-                    Toast.makeText(this, "SORT BY desc ASC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY desc ASC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getDescription));
                 } else {
-                    Toast.makeText(this, "SORT BY desc DESC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY desc DESC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getDescription).reversed());
                 }
                 sortTypeTextView.setText("Description");
@@ -274,10 +274,10 @@ public final static int REQUEST_CODE_BARCODE = 10;
                 break;
             case "make":
                 if (isAscending) {
-                    Toast.makeText(this, "SORT BY make ASC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY make ASC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getMake));
                 } else {
-                    Toast.makeText(this, "SORT BY make DESC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY make DESC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getMake).reversed());
                 }
                 sortTypeTextView.setText("Make");
@@ -285,17 +285,17 @@ public final static int REQUEST_CODE_BARCODE = 10;
                 break;
             case "value":
                 if (isAscending) {
-                    Toast.makeText(this, "SORT BY value ASC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY value ASC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getEstimatedValue));
                 } else {
-                    Toast.makeText(this, "SORT BY value DESC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY value DESC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getEstimatedValue).reversed());
                 }
                 sortTypeTextView.setText("Estimated Value");
                 itemAdapter.notifyDataSetChanged();
                 break;
             case "NONE":
-                Toast.makeText(this, "No selection", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "No selection", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
