@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
     private float total;
     private LinearLayout sortTypeLayout;
     private TextView sortTypeTextView;
+    private TagManager tagManager = new TagManager();
 
     public final static int REQUEST_CODE_ADD = 1;
     public final static int REQUEST_CODE_VIEW = 2;
@@ -163,13 +164,6 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 newFragment.show(getSupportFragmentManager(), "User Control");
             }
         });
-
-        //Create Fragment by clicking tag
-        Button openTagsButton = findViewById(R.id.tag_button);
-        openTagsButton.setOnClickListener(v -> {
-            TagActivity TagFragment = new TagActivity();
-            TagFragment.show(getSupportFragmentManager(), "dialog");
-        });
     }
     @Override
     public void onSortOKPressed(String sortType, Boolean isAscending) {
@@ -229,6 +223,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
     @Override
     public void inputManually(){
         Intent i = new Intent(MainActivity.this, AddItemActivity.class);
+        i.putExtra("Manager", tagManager);
         startActivityForResult(i, REQUEST_CODE_ADD);
     }
 
@@ -249,15 +244,21 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     int day = data.getIntExtra("day", 0);
                     int month = data.getIntExtra("month", 0);
                     int year = data.getIntExtra("year", 0);
+                    ArrayList<Tag> selectedTags = (ArrayList<Tag>) data.getBundleExtra("BUNDLE").getSerializable("tagList");
                     // construct a Date object
                     Date date = new Date(day, month, year);
+
+                    Item item;
+
                     if (serialNumber == 0) {
-                        Item item = new Item(name, date, description, make, model, value, comment);
+                        item = new Item(name, date, description, make, model, value, comment);
                         dataList.add(item);
                     } else {
-                        Item item = new Item(name, date, description, make, model, value, comment, serialNumber);
+                        item = new Item(name, date, description, make, model, value, comment, serialNumber);
                         dataList.add(item);
                     }
+
+                    tagManager.setItemTags(item, selectedTags);
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup
                     originalOrderDataList.clear();

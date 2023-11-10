@@ -1,12 +1,15 @@
 package com.example.belongingsbuddy;
 
 public class Tag {
+    //String Name Associated with Tag
     private String tagName;
 
+    //Constructor
     public Tag(String tagName) {
         this.tagName = tagName;
     }
 
+    //Getters and setters
     public String getTagName() {
         return tagName;
     }
@@ -15,6 +18,7 @@ public class Tag {
         this.tagName = tagName;
     }
 
+    //Comparator override to comapre tag strings instead of objects
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -23,11 +27,13 @@ public class Tag {
         return tagName.equals(tag.tagName);
     }
 
+    //Return Name String Hash
     @Override
     public int hashCode() {
         return tagName.hashCode();
     }
 
+    //Return name string on to string
     @Override
     public String toString() {
         return tagName;

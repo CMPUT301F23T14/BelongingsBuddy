@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class AddItemActivity extends AppCompatActivity{
     private EditText value_text;
     private String comment;
     private EditText comment_text;
-    private ArrayList<Tag> tags;
+    private ArrayList<Tag> tags = new ArrayList<>();
     private ArrayList<Photo> photos;
 
     @Override
@@ -58,6 +59,17 @@ public class AddItemActivity extends AppCompatActivity{
                 newFragment.show(getSupportFragmentManager(), "Date");
 
             }
+        });
+
+        //Set Tags Implementation Dialog Frame Window
+        Button openTagsButton = findViewById(R.id.add_tags_button);
+        openTagsButton.setOnClickListener(v -> {
+            Bundle arg = new Bundle();
+            arg.putSerializable("tagManager", getIntent().getSerializableExtra("Manager"));
+            arg.putSerializable("selectedTags", tags);
+            TagActivity TagFragment = new TagActivity();
+            TagFragment.setArguments(arg);
+            TagFragment.show(getSupportFragmentManager(), "dialog");
         });
 
         // CONFIRM implementation:
@@ -146,6 +158,11 @@ public class AddItemActivity extends AppCompatActivity{
                     returnIntent.putExtra("day", date.getDay());
                     returnIntent.putExtra("month", date.getMonth());
                     returnIntent.putExtra("year", date.getYear());
+
+                    Bundle args = new Bundle();
+                    args.putSerializable("tagList",tags);
+                    returnIntent.putExtra("BUNDLE",args);
+
                     setResult(Activity.RESULT_OK,returnIntent);
                     finish();
                 }
@@ -168,5 +185,9 @@ public class AddItemActivity extends AppCompatActivity{
     private void resetPrompts(TextView[] prompts){
         for (TextView p: prompts)
             p.setBackgroundColor(getResources().getColor(R.color.light_purple));
+    }
+
+    public void setTagList(ArrayList<Tag> tagList) {
+        tags = tagList;
     }
 }
