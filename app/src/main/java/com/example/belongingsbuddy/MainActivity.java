@@ -93,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
         originalOrderDataList = new ArrayList<Item>();
         originalOrderDataList.addAll(dataList);
-        originalOrderDataList.addAll(dataList);
 
         // set up itemAdapter and itemListView
         itemAdapter = new CustomList(this, dataList);
