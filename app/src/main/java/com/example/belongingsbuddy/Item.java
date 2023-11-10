@@ -19,43 +19,8 @@ public class Item implements Serializable {
     private ArrayList<Tag> tags;
     private ArrayList<Photo> photos;
 
-
     /**
-     * Constructor for the item class
-     *
-     * @param name
-     * name of the item (String)
-     * @param date
-     * date of purchase or acquisition (Date)
-     * @param description
-     * brief description of item (String)
-     * @param make
-     * make of the Item (String)
-     * @param model
-     * model of the Item (String)
-     * @param serialNumber
-     * serial number for the Item (Integer)
-     * @param estimatedValue
-     * estimated value of the Item (Float)
-     * @param comment
-     * comment(s) about the item (String)
-     */
-    public Item(String name, Date date, String description, String make, String model,
-                Integer serialNumber,Float estimatedValue, String comment){
-        this.name = name;
-        this.date = date;
-        this.description = description;
-        this.make = make;
-        this.model = model;
-        this.serialNumber = serialNumber;
-        this.estimatedValue = estimatedValue;
-        this.comment = comment;
-        tags = new ArrayList<Tag>();
-        photos = new ArrayList<Photo>();
-    }
-
-    /**
-     * Constructor for the Item class without a provided serialNumber
+     * Constructor for the Item class (without a provided serial number)
      * @param name
      * name of Item (String)
      * @param date

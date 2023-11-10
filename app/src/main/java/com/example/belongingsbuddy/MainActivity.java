@@ -184,10 +184,6 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 return true;
             }
         });
-
-
-
-
     }
 
     private void hideMultiSelectButtons() {
@@ -226,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 totalTextView.setText(String.format("$%.2f", newTotal));
 
                 // Update the total variable
-                total = newTotal;
+                Float total = newTotal;
 
 
                 // Clear the selected items list
@@ -259,7 +255,6 @@ public class MainActivity extends AppCompatActivity implements Listener{
         cancelButton.setVisibility(View.GONE);
         deleteButton.setVisibility(View.GONE);
     }
-
 
     @Override
     public void onSortOKPressed(String sortType, Boolean isAscending) {

@@ -15,6 +15,11 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+/**
+ *  Activity for editing an Item from the user's dataList.
+ *  This class gets all the necessary input from the user and then returns that
+ *  data to the calling activity (MainActivity)
+ */
 public class EditItemActivity extends AppCompatActivity{
     private EditText name_text;
     private String name;
@@ -36,6 +41,19 @@ public class EditItemActivity extends AppCompatActivity{
     private Integer day = null;
     private Integer month = null;
     private Integer year = null;
+
+    /**
+     * Display the activity_edit_item View and wait for user input.
+     * If the user clicks the "Cancel" button, end the activity.
+     * If the user clicks "Confirm," this class verifies that all the required fields were filled out by
+     * the user, and then returns that data to the calling activity (MainActivity)
+     * NOTE: if invalid input is given and the user clicks the "Confirm" button, then this class will
+     * notify the user about any issues and wait for new user input
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,10 +96,7 @@ public class EditItemActivity extends AppCompatActivity{
             public void onClick(View v) {
                 DatePickerFragment newFragment = new DatePickerFragment();
                 newFragment.show(getSupportFragmentManager(), "Date");
-                //Integer day = newFragment.getDay();
-                //Toast.makeText(EditItemActivity.this, day.toString(), Toast.LENGTH_SHORT).show();
             }
-
         });
 
         // CONFIRM implementation:
@@ -106,6 +121,7 @@ public class EditItemActivity extends AppCompatActivity{
                 required.add(value_text);
 
                 // assert all required fields are filled out
+                // if they are not all filled out, alert the user and set valid to false
                 for (int i = 0; i < required.size(); i++){
                     if (required.get(i).getText().toString().trim().length() == 0){
                         if (valid){
@@ -117,6 +133,7 @@ public class EditItemActivity extends AppCompatActivity{
                 }
 
                 //assert a Date has been provided
+                // if it has not been provided, alert the user and set valid to false
                 if (date_text.getText().toString().equals("yyyy-mm-dd")){
                     TextView prompt = prompts[5];
                     if (valid){
@@ -130,6 +147,7 @@ public class EditItemActivity extends AppCompatActivity{
                 }
                 // all required fields have been filled out
                 if (valid){
+                    // get the updated item info
                     name = name_text.getText().toString();
                     description = description_text.getText().toString();
                     make = make_text.getText().toString();
@@ -148,6 +166,7 @@ public class EditItemActivity extends AppCompatActivity{
                     } else {
                         serialNum = Integer.parseInt(serialNum_text.getText().toString());
                     }
+                    // create returnIntent and pass needed data as extras
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("name", name);
                     returnIntent.putExtra("description", description);
@@ -177,16 +196,13 @@ public class EditItemActivity extends AppCompatActivity{
             }
         });
     }
+    /**
+     * Sets the background color of the given TextView(s) back to their original color.
+     * This is needed because they may have been previously set to red to alert the user of missing input
+     * @param prompts A list of TextViews containing all the prompts that need to be "reset"
+     */
     private void resetPrompts(TextView[] prompts){
         for (TextView p: prompts)
             p.setBackgroundColor(getResources().getColor(R.color.light_purple));
-    }
-
-    public  void getDate(Integer day, Integer month, Integer year){
-        this.day = day;
-        this.month = month;
-        this.year = year;
-        Toast.makeText(this, year.toString(), Toast.LENGTH_SHORT).show();
-
     }
 }
