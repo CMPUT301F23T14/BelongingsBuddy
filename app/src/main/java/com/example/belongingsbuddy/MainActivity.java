@@ -181,8 +181,6 @@ public final static int REQUEST_CODE_BARCODE = 10;
 
 
                 // Set an onClickListener for the delete button
-
-
                 return true;
             }
         });
@@ -212,6 +210,10 @@ public final static int REQUEST_CODE_BARCODE = 10;
                 // Notify the adapter that the data has changed
                 itemAdapter.notifyDataSetChanged();
                 ((CustomList) itemAdapter).clearSelectedItems();
+
+                // backup in case of sort
+                originalOrderDataList.clear();
+                originalOrderDataList.addAll(dataList);
 
                 // Update the total TextView
                 totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
