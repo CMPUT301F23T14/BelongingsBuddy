@@ -30,13 +30,13 @@ public class MainActivity extends AppCompatActivity implements Listener{
     private TextView totalTextView;
     private FirebaseFirestore db;
     private String username;
-    private LinearLayout sortTypeLayout;
+        private LinearLayout sortTypeLayout;
     private TextView sortTypeTextView;
 
     public final static int REQUEST_CODE_ADD = 1;
     public final static int REQUEST_CODE_VIEW = 2;
     public final static int REQUEST_CODE_EDIT = 3;
-    public final static int REQUEST_CODE_BARCODE = 10;
+public final static int REQUEST_CODE_BARCODE = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
         // click listener for items in ListView
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            /**
+/**
              * When an Item form the AdapterView is clicked on, system gets information about the
              * Item and starts a ItemViewActivity passing the Item's data as Extras
              * @param parent The AdapterView where the click happened.
@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 newFragment.show(getSupportFragmentManager(), "User Control");
             }
         });
-
+    
         // Set long-click listener to enter multi-select mode
         itemListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -211,22 +211,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 itemAdapter.notifyDataSetChanged();
                 ((CustomList) itemAdapter).clearSelectedItems();
 
-                // Recalculate the total
-                //Float value = data.getFloatExtra("value", 0);
-                float newTotal = 0;
-                for (Item item : dataList) {
-                    newTotal += item.getEstimatedValue();
-                }
-
                 // Update the total TextView
-                totalTextView.setText(String.format("$%.2f", newTotal));
-
-                // Update the total variable
-                Float total = newTotal;
-
+                totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
 
                 // Clear the selected items list
-
                 // Exit multi-select mode and show the original buttons
                 ((CustomList) itemAdapter).setMultiSelectMode(false);
                 showMultiSelectButtons();
@@ -310,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
         }
     }
 
-    /**
+/**
      * Part of the Listener interface.
      * When the user selects "Input manually" from the Scar or Manual prompt, MainActivity starts an
      * AddItemActivity
@@ -349,10 +337,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
             case REQUEST_CODE_ADD:
-                // There are 2 possible outcomes when the REQUEST_CODE_ADD requestCode is received
+// There are 2 possible outcomes when the REQUEST_CODE_ADD requestCode is received
                 // Only RESULT_OK requires further work from ActivityMain
                 if(resultCode == Activity.RESULT_OK) {
-                    // RESULT_OK indicates that all the required fields were correctly filled out
+// RESULT_OK indicates that all the required fields were correctly filled out
                     // and the user clicked "confirm"
                     // get all the data given by user
                     String name = data.getStringExtra("name");
@@ -384,30 +372,30 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 break;
 
             case REQUEST_CODE_VIEW:
-                // there are 3 possible outcomes when a REQUEST_CODE_VIEW requestCode is received
+// there are 3 possible outcomes when a REQUEST_CODE_VIEW requestCode is received
                 // only two of them require further work from MainActivity
                 if (resultCode == ItemViewActivity.REQUEST_CODE_EDIT) {
-                    // CASE 1: User clicked the "Edit" button from the ItemViewActivity screen
+// CASE 1: User clicked the "Edit" button from the ItemViewActivity screen
                     // start an EditItemActivity for the Item originally clicked
                     Intent startIntent = new Intent(MainActivity.this, EditItemActivity.class);
                     Bundle itemInfo = data.getBundleExtra("item");
                     startIntent.putExtra("item", itemInfo);
                     startActivityForResult(startIntent, REQUEST_CODE_EDIT);
                 } else if (resultCode == ItemViewActivity.REQUEST_CODE_DELETE) {
-                    // CASE 2: User clicked the "Delete" button from the ItemViewActivity screen
+// CASE 2: User clicked the "Delete" button from the ItemViewActivity screen
                     // delete the Item from the dataLIst and make other necessary changes
                     int position = data.getIntExtra("position", 0);
                     float value = dataList.get(position).getEstimatedValue();
                     dataList.remove(position);
-                    itemAdapter.notifyDataSetChanged();
-                    // update datalist backup
+                                        itemAdapter.notifyDataSetChanged();
+// update datalist backup
                     originalOrderDataList.clear();
                     originalOrderDataList.addAll(dataList);
                     // update total
                     totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
                 }
             case REQUEST_CODE_EDIT:
-                // there are 2 possible outcomes when the REQUEST_CODE_EDIT requestCode is received
+// there are 2 possible outcomes when the REQUEST_CODE_EDIT requestCode is received
                 // only one of them requires further work from ActivityMain
                 if (resultCode == Activity.RESULT_OK){
                     Bundle info = data.getExtras();
@@ -415,7 +403,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     Integer index = info.getInt("index");
                     // update info about the edited Item
                     Item item = dataList.get(index);
-                    // get old value
+// get old value
                     float oldValue = item.getEstimatedValue();
                     // update info about the edited Item
                     item.setName(info.getString("name"));
@@ -429,7 +417,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     item.setSerialNumber(info.getInt("serial number"));
                     item.setComment(info.getString("comment"));
                     itemAdapter.notifyDataSetChanged();
-                    // update datalist backup
+                // update datalist backup
                     originalOrderDataList.clear();
                     originalOrderDataList.addAll(dataList);
                     // update total
@@ -444,7 +432,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 startActivityForResult(intent, REQUEST_CODE_ADD);
         }
     }
-    private float sumItems(ArrayList<Item> dataList) {
+public float sumItems(ArrayList<Item> dataList) {
         float sum = 0f;
         for (Item item: dataList) {
             sum += item.getEstimatedValue();

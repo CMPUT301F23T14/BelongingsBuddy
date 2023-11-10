@@ -1,9 +1,7 @@
 package com.example.belongingsbuddy;
-
 /**
- * Interface implemented by MainActivity
- * Allows other classes to call methods from implemented in Listener;
- * specifies the onSortOKPressed and inputManually methods
+ * The Listener interface provides callback methods for interacting with sorting and input operations
+ * in the BelongingsBuddy application.
  */
 public interface Listener {
     void onSortOKPressed(String sortType, Boolean isAscending);
