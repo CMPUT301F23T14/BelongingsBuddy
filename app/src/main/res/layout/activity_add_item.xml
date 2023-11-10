@@ -3,6 +3,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/add_master_view"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -20,6 +21,7 @@
     </TextView>
 
     <ScrollView
+        android:id="@+id/add_scroller"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -324,16 +326,21 @@
                     android:paddingStart="10dp"
                     android:textColor="@color/black">
                 </TextView>
-
-                <EditText
+                <TextView
                     android:id="@+id/add_tags"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:hint=""
                     android:textSize="25sp"
                     android:background="@color/light_purple"
                     android:paddingVertical="10dp">
-                </EditText>
+                </TextView>
+                <Button
+                    android:id="@+id/add_tags_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+">
+                </Button>
             </LinearLayout>
 
             <LinearLayout
