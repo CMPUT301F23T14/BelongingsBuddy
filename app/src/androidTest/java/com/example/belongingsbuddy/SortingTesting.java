@@ -70,6 +70,9 @@ public class SortingTesting {
         testDateSortDesc();
     }
 
+    /**
+     * Tests if sort type is displayed for date
+     */
     // Check whether sort type is displayed
     @Test
     public void testSortDateDisplaysType() {
@@ -81,6 +84,9 @@ public class SortingTesting {
         // Check for correct string
         onView(withId(R.id.sort_type_textview)).check(matches(withText("Date")));
     }
+    /**
+     * Tests if sort type is displayed for desc
+     */
     // Check whether sort type is displayed
     @Test
     public void testSortDescDisplaysType() {
@@ -92,6 +98,9 @@ public class SortingTesting {
         // Check for correct string
         onView(withId(R.id.sort_type_textview)).check(matches(withText("Description")));
     }
+    /**
+     * Tests if sort type is displayed for make
+     */
     // Check whether sort type is displayed
     @Test
     public void testSortMakeDisplaysType() {
@@ -103,6 +112,9 @@ public class SortingTesting {
         // Check for correct string
         onView(withId(R.id.sort_type_textview)).check(matches(withText("Make")));
     }
+    /**
+     * Tests if sort type is displayed for value
+     */
     // Check whether sort type is displayed
     @Test
     public void testSortValueDisplaysType() {
@@ -115,6 +127,9 @@ public class SortingTesting {
         onView(withId(R.id.sort_type_textview)).check(matches(withText("Estimated Value")));
     }
 
+    /**
+     * Tests if rollback ui works
+     */
     // Check whether X works
     @Test
     public void testSortRollback() {
@@ -124,6 +139,9 @@ public class SortingTesting {
         onView(withText("Estimated")).check(doesNotExist());
     }
 
+    /**
+     * Tests value asc works
+     */
     // ASC
     // Check wether value sort works
     @Test
@@ -138,6 +156,9 @@ public class SortingTesting {
         onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_value)).check(matches(withText("200.0")));
         onData(is(instanceOf(Item.class))).atPosition(2).onChildView(withId(R.id.item_value)).check(matches(withText("400.0")));
     }
+    /**
+     * Tests make asc works
+     */
     // Check wether make sort works
     @Test
     public void testMakeSortAsc() {
@@ -151,6 +172,9 @@ public class SortingTesting {
         onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_name)).check(matches(withText("Chair")));
         onData(is(instanceOf(Item.class))).atPosition(2).onChildView(withId(R.id.item_name)).check(matches(withText("Table")));
     }
+    /**
+     * Tests desc asc works
+     */
     // Check wether desc sort works
     @Test
     public void testDescSortAsc() {
@@ -164,7 +188,9 @@ public class SortingTesting {
         onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_name)).check(matches(withText("Lamp")));
         onData(is(instanceOf(Item.class))).atPosition(2).onChildView(withId(R.id.item_name)).check(matches(withText("Table")));
     }
-
+    /**
+     * Tests value desc works
+     */
     // DESC
     // Check wether value sort works
     @Test
@@ -180,7 +206,9 @@ public class SortingTesting {
         onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_value)).check(matches(withText("200.0")));
         onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_value)).check(matches(withText("400.0")));
     }
-    // Check wether make sort works
+    /**
+     * Tests make desc works
+     */
     @Test
     public void testMakeSortDesc() {
         // Enter the sort screen
@@ -194,7 +222,9 @@ public class SortingTesting {
         onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_name)).check(matches(withText("Chair")));
         onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_name)).check(matches(withText("Table")));
     }
-    // Check wether desc sort works
+    /**
+     * Tests desc desc works
+     */
     @Test
     public void testDescSortDesc() {
         // Enter the sort screen
@@ -208,6 +238,9 @@ public class SortingTesting {
         onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_name)).check(matches(withText("Lamp")));
         onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_name)).check(matches(withText("Table")));
     }
+    /**
+     * Tests date asc works
+     */
 
     // Test method for adding an item and checking if the total updates
     @Test
@@ -244,6 +277,9 @@ public class SortingTesting {
         // Check if order is good
         onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_name)).check(matches(withText("TEST")));
     }
+    /**
+     * Tests value dsc works
+     */
     // Test method for adding an item and checking if the total updates
     @Test
     public void testDateSortDesc() {

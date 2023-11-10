@@ -59,12 +59,18 @@ public class TotalTest {
         testTotalDeleteLongPress();
     }
 
+    /**
+     * Tests if total is displayed
+     */
     // Test method for checking if the initial total is displayed correctly
     @Test
     public void testIsTotalThere() {
         onView(withId(R.id.total)).check(matches(withText("$650.00")));
     }
 
+    /**
+     * Tests if coorect total is displayed after add
+     */
     // Test method for adding an item and checking if the total updates
     @Test
     public void testTotalAdd() {
@@ -94,6 +100,9 @@ public class TotalTest {
         onView(withId(R.id.total)).check(matches(withText("$672.00")));
     }
 
+    /**
+     * Tests if coorect total is displayed after edit
+     */
     // Test method for editing an item and checking if the total updates
     @Test
     public void testTotalEdit() {
@@ -112,6 +121,9 @@ public class TotalTest {
         onView(withId(R.id.total)).check(matches(withText("$672.01")));
     }
 
+    /**
+     * Tests if coorect total is displayed after delete
+     */
     // Test method for deleting an item and checking if the total updates
     @Test
     public void testTotalDelete() {
@@ -124,6 +136,9 @@ public class TotalTest {
         onView(withId(R.id.total)).check(matches(withText("$472.00")));
     }
 
+    /**
+     * Tests if coorect total is displayed after delete long press
+     */
     // Test method for deleting multiple items and checking if the total updates
     @Test
     public void testTotalDeleteLongPress() {

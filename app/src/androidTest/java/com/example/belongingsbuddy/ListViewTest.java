@@ -58,7 +58,9 @@ public class ListViewTest {
         testDeleteDisplays();
         testDeleteLongPressDisplays();
     }
-
+    /**
+     * Tests if adding adds to listview
+     */
     @Test
     public void testAddDisplays() {
         // Click on the "Add" button
@@ -91,6 +93,10 @@ public class ListViewTest {
         onView(withText("APPL*E"));
     }
 
+    /**
+     * Tests if editing edits to listview
+     */
+
     // Test method for editing and displaying items
     @Test
     public void testEditDisplays() {
@@ -111,7 +117,9 @@ public class ListViewTest {
         // Check if the edited item with the name "CHEESE" is displayed
         onView(withText("CHEESE"));
     }
-
+    /**
+     * Tests if deleteing removes from listview
+     */
     // Test method for deleting items
     @Test
     public void testDeleteDisplays() {
@@ -125,7 +133,9 @@ public class ListViewTest {
         // Check if the deleted item with the name "Chair" is no longer displayed
         onView(withText("CHEESE")).check(doesNotExist());
     }
-
+    /**
+     * Tests if deleting on long press deletes from listview
+     */
     // Test method for deleting items with long press
     @Test
     public void testDeleteLongPressDisplays() {
