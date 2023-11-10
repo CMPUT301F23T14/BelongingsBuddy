@@ -1,5 +1,6 @@
 package com.example.belongingsbuddy;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
@@ -92,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements Listener{
         // otherwise it will seemingly "delete" any user added entries
 
         originalOrderDataList = new ArrayList<Item>();
-        originalOrderDataList.addAll(dataList);
         originalOrderDataList.addAll(dataList);
 
         // set up itemAdapter and itemListView
@@ -251,16 +251,21 @@ public class MainActivity extends AppCompatActivity implements Listener{
         deleteButton.setVisibility(View.GONE);
     }
 
+    /**
+     * Handles sorting of the data based on the selected sort type and order.
+     * @param sortType the type of sorting (e.g. "date", "desc", "make", "value", or "NONE")
+     * @param isAscending a boolean saying whether to sort in ascending order (true) or descending order (false)
+     */
     @Override
     public void onSortOKPressed(String sortType, Boolean isAscending) {
         sortTypeLayout.setVisibility(View.VISIBLE);
         switch (sortType) {
             case "date":
                 if (isAscending) {
-                    Toast.makeText(this, "SORT BY date ASC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY date ASC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getDate));
                 } else {
-                    Toast.makeText(this, "SORT BY date DESC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY date DESC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getDate).reversed());
                 }
                 sortTypeTextView.setText("Date");
@@ -268,10 +273,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 break;
             case "desc":
                 if (isAscending) {
-                    Toast.makeText(this, "SORT BY desc ASC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY desc ASC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getDescription));
                 } else {
-                    Toast.makeText(this, "SORT BY desc DESC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY desc DESC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getDescription).reversed());
                 }
                 sortTypeTextView.setText("Description");
@@ -279,10 +284,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 break;
             case "make":
                 if (isAscending) {
-                    Toast.makeText(this, "SORT BY make ASC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY make ASC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getMake));
                 } else {
-                    Toast.makeText(this, "SORT BY make DESC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY make DESC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getMake).reversed());
                 }
                 sortTypeTextView.setText("Make");
@@ -290,17 +295,17 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 break;
             case "value":
                 if (isAscending) {
-                    Toast.makeText(this, "SORT BY value ASC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY value ASC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getEstimatedValue));
                 } else {
-                    Toast.makeText(this, "SORT BY value DESC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY value DESC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getEstimatedValue).reversed());
                 }
                 sortTypeTextView.setText("Estimated Value");
                 itemAdapter.notifyDataSetChanged();
                 break;
             case "NONE":
-                Toast.makeText(this, "No selection", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "No selection", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -449,11 +454,17 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 startActivityForResult(intent, REQUEST_CODE_ADD);
         }
     }
-public float sumItems(ArrayList<Item> dataList) {
-        float sum = 0f;
-        for (Item item: dataList) {
-            sum += item.getEstimatedValue();
-        }
-        return sum;
+    /**
+     * Calculates the sum of estimated values of items in the given ArrayList.
+     * @param dataList the ArrayList of Items
+     * @return the sum of estimated values of items
+     * @throws NullPointerException if ArrayList is null
+     */
+    public float sumItems(@NonNull ArrayList<Item> dataList) {
+            float sum = 0f;
+            for (Item item: dataList) {
+                sum += item.getEstimatedValue();
+            }
+            return sum;
     }
 }
