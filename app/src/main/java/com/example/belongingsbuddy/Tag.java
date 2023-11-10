@@ -1,8 +1,6 @@
 package com.example.belongingsbuddy;
 
-import java.io.Serializable;
-
-public class Tag implements Serializable {
+public class Tag {
     //String Name Associated with Tag
     private String tagName;
 
