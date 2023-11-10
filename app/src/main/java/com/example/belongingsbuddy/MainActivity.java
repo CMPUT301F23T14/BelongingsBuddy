@@ -1,5 +1,6 @@
 package com.example.belongingsbuddy;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
@@ -250,6 +251,11 @@ public class MainActivity extends AppCompatActivity implements Listener{
         deleteButton.setVisibility(View.GONE);
     }
 
+    /**
+     * Handles sorting of the data based on the selected sort type and order.
+     * @param sortType the type of sorting (e.g. "date", "desc", "make", "value", or "NONE")
+     * @param isAscending a boolean saying whether to sort in ascending order (true) or descending order (false)
+     */
     @Override
     public void onSortOKPressed(String sortType, Boolean isAscending) {
         sortTypeLayout.setVisibility(View.VISIBLE);
@@ -448,11 +454,17 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 startActivityForResult(intent, REQUEST_CODE_ADD);
         }
     }
-public float sumItems(ArrayList<Item> dataList) {
-        float sum = 0f;
-        for (Item item: dataList) {
-            sum += item.getEstimatedValue();
-        }
-        return sum;
+    /**
+     * Calculates the sum of estimated values of items in the given ArrayList.
+     * @param dataList the ArrayList of Items
+     * @return the sum of estimated values of items
+     * @throws NullPointerException if ArrayList is null
+     */
+    public float sumItems(@NonNull ArrayList<Item> dataList) {
+            float sum = 0f;
+            for (Item item: dataList) {
+                sum += item.getEstimatedValue();
+            }
+            return sum;
     }
 }
