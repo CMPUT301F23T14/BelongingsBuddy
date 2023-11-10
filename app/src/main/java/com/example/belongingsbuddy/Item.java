@@ -19,7 +19,6 @@ public class Item implements Serializable {
     private ArrayList<Tag> tags;
     private ArrayList<Photo> photos;
 
-
     /**
      * Constructor for the item class
      *

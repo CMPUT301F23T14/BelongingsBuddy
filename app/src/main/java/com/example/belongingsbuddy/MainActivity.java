@@ -202,22 +202,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 itemAdapter.notifyDataSetChanged();
                 ((CustomList) itemAdapter).clearSelectedItems();
 
-                // Recalculate the total
-                //Float value = data.getFloatExtra("value", 0);
-                float newTotal = 0;
-                for (Item item : dataList) {
-                    newTotal += item.getEstimatedValue();
-                }
-
                 // Update the total TextView
-                totalTextView.setText(String.format("$%.2f", newTotal));
-
-                // Update the total variable
-                total = newTotal;
-
+                totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
 
                 // Clear the selected items list
-
                 // Exit multi-select mode and show the original buttons
                 ((CustomList) itemAdapter).setMultiSelectMode(false);
                 showMultiSelectButtons();
@@ -406,7 +394,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 startActivityForResult(intent, REQUEST_CODE_ADD);
         }
     }
-    private float sumItems(ArrayList<Item> dataList) {
+    public float sumItems(ArrayList<Item> dataList) {
         float sum = 0f;
         for (Item item: dataList) {
             sum += item.getEstimatedValue();
