@@ -17,6 +17,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+/**
+ * Activity for adding an Item to the user's dataList.
+ * This class gets all the necessary input from the user to construct a new Item and then returns that
+ * data to the calling activity (MainActivity)
+ */
 public class AddItemActivity extends AppCompatActivity{
     private Item item;
     private String name;
@@ -38,13 +43,23 @@ public class AddItemActivity extends AppCompatActivity{
     private ArrayList<Tag> tags;
     private ArrayList<Photo> photos;
 
+    /**
+     * Display the activity_add_item View and wait for user input.
+     * If the user clicks the "Cancel" button, end the activity.
+     * If the user clicks "Confirm," this class verifies that all the required fields were filled out by
+     * the user, and then returns that data to the calling activity (MainActivity)
+     * NOTE: if invalid input is given and the user clicks the "Confirm" button, then this class will
+     * notify the user about any issues and wait for new user input
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item);
-
-        // SET DATE implementation
-        Button setDate = findViewById(R.id.add_pick_date_button);
 
         //Check if there is any info from barcodes
         String productInfo = getIntent().getStringExtra("productInfo");
@@ -62,13 +77,13 @@ public class AddItemActivity extends AppCompatActivity{
             }
         }
 
-
+        // SET DATE implementation
+        Button setDate = findViewById(R.id.add_pick_date_button);
         setDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DatePickerFragment newFragment = new DatePickerFragment();
                 newFragment.show(getSupportFragmentManager(), "Date");
-
             }
         });
 
@@ -103,6 +118,7 @@ public class AddItemActivity extends AppCompatActivity{
                 required.add(value_text);
 
                 // assert all required fields are filled out
+                // if not, alert the user and set valid flag to false
                 for (int i = 0; i < required.size(); i++){
                     if (required.get(i).getText().toString().trim().length() == 0){
                         if (valid){
@@ -114,6 +130,7 @@ public class AddItemActivity extends AppCompatActivity{
                 }
 
                 //assert a Date has been provided
+                // if it has not been provided, alert the user and set value to false
                 if (date_text.getText().toString().equals("yyyy-mm-dd")){
                     TextView prompt = prompts[5];
                     if (valid){
@@ -125,7 +142,9 @@ public class AddItemActivity extends AppCompatActivity{
                     // a date has been provided
                     date = new Date(date_text.getText().toString());
                 }
-                // all required fields have been filled out
+
+                // If valid is true, then all the required fields have been filled out
+                // get user input, and pass necessary info as extras in the returnIntent
                 if (valid){
                     name = name_text.getText().toString();
                     description = description_text.getText().toString();
@@ -142,11 +161,10 @@ public class AddItemActivity extends AppCompatActivity{
                     if (TextUtils.isEmpty(serialNumber_text.getText().toString())){
                         // use the constructor without a serial number
                         serialNumber = null;
-                        //item = new Item(name, date, description, make, model, value, comment);
                     } else {
                         serialNumber = Integer.parseInt(serialNumber_text.getText().toString());
-                        //item = new Item(name, date, description, make, model, serialNumber, value, comment);
                     }
+                    // create returnIntent and pass needed data as extras
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("name", name);
                     returnIntent.putExtra("description", description);
@@ -177,6 +195,11 @@ public class AddItemActivity extends AppCompatActivity{
 
     }
 
+    /**
+     * Sets the background color of the given TextView(s) back to their original color.
+     * This is needed because they may have been previously set to red to alert the user of missing input
+     * @param prompts A list of TextViews containing all the prompts that need to be "reset"
+     */
     private void resetPrompts(TextView[] prompts){
         for (TextView p: prompts)
             p.setBackgroundColor(getResources().getColor(R.color.light_purple));
