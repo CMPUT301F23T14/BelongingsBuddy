@@ -133,7 +133,6 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 intent.putExtra("serialNum", i.getSerialNumber());
                 intent.putExtra("comment", i.getComment());
                 intent.putExtra("index", position);
-                intent.putExtra("Tags", tagManager.printItemTags(i));
                 startActivityForResult(intent, REQUEST_CODE_VIEW);
             }
         });

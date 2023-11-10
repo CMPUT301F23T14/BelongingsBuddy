@@ -28,9 +28,6 @@ public class ItemViewActivity extends AppCompatActivity {
     private TextView value;
     private TextView serialNum;
     private TextView comment;
-    private TextView tags;
-    // TextView tags;
-    // TextView photos
 
     /**
      * Display the activity_item_view View and fill the view with information about the Item
@@ -57,7 +54,6 @@ public class ItemViewActivity extends AppCompatActivity {
         value = this.findViewById(R.id.view_value);
         serialNum = this.findViewById(R.id.view_serial_number);
         comment = this.findViewById(R.id.view_comment);
-        tags = this.findViewById(R.id.view_tags);
 
         // set up the TextViews with the information from the Item
         name.setText(getIntent().getStringExtra("name"));
@@ -72,7 +68,6 @@ public class ItemViewActivity extends AppCompatActivity {
             serialNum.setText(serial.toString());
         }
         comment.setText(getIntent().getStringExtra("comment"));
-        tags.setText(getIntent().getStringExtra("Tags"));
 
 
         // BACK button implementation
