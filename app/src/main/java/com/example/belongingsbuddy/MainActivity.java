@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
     private String username;
         private LinearLayout sortTypeLayout;
     private TextView sortTypeTextView;
+    private TagManager tagManager = new TagManager();
 
     public final static int REQUEST_CODE_ADD = 1;
     public final static int REQUEST_CODE_VIEW = 2;
@@ -88,6 +89,7 @@ public final static int REQUEST_CODE_BARCODE = 10;
         // otherwise it will seemingly "delete" any user added entries
 
         originalOrderDataList = new ArrayList<Item>();
+        originalOrderDataList.addAll(dataList);
         originalOrderDataList.addAll(dataList);
 
         // set up itemAdapter and itemListView
@@ -306,6 +308,7 @@ public final static int REQUEST_CODE_BARCODE = 10;
     @Override
     public void inputManually(){
         Intent i = new Intent(MainActivity.this, AddItemActivity.class);
+        i.putExtra("Manager", tagManager);
         startActivityForResult(i, REQUEST_CODE_ADD);
     }
 
@@ -353,15 +356,23 @@ public final static int REQUEST_CODE_BARCODE = 10;
                     int day = data.getIntExtra("day", 0);
                     int month = data.getIntExtra("month", 0);
                     int year = data.getIntExtra("year", 0);
+                  
+                    ArrayList<Tag> selectedTags = (ArrayList<Tag>) data.getBundleExtra("BUNDLE").getSerializable("tagList");
+                    // construct a Date object
                     // construct a Date object (call constructors depending on whether or not a serial number was given)
                     Date date = new Date(day, month, year);
+
+                    Item item;
+
                     if (serialNumber == 0) {
-                        Item item = new Item(name, date, description, make, model, value, comment);
+                        item = new Item(name, date, description, make, model, value, comment);
                         dataList.add(item);
                     } else {
-                        Item item = new Item(name, date, description, make, model, value, comment, serialNumber);
+                        item = new Item(name, date, description, make, model, value, comment, serialNumber);
                         dataList.add(item);
                     }
+
+                    tagManager.setItemTags(item, selectedTags);
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup
                     originalOrderDataList.clear();
