@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * Date represents a date on the calendar by its year, month, and day;
- * The Class uses standerd getter and setter methods
+ * The Class uses standard getter and setter methods
  */
 public class Date implements Comparable<Date> {
     private int day;
@@ -42,19 +42,25 @@ public class Date implements Comparable<Date> {
     }
 
     /**
-     * Constructor for when a String is passed as a parameter
+     * Constructor for when a String is passed as a parameter.
      * String should be in yyyy-mm-dd format
      * @param string
-     * String in the format "yyyy-mm-dd"
-     * where 'yyyy' represents the year,
-     * 'mm' represents the month,
+     * String in the format "yyyy-mm-dd" |
+     * where 'yyyy' represents the year |
+     * 'mm' represents the month |
      * and 'dd' represents the day
      */
     protected Date (String string){
-        List<String> data = Arrays.asList(string.split("-"));
-        year = Integer.parseInt(data.get(0));
-        month = Integer.parseInt(data.get(1));
-        day = Integer.parseInt(data.get(2));
+        try{
+            List<String> data = Arrays.asList(string.split("-"));
+            year = Integer.parseInt(data.get(0));
+            month = Integer.parseInt(data.get(1));
+            day = Integer.parseInt(data.get(2));
+        }
+        catch(Exception e){
+            throw new IllegalArgumentException();
+        }
+
 
     }
 

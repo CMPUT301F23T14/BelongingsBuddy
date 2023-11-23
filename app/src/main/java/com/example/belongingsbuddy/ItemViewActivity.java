@@ -14,8 +14,7 @@ import android.widget.Toast;
 import org.w3c.dom.Text;
 
 /**
- * I started working on this before I realized I was not supposed to do it.
- * I figured to include it ¯\_(ツ)_/¯
+ * Activity for viewing the details of an Item from the user's dataList
  */
 public class ItemViewActivity extends AppCompatActivity {
     public final static int REQUEST_CODE_BACK = 1;
@@ -29,9 +28,18 @@ public class ItemViewActivity extends AppCompatActivity {
     private TextView value;
     private TextView serialNum;
     private TextView comment;
-    // TextView tags;
-    // TextView photos
 
+    /**
+     * Display the activity_item_view View and fill the view with information about the Item
+     * (this information is given to ItemViewActivity as extras in the calling Intent).
+     *  If the user clicks the "Back" button, then give REQUEST_CODE_BACK to the returnIntent
+     *  If the user clicks the "Edit" button, then give REQUEST_CODE_EDIT to the returnIntent
+     *  If the user clicks the "Delete" button, then give REQUEST_CODE_DELETE to the the returnIntent
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -1,5 +1,6 @@
 package com.example.belongingsbuddy;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
@@ -33,10 +34,14 @@ public class MainActivity extends AppCompatActivity implements Listener{
     private LinearLayout sortTypeLayout;
     private TextView sortTypeTextView;
 
+    private TagManager tagManager = new TagManager();
+
     public final static int REQUEST_CODE_ADD = 1;
     public final static int REQUEST_CODE_VIEW = 2;
     public final static int REQUEST_CODE_EDIT = 3;
     public final static int REQUEST_CODE_BARCODE = 10;
+    public static Integer lastResult = 1000;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +88,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
         dataList.add(testItem3);
 
         // setup dataList copy
+        // since copy is in onCreate, user can forget to clear prev sort and it will rollback properly
+        // NOTE: when add method is complete, it will need to update this list in some onOkPressed method
+        // otherwise it will seemingly "delete" any user added entries
+
         originalOrderDataList = new ArrayList<Item>();
         originalOrderDataList.addAll(dataList);
 
@@ -100,11 +109,20 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
         // click listener for items in ListView
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+/**
+             * When an Item form the AdapterView is clicked on, system gets information about the
+             * Item and starts a ItemViewActivity passing the Item's data as Extras
+             * @param parent The AdapterView where the click happened.
+             * @param view The view within the AdapterView that was clicked (this
+             *            will be a view provided by the adapter)
+             * @param position The position of the view in the adapter.
+             * @param id The row id of the item that was clicked.
+             */
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // get the Item being clicked
                 Item i = itemAdapter.getItem(position);
-                // setup the ItemView Activity
+                // setup the ItemViewActivity by creating a new Intent and passing Item data as extras
                 Intent intent = new Intent(MainActivity.this, ItemViewActivity.class);
                 intent.putExtra("name", i.getName());
                 intent.putExtra("date", i.getDate().getString());
@@ -156,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 newFragment.show(getSupportFragmentManager(), "User Control");
             }
         });
-
+    
         // Set long-click listener to enter multi-select mode
         itemListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -166,15 +184,9 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
 
                 // Set an onClickListener for the delete button
-
-
                 return true;
             }
         });
-
-
-
-
     }
 
     private void hideMultiSelectButtons() {
@@ -201,6 +213,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 // Notify the adapter that the data has changed
                 itemAdapter.notifyDataSetChanged();
                 ((CustomList) itemAdapter).clearSelectedItems();
+
+                // backup in case of sort
+                originalOrderDataList.clear();
+                originalOrderDataList.addAll(dataList);
 
                 // Update the total TextView
                 totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
@@ -235,17 +251,21 @@ public class MainActivity extends AppCompatActivity implements Listener{
         deleteButton.setVisibility(View.GONE);
     }
 
-
+    /**
+     * Handles sorting of the data based on the selected sort type and order.
+     * @param sortType the type of sorting (e.g. "date", "desc", "make", "value", or "NONE")
+     * @param isAscending a boolean saying whether to sort in ascending order (true) or descending order (false)
+     */
     @Override
     public void onSortOKPressed(String sortType, Boolean isAscending) {
         sortTypeLayout.setVisibility(View.VISIBLE);
         switch (sortType) {
             case "date":
                 if (isAscending) {
-                    Toast.makeText(this, "SORT BY date ASC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY date ASC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getDate));
                 } else {
-                    Toast.makeText(this, "SORT BY date DESC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY date DESC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getDate).reversed());
                 }
                 sortTypeTextView.setText("Date");
@@ -253,10 +273,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 break;
             case "desc":
                 if (isAscending) {
-                    Toast.makeText(this, "SORT BY desc ASC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY desc ASC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getDescription));
                 } else {
-                    Toast.makeText(this, "SORT BY desc DESC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY desc DESC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getDescription).reversed());
                 }
                 sortTypeTextView.setText("Description");
@@ -264,10 +284,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 break;
             case "make":
                 if (isAscending) {
-                    Toast.makeText(this, "SORT BY make ASC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY make ASC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getMake));
                 } else {
-                    Toast.makeText(this, "SORT BY make DESC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY make DESC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getMake).reversed());
                 }
                 sortTypeTextView.setText("Make");
@@ -275,27 +295,33 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 break;
             case "value":
                 if (isAscending) {
-                    Toast.makeText(this, "SORT BY value ASC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY value ASC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getEstimatedValue));
                 } else {
-                    Toast.makeText(this, "SORT BY value DESC", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "SORT BY value DESC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getEstimatedValue).reversed());
                 }
                 sortTypeTextView.setText("Estimated Value");
                 itemAdapter.notifyDataSetChanged();
                 break;
             case "NONE":
-                Toast.makeText(this, "No selection", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "No selection", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
 
-
+/**
+     * Part of the Listener interface.
+     * When the user selects "Input manually" from the Scar or Manual prompt, MainActivity starts an
+     * AddItemActivity
+     */
     @Override
     public void inputManually(){
         Intent i = new Intent(MainActivity.this, AddItemActivity.class);
+        i.putExtra("Manager", tagManager);
         startActivityForResult(i, REQUEST_CODE_ADD);
     }
+
 
     /**
      * Creates a Scanner Activity and gives a result
@@ -306,12 +332,30 @@ public class MainActivity extends AppCompatActivity implements Listener{
         startActivityForResult(i, REQUEST_CODE_BARCODE);
     }
 
+
+    /**
+     * When an Activity with a request code is completed, MainActivity deals with the result depending on
+     * the requestCode and the resultCode
+     * @param requestCode The integer request code originally supplied to
+     *                    startActivityForResult(), allowing you to identify who this
+     *                    result came from.
+     * @param resultCode The integer result code returned by the child activity
+     *                   through its setResult().
+     * @param data An Intent, which can return result data to the caller
+     *               (various data can be attached to Intent "extras").
+     *
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        lastResult = resultCode;
         switch (requestCode){
             case REQUEST_CODE_ADD:
+                // There are 2 possible outcomes when the REQUEST_CODE_ADD requestCode is received
+                // Only RESULT_OK requires further work from ActivityMain
                 if(resultCode == Activity.RESULT_OK) {
+                    // RESULT_OK indicates that all the required fields were correctly filled out
+                    // and the user clicked "confirm"
                     // get all the data given by user
                     String name = data.getStringExtra("name");
                     String description = data.getStringExtra("description");
@@ -323,15 +367,23 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     int day = data.getIntExtra("day", 0);
                     int month = data.getIntExtra("month", 0);
                     int year = data.getIntExtra("year", 0);
+                  
+                    ArrayList<Tag> selectedTags = (ArrayList<Tag>) data.getBundleExtra("BUNDLE").getSerializable("tagList");
                     // construct a Date object
+                    // construct a Date object (call constructors depending on whether or not a serial number was given)
                     Date date = new Date(day, month, year);
+
+                    Item item;
+
                     if (serialNumber == 0) {
-                        Item item = new Item(name, date, description, make, model, value, comment);
+                        item = new Item(name, date, description, make, model, value, comment);
                         dataList.add(item);
                     } else {
-                        Item item = new Item(name, date, description, make, model, value, comment, serialNumber);
+                        item = new Item(name, date, description, make, model, value, comment, serialNumber);
                         dataList.add(item);
                     }
+
+                    tagManager.setItemTags(item, selectedTags);
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup
                     originalOrderDataList.clear();
@@ -342,12 +394,18 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 break;
 
             case REQUEST_CODE_VIEW:
+                // there are 3 possible outcomes when a REQUEST_CODE_VIEW requestCode is received
+                // only two of them require further work from MainActivity
                 if (resultCode == ItemViewActivity.REQUEST_CODE_EDIT) {
+                    // CASE 1: User clicked the "Edit" button from the ItemViewActivity screen
+                    // start an EditItemActivity for the Item originally clicked
                     Intent startIntent = new Intent(MainActivity.this, EditItemActivity.class);
                     Bundle itemInfo = data.getBundleExtra("item");
                     startIntent.putExtra("item", itemInfo);
                     startActivityForResult(startIntent, REQUEST_CODE_EDIT);
                 } else if (resultCode == ItemViewActivity.REQUEST_CODE_DELETE) {
+                    // CASE 2: User clicked the "Delete" button from the ItemViewActivity screen
+                    // delete the Item from the dataLIst and make other necessary changes
                     int position = data.getIntExtra("position", 0);
                     float value = dataList.get(position).getEstimatedValue();
                     dataList.remove(position);
@@ -359,6 +417,8 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
                 }
             case REQUEST_CODE_EDIT:
+                // there are 2 possible outcomes when the REQUEST_CODE_EDIT requestCode is received
+                // only one of them requires further work from ActivityMain
                 if (resultCode == Activity.RESULT_OK){
                     Bundle info = data.getExtras();
                     // get correct Item to edit
@@ -394,11 +454,17 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 startActivityForResult(intent, REQUEST_CODE_ADD);
         }
     }
-    public float sumItems(ArrayList<Item> dataList) {
-        float sum = 0f;
-        for (Item item: dataList) {
-            sum += item.getEstimatedValue();
-        }
-        return sum;
+    /**
+     * Calculates the sum of estimated values of items in the given ArrayList.
+     * @param dataList the ArrayList of Items
+     * @return the sum of estimated values of items
+     * @throws NullPointerException if ArrayList is null
+     */
+    public float sumItems(@NonNull ArrayList<Item> dataList) {
+            float sum = 0f;
+            for (Item item: dataList) {
+                sum += item.getEstimatedValue();
+            }
+            return sum;
     }
 }
