@@ -51,16 +51,10 @@ public class Date implements Comparable<Date> {
      * and 'dd' represents the day
      */
     protected Date (String string){
-        try{
-            List<String> data = Arrays.asList(string.split("-"));
-            year = Integer.parseInt(data.get(0));
-            month = Integer.parseInt(data.get(1));
-            day = Integer.parseInt(data.get(2));
-        }
-        catch(Exception e){
-            throw new IllegalArgumentException();
-        }
-
+        List<String> data = Arrays.asList(string.split("-"));
+        year = Integer.parseInt(data.get(0));
+        month = Integer.parseInt(data.get(1));
+        day = Integer.parseInt(data.get(2));
 
     }
 

@@ -1,6 +1,5 @@
 package com.example.belongingsbuddy;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
@@ -31,17 +30,14 @@ public class MainActivity extends AppCompatActivity implements Listener{
     private TextView totalTextView;
     private FirebaseFirestore db;
     private String username;
-    private LinearLayout sortTypeLayout;
+        private LinearLayout sortTypeLayout;
     private TextView sortTypeTextView;
-
     private TagManager tagManager = new TagManager();
 
     public final static int REQUEST_CODE_ADD = 1;
     public final static int REQUEST_CODE_VIEW = 2;
     public final static int REQUEST_CODE_EDIT = 3;
-    public final static int REQUEST_CODE_BARCODE = 10;
-    public static Integer lastResult = 1000;
-
+public final static int REQUEST_CODE_BARCODE = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
         originalOrderDataList = new ArrayList<Item>();
         originalOrderDataList.addAll(dataList);
+        originalOrderDataList.addAll(dataList);
 
         // set up itemAdapter and itemListView
         itemAdapter = new CustomList(this, dataList);
@@ -133,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 intent.putExtra("serialNum", i.getSerialNumber());
                 intent.putExtra("comment", i.getComment());
                 intent.putExtra("index", position);
+                intent.putExtra("Tags", tagManager.printItemTags(i));
                 startActivityForResult(intent, REQUEST_CODE_VIEW);
             }
         });
@@ -184,6 +182,8 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
 
                 // Set an onClickListener for the delete button
+
+
                 return true;
             }
         });
@@ -213,10 +213,6 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 // Notify the adapter that the data has changed
                 itemAdapter.notifyDataSetChanged();
                 ((CustomList) itemAdapter).clearSelectedItems();
-
-                // backup in case of sort
-                originalOrderDataList.clear();
-                originalOrderDataList.addAll(dataList);
 
                 // Update the total TextView
                 totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
@@ -251,21 +247,16 @@ public class MainActivity extends AppCompatActivity implements Listener{
         deleteButton.setVisibility(View.GONE);
     }
 
-    /**
-     * Handles sorting of the data based on the selected sort type and order.
-     * @param sortType the type of sorting (e.g. "date", "desc", "make", "value", or "NONE")
-     * @param isAscending a boolean saying whether to sort in ascending order (true) or descending order (false)
-     */
     @Override
     public void onSortOKPressed(String sortType, Boolean isAscending) {
         sortTypeLayout.setVisibility(View.VISIBLE);
         switch (sortType) {
             case "date":
                 if (isAscending) {
-//                    Toast.makeText(this, "SORT BY date ASC", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "SORT BY date ASC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getDate));
                 } else {
-//                    Toast.makeText(this, "SORT BY date DESC", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "SORT BY date DESC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getDate).reversed());
                 }
                 sortTypeTextView.setText("Date");
@@ -273,10 +264,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 break;
             case "desc":
                 if (isAscending) {
-//                    Toast.makeText(this, "SORT BY desc ASC", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "SORT BY desc ASC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getDescription));
                 } else {
-//                    Toast.makeText(this, "SORT BY desc DESC", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "SORT BY desc DESC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getDescription).reversed());
                 }
                 sortTypeTextView.setText("Description");
@@ -284,10 +275,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 break;
             case "make":
                 if (isAscending) {
-//                    Toast.makeText(this, "SORT BY make ASC", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "SORT BY make ASC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getMake));
                 } else {
-//                    Toast.makeText(this, "SORT BY make DESC", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "SORT BY make DESC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getMake).reversed());
                 }
                 sortTypeTextView.setText("Make");
@@ -295,17 +286,17 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 break;
             case "value":
                 if (isAscending) {
-//                    Toast.makeText(this, "SORT BY value ASC", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "SORT BY value ASC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getEstimatedValue));
                 } else {
-//                    Toast.makeText(this, "SORT BY value DESC", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "SORT BY value DESC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getEstimatedValue).reversed());
                 }
                 sortTypeTextView.setText("Estimated Value");
                 itemAdapter.notifyDataSetChanged();
                 break;
             case "NONE":
-//                Toast.makeText(this, "No selection", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "No selection", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -348,13 +339,12 @@ public class MainActivity extends AppCompatActivity implements Listener{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        lastResult = resultCode;
         switch (requestCode){
             case REQUEST_CODE_ADD:
-                // There are 2 possible outcomes when the REQUEST_CODE_ADD requestCode is received
+// There are 2 possible outcomes when the REQUEST_CODE_ADD requestCode is received
                 // Only RESULT_OK requires further work from ActivityMain
                 if(resultCode == Activity.RESULT_OK) {
-                    // RESULT_OK indicates that all the required fields were correctly filled out
+// RESULT_OK indicates that all the required fields were correctly filled out
                     // and the user clicked "confirm"
                     // get all the data given by user
                     String name = data.getStringExtra("name");
@@ -394,30 +384,30 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 break;
 
             case REQUEST_CODE_VIEW:
-                // there are 3 possible outcomes when a REQUEST_CODE_VIEW requestCode is received
+// there are 3 possible outcomes when a REQUEST_CODE_VIEW requestCode is received
                 // only two of them require further work from MainActivity
                 if (resultCode == ItemViewActivity.REQUEST_CODE_EDIT) {
-                    // CASE 1: User clicked the "Edit" button from the ItemViewActivity screen
+// CASE 1: User clicked the "Edit" button from the ItemViewActivity screen
                     // start an EditItemActivity for the Item originally clicked
                     Intent startIntent = new Intent(MainActivity.this, EditItemActivity.class);
                     Bundle itemInfo = data.getBundleExtra("item");
                     startIntent.putExtra("item", itemInfo);
                     startActivityForResult(startIntent, REQUEST_CODE_EDIT);
                 } else if (resultCode == ItemViewActivity.REQUEST_CODE_DELETE) {
-                    // CASE 2: User clicked the "Delete" button from the ItemViewActivity screen
+// CASE 2: User clicked the "Delete" button from the ItemViewActivity screen
                     // delete the Item from the dataLIst and make other necessary changes
                     int position = data.getIntExtra("position", 0);
                     float value = dataList.get(position).getEstimatedValue();
                     dataList.remove(position);
-                    itemAdapter.notifyDataSetChanged();
-                    // update datalist backup
+                                        itemAdapter.notifyDataSetChanged();
+// update datalist backup
                     originalOrderDataList.clear();
                     originalOrderDataList.addAll(dataList);
                     // update total
                     totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
                 }
             case REQUEST_CODE_EDIT:
-                // there are 2 possible outcomes when the REQUEST_CODE_EDIT requestCode is received
+// there are 2 possible outcomes when the REQUEST_CODE_EDIT requestCode is received
                 // only one of them requires further work from ActivityMain
                 if (resultCode == Activity.RESULT_OK){
                     Bundle info = data.getExtras();
@@ -425,7 +415,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     Integer index = info.getInt("index");
                     // update info about the edited Item
                     Item item = dataList.get(index);
-                    // get old value
+// get old value
                     float oldValue = item.getEstimatedValue();
                     // update info about the edited Item
                     item.setName(info.getString("name"));
@@ -439,7 +429,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     item.setSerialNumber(info.getInt("serial number"));
                     item.setComment(info.getString("comment"));
                     itemAdapter.notifyDataSetChanged();
-                    // update datalist backup
+                // update datalist backup
                     originalOrderDataList.clear();
                     originalOrderDataList.addAll(dataList);
                     // update total
@@ -454,17 +444,11 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 startActivityForResult(intent, REQUEST_CODE_ADD);
         }
     }
-    /**
-     * Calculates the sum of estimated values of items in the given ArrayList.
-     * @param dataList the ArrayList of Items
-     * @return the sum of estimated values of items
-     * @throws NullPointerException if ArrayList is null
-     */
-    public float sumItems(@NonNull ArrayList<Item> dataList) {
-            float sum = 0f;
-            for (Item item: dataList) {
-                sum += item.getEstimatedValue();
-            }
-            return sum;
+public float sumItems(ArrayList<Item> dataList) {
+        float sum = 0f;
+        for (Item item: dataList) {
+            sum += item.getEstimatedValue();
+        }
+        return sum;
     }
 }

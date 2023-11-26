@@ -37,40 +37,20 @@ import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-// Must use testAll method otherwise firestore errors
-// sometimes it errors with firestore sync issues on first run after building app
-// run it again and it should not error out
+// CANNOT be run all at once for some reason (seems to be firestore problems)
 
-/**
- * Runs a series of tests related to adding, editing, and deleting items and its affect on total
- */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class TotalTest {
     @Rule
     public ActivityScenarioRule<MainActivity> scenario1 = new ActivityScenarioRule<>(MainActivity.class);
 
-    @Test
-    public void testAllTotal() {
-        testIsTotalThere();
-        testTotalAdd();
-        testTotalEdit();
-        testTotalDelete();
-        testTotalDeleteLongPress();
-    }
-
-    /**
-     * Tests if total is displayed
-     */
     // Test method for checking if the initial total is displayed correctly
     @Test
     public void testIsTotalThere() {
         onView(withId(R.id.total)).check(matches(withText("$650.00")));
     }
 
-    /**
-     * Tests if coorect total is displayed after add
-     */
     // Test method for adding an item and checking if the total updates
     @Test
     public void testTotalAdd() {
@@ -100,9 +80,31 @@ public class TotalTest {
         onView(withId(R.id.total)).check(matches(withText("$672.00")));
     }
 
-    /**
-     * Tests if coorect total is displayed after edit
-     */
+    // Test method for deleting an item and checking if the total updates
+    @Test
+    public void testTotalDelete() {
+        // Click on an item in the list and then click on the "Delete" button
+        onData(is(instanceOf(Item.class))).atPosition(0).perform(click());
+        onView(withId(R.id.view_belete)).perform(scrollTo());
+        onView(withId(R.id.view_belete)).perform(click());
+
+        // Check if the total updates correctly after deleting the item
+        onView(withId(R.id.total)).check(matches(withText("$450.00")));
+    }
+
+    // Test method for deleting multiple items and checking if the total updates
+    @Test
+    public void testTotalDeleteLongPress() {
+        // Long press on an item, click on checkboxes, and then click on the "Delete" button
+        onData(is(instanceOf(Item.class))).atPosition(0).perform(longClick());
+        onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.checkbox)).perform(click());
+        onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.checkbox)).perform(click());
+        onView(withId(R.id.delete_button_multiple)).perform(click());
+
+        // Check if the total updates correctly after deleting multiple items
+        onView(withId(R.id.total)).check(matches(withText("$50.00")));
+    }
+
     // Test method for editing an item and checking if the total updates
     @Test
     public void testTotalEdit() {
@@ -118,37 +120,6 @@ public class TotalTest {
         onView(withId(R.id.edit_confirm)).perform(click());
 
         // Check if the total updates correctly after editing the item
-        onView(withId(R.id.total)).check(matches(withText("$672.01")));
-    }
-
-    /**
-     * Tests if coorect total is displayed after delete
-     */
-    // Test method for deleting an item and checking if the total updates
-    @Test
-    public void testTotalDelete() {
-        // Click on an item in the list and then click on the "Delete" button
-        onData(is(instanceOf(Item.class))).atPosition(0).perform(click());
-        onView(withId(R.id.view_belete)).perform(scrollTo());
-        onView(withId(R.id.view_belete)).perform(click());
-
-        // Check if the total updates correctly after deleting the item
-        onView(withId(R.id.total)).check(matches(withText("$472.00")));
-    }
-
-    /**
-     * Tests if coorect total is displayed after delete long press
-     */
-    // Test method for deleting multiple items and checking if the total updates
-    @Test
-    public void testTotalDeleteLongPress() {
-        // Long press on an item, click on checkboxes, and then click on the "Delete" button
-        onData(is(instanceOf(Item.class))).atPosition(0).perform(longClick());
-        onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.checkbox)).perform(click());
-        onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.checkbox)).perform(click());
-        onView(withId(R.id.delete_button_multiple)).perform(click());
-
-        // Check if the total updates correctly after deleting multiple items
-        onView(withId(R.id.total)).check(matches(withText("$22.00")));
+        onView(withId(R.id.total)).check(matches(withText("$650.01")));
     }
 }
