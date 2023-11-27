@@ -34,7 +34,7 @@ public class AddItemActivity extends AppCompatActivity{
     private EditText make_text;
     private String model;
     private EditText model_text;
-    private Integer serialNumber;
+    private String serialNumber;
     private EditText serialNumber_text;
     private Float value;
     private EditText value_text;
@@ -179,7 +179,7 @@ public class AddItemActivity extends AppCompatActivity{
                         // use the constructor without a serial number
                         serialNumber = null;
                     } else {
-                        serialNumber = Integer.parseInt(serialNumber_text.getText().toString());
+                        serialNumber = serialNumber_text.getText().toString();
                     }
                     // create returnIntent and pass needed data as extras
                     Intent returnIntent = new Intent();

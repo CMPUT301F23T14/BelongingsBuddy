@@ -13,7 +13,7 @@ public class Item implements Serializable {
     private String description;
     private String make;
     private String model;
-    private Integer serialNumber;
+    private String serialNumber;
     private Float estimatedValue;
     private String comment;
     private ArrayList<Tag> tags;
@@ -70,7 +70,7 @@ public class Item implements Serializable {
      * serial number of item (Integer)
      */
     public Item(String name, Date date, String description, String make, String model,
-                Float estimatedValue, String comment, Integer serialNumber){
+                Float estimatedValue, String comment, String serialNumber){
         this.name = name;
         this.date = date;
         this.description = description;
@@ -122,11 +122,11 @@ public class Item implements Serializable {
         this.model = model;
     }
 
-    public Integer getSerialNumber() {
+    public String getSerialNumber() {
         return serialNumber;
     }
 
-    public void setSerialNumber(Integer serialNumber) {
+    public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
     }
 
