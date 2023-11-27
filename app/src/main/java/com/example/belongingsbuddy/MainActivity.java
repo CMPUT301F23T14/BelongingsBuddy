@@ -368,7 +368,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     String model = data.getStringExtra("model");
                     Float value = data.getFloatExtra("value", 0);
                     String comment = data.getStringExtra("comment");
-                    int serialNumber = data.getIntExtra("serial number", 0);
+                    String serialNumber = data.getStringExtra("serial number");
                     int day = data.getIntExtra("day", 0);
                     int month = data.getIntExtra("month", 0);
                     int year = data.getIntExtra("year", 0);
@@ -380,7 +380,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
                     Item item;
 
-                    if (serialNumber == 0) {
+                    if (serialNumber.equals("")) {
                         item = new Item(name, date, description, make, model, value, comment);
                         dataList.add(item);
                     } else {
@@ -443,7 +443,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     item.setMake(info.getString("make"));
                     item.setModel(info.getString("model"));
                     item.setEstimatedValue(info.getFloat("value"));
-                    item.setSerialNumber(info.getInt("serial number"));
+                    item.setSerialNumber(info.getString("serial number"));
                     item.setComment(info.getString("comment"));
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup
@@ -456,8 +456,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
             case REQUEST_CODE_BARCODE:
                 //Add the rest of the item manually in case of incomplete data
                 String productInfo = data.getStringExtra("result");
+                String serialnum = data.getStringExtra("serial");
                 Intent intent = new Intent(MainActivity.this, AddItemActivity.class);
                 intent.putExtra("productInfo", productInfo);
+                intent.putExtra("serial", serialnum);
                 startActivityForResult(intent, REQUEST_CODE_ADD);
         }
     }
