@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
     private ArrayAdapter<Item> itemAdapter;
     private TextView totalTextView;
     private FirebaseFirestore db;
+    private CollectionReference user_collection;
     private String username;
     private LinearLayout sortTypeLayout;
     private TextView sortTypeTextView;
@@ -70,10 +71,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
         String uID = "";
         if (auth.getCurrentUser() != null) {
             uID = auth.getCurrentUser().getUid();
-            CollectionReference user_collection = db.collection(uID); // collection name MUST be the FirestoreAuth uID
+            user_collection = db.collection(uID); // collection name MUST be the FirestoreAuth uID
         }
 
-        // First: set up dataList, itemListView, and itemAdapter
+       /* // First: set up dataList, itemListView, and itemAdapter
         dataList = new ArrayList<Item>();
 
         Item testItem1 = new Item("Chair", new Date(), "A chair",
@@ -86,6 +87,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
         dataList.add(testItem1);
         dataList.add(testItem2);
         dataList.add(testItem3);
+
+        // add items to database
+        testItem1.addToDatabase(user_collection);
+        testItem2.addToDatabase(user_collection);*/
 
         // setup dataList copy
         // since copy is in onCreate, user can forget to clear prev sort and it will rollback properly
@@ -382,6 +387,8 @@ public class MainActivity extends AppCompatActivity implements Listener{
                         item = new Item(name, date, description, make, model, value, comment, serialNumber);
                         dataList.add(item);
                     }
+                    // add Item to FireStore database
+                    item.addToDatabase(user_collection);
 
                     tagManager.setItemTags(item, selectedTags);
                     itemAdapter.notifyDataSetChanged();

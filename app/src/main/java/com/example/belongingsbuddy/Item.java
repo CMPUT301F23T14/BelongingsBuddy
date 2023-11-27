@@ -1,10 +1,13 @@
 package com.example.belongingsbuddy;
 
+import com.google.firebase.firestore.CollectionReference;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
- * an instance of this class represent an Item that will be put the app will add to the inventory
+ * an instance of this class represent an Item that the app will add to the inventory
  * the class uses standard setter and getter methods
  */
 public class Item implements Serializable {
@@ -179,4 +182,15 @@ public class Item implements Serializable {
     public  void addPhoto(Photo p){
         photos.add(p);
     }
+
+    /**
+     * Add the Item to the FireStore CollectionReference passed in as a parameter
+     * @param collection Firestore CollectionReference the Item is being added to
+     */
+    public void addToDatabase(CollectionReference collection){
+        collection.document(this.name).set(this);
+    }
+
 }
+
+
