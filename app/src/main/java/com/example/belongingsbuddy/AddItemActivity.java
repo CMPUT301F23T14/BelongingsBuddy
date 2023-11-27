@@ -63,18 +63,24 @@ public class AddItemActivity extends AppCompatActivity{
 
         //Check if there is any info from barcodes
         String productInfo = getIntent().getStringExtra("productInfo");
-        if (productInfo != null) {
+        String serialnum = getIntent().getStringExtra("serial");
+        if (productInfo != null && !productInfo.equals("failure")) {
             try {
                 JSONObject productJSON = new JSONObject(productInfo);
                 description_text = findViewById(R.id.add_description);
-
                 if (productJSON.has("description")) {
                     String initialText = productJSON.getString("description");
                     description_text.setText(initialText.replace(" (from barcode.monster)", ""));
                 }
             } catch (JSONException e) {
-                throw new RuntimeException(e);
             }
+        }
+        else if (productInfo != null && productInfo == "failure") {
+            Toast.makeText(this, "Failed to connect to barcode monster API", Toast.LENGTH_SHORT).show();
+        }
+        if (serialnum != null) {
+            serialNumber_text = findViewById(R.id.add_serial_number);
+            serialNumber_text.setText(serialnum);
         }
 
         // SET DATE implementation
