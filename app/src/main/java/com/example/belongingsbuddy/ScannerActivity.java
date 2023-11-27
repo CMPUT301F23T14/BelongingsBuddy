@@ -118,5 +118,72 @@ public class ScannerActivity extends CameraActivity implements CameraCreationLis
     public void onCameraCreationFailure() {
         finish();
     }
+
+    /**
+     * Calls google ML kit and tries to find a barcode.
+     * Calls lookupBarcode if found
+     * @param mediaImage The image to search for barcodes
+     * @param imageProxy An imageproxy with data for the mediaImage
+     */
+    protected void detectBarcode(Image mediaImage, ImageProxy imageProxy) {
+
+        InputImage image = InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
+        Task<List<Barcode>> result = scanner.process(image)
+                .addOnSuccessListener(barcodes -> {
+                    //check if barcode is found
+                    if (barcodes.size() != 0) {
+                        String code = barcodes.get(0).getDisplayValue();
+                        lookupBarcode(code);
+                    }
+
+                })
+                .addOnFailureListener(e -> {
+                        }
+                );
+    }
+
+    /**
+     * Calls barcode.monster api to get info from the barcode,
+     * ends the activity on success
+     * @param code The code to search the api for
+     */
+    protected void lookupBarcode(String code) {
+        //Stops us from having 2 concurrent api calls
+        if (!isRequestInProgress) {
+            isRequestInProgress = true;
+            //Use a new thread to avoid errors
+            Toast.makeText(this, "Barcode Found, please wait for API to lookup barcode", Toast.LENGTH_SHORT).show();
+            new Thread(() -> {
+                //setup for api call
+                OkHttpClient client = new OkHttpClient();
+                Request request = new Request.Builder()
+                        .url("https://barcode.monster/api/" + code)
+                        .get()
+                        .build();
+                try {
+                    Response response = client.newCall(request).execute();
+                    //get info from the succesful response
+                    String jsonContent = response.body().string();
+                    Intent intent = new Intent();
+                    intent.putExtra("result", jsonContent);
+                    intent.putExtra("serial", code);
+                    setResult(Activity.RESULT_OK, intent);
+                    finish();
+                } catch (IOException e) {
+                    Intent intent = new Intent();
+                    intent.putExtra("result", "failure");
+                    intent.putExtra("serial", code);
+                    setResult(Activity.RESULT_OK, intent);
+                    finish();
+                } finally {
+                    // The request is complete, so set the flag to false to allow future requests
+                    isRequestInProgress = false;
+                }
+            }).start();
+        } else {
+            // A request is already in progress; you can choose to skip or queue this request, or handle it in another way.
+            System.out.println("Request in progress. Skipping this request.");
+        }
+    }
 }
 
