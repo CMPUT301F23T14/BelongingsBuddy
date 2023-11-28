@@ -228,6 +228,12 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 // Implement logic to remove selected items from your dataList
                 dataList.removeAll(selectedItems);
 
+                // Remove Items from FireStore collection
+                for (Item i: selectedItems) {
+                    user_collection.document(i.getName()).delete();
+
+
+                }
                 // Notify the adapter that the data has changed
                 itemAdapter.notifyDataSetChanged();
                 ((CustomList) itemAdapter).clearSelectedItems();
