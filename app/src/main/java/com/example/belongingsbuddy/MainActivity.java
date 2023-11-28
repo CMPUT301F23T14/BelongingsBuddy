@@ -28,6 +28,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 
 import javax.annotation.Nullable;
 
@@ -399,7 +400,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
                     Item item;
 
-                    if (serialNumber.equals("")) {
+                    if (serialNumber == null) {
                         item = new Item(name, date, description, make, model, value, comment);
                         dataList.add(item);
                     } else {
@@ -409,7 +410,11 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     // add Item to FireStore database
                     item.addToDatabase(user_collection);
 
-                    tagManager.setItemTags(item, selectedTags);
+//                    ArrayList tagSet = new ArrayList();
+//                    tagSet.add(new Tag("tag"));
+//
+//                    tagManager.setItemTags(item, tagSet);
+//                    tagManager.AddItem(item);
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup
                     originalOrderDataList.clear();
