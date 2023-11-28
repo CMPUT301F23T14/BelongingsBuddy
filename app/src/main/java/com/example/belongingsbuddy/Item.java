@@ -1,6 +1,10 @@
 package com.example.belongingsbuddy;
 
+import android.widget.Toast;
+
 import com.google.firebase.firestore.CollectionReference;
+
+import org.checkerframework.checker.units.qual.C;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -84,6 +88,13 @@ public class Item implements Serializable {
         this.comment = comment;
         tags = new ArrayList<Tag>();
         photos = new ArrayList<Photo>();
+    }
+
+    /**
+     * public constructor that takes no parameters.
+     * This is used to load items from FireStore collection
+     */
+    public Item(){
     }
     public String getName() {
         return name;
@@ -188,6 +199,11 @@ public class Item implements Serializable {
      * @param collection Firestore CollectionReference the Item is being added to
      */
     public void addToDatabase(CollectionReference collection){
+        collection.document(this.name).set(this);
+    }
+
+    public void updateInDatabase(CollectionReference collection, String oldName){
+        collection.document(oldName).delete();
         collection.document(this.name).set(this);
     }
 

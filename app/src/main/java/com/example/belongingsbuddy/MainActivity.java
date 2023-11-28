@@ -7,6 +7,7 @@ import androidx.fragment.app.DialogFragment;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -16,12 +17,19 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+
+import javax.annotation.Nullable;
 
 public class MainActivity extends AppCompatActivity implements Listener{
     private ArrayList<Item> dataList;
@@ -74,29 +82,12 @@ public class MainActivity extends AppCompatActivity implements Listener{
             user_collection = db.collection(uID); // collection name MUST be the FirestoreAuth uID
         }
 
-       /* // First: set up dataList, itemListView, and itemAdapter
+        // First: set up dataList, itemListView, and itemAdapter
         dataList = new ArrayList<Item>();
-
-        Item testItem1 = new Item("Chair", new Date(), "A chair",
-                "Hermann Miller", "Chair 9000", (float) 200, "I like this chair");
-        Item testItem2 = new Item("Table", new Date(), "A table",
-                "Ikea", "Table 9000", (float) 400, "I like this table");
-        Item testItem3 = new Item("Lamp", new Date(), "A lamp",
-                "Amazon", "Lamp 9000", (float) 50, "I like this lamp");
         itemListView = findViewById(R.id.item_list);
-        dataList.add(testItem1);
-        dataList.add(testItem2);
-        dataList.add(testItem3);
-
-        // add items to database
-        testItem1.addToDatabase(user_collection);
-        testItem2.addToDatabase(user_collection);*/
 
         // setup dataList copy
         // since copy is in onCreate, user can forget to clear prev sort and it will rollback properly
-        // NOTE: when add method is complete, it will need to update this list in some onOkPressed method
-        // otherwise it will seemingly "delete" any user added entries
-
         originalOrderDataList = new ArrayList<Item>();
         originalOrderDataList.addAll(dataList);
 
@@ -104,9 +95,31 @@ public class MainActivity extends AppCompatActivity implements Listener{
         itemAdapter = new CustomList(this, dataList);
         itemListView.setAdapter(itemAdapter);
 
-        // total
-        totalTextView = findViewById(R.id.total);
-        totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
+        // load Items from user's collection on FireStore and add those items to dataList
+        user_collection.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot querySnapshots,
+                                @Nullable FirebaseFirestoreException error) {
+                if (error != null){
+                    Log.e("Firestore", error.toString());
+                    return;
+                }
+                if (querySnapshots != null){
+                    dataList.clear();
+                    for (QueryDocumentSnapshot doc: querySnapshots) {
+                        Item item = doc.toObject(Item.class);
+                        dataList.add(item);
+                    }
+                    itemAdapter.notifyDataSetChanged();
+                    // set total
+                    // total
+                    totalTextView = findViewById(R.id.total);
+                    totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
+                }
+            }
+        });
+
+
 
         // get ui objects for sort
         sortTypeLayout = findViewById(R.id.sort_type_layout);
@@ -315,7 +328,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
         }
     }
 
-/**
+    /**
      * Part of the Listener interface.
      * When the user selects "Input manually" from the Scar or Manual prompt, MainActivity starts an
      * AddItemActivity
@@ -412,10 +425,12 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     startActivityForResult(startIntent, REQUEST_CODE_EDIT);
                 } else if (resultCode == ItemViewActivity.REQUEST_CODE_DELETE) {
                     // CASE 2: User clicked the "Delete" button from the ItemViewActivity screen
-                    // delete the Item from the dataLIst and make other necessary changes
+                    // delete the Item from the dataList and make other necessary changes
                     int position = data.getIntExtra("position", 0);
                     float value = dataList.get(position).getEstimatedValue();
                     dataList.remove(position);
+                    // remove Item from FireStore collection
+                    user_collection.document(dataList.get(position).getName()).delete();
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup
                     originalOrderDataList.clear();
@@ -432,6 +447,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     Integer index = info.getInt("index");
                     // update info about the edited Item
                     Item item = dataList.get(index);
+                    String oldName = item.getName();
                     // get old value
                     float oldValue = item.getEstimatedValue();
                     // update info about the edited Item
@@ -449,6 +465,8 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     // update datalist backup
                     originalOrderDataList.clear();
                     originalOrderDataList.addAll(dataList);
+                    // update item in FireStore
+                    item.updateInDatabase(user_collection, oldName);
                     // update total
                     totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
                 }
