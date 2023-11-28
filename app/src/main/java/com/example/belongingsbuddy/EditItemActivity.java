@@ -62,10 +62,14 @@ public class EditItemActivity extends AppCompatActivity {
     private Integer day = null;
     private Integer month = null;
     private Integer year = null;
-    private static final int PICK_IMAGES_REQUEST_CODE = 1;
 
+    // photo stuff !
+    private static final int PICK_IMAGES_REQUEST_CODE = 1;
     private ArrayList<Photo> selectedImages = new ArrayList<>();
     private ArrayList<Photo> savedImages = new ArrayList<>();
+    private ArrayList<Uri> imageURIs = new ArrayList<Uri>();
+
+
 
     /**
      * Display the activity_edit_item View and wait for user input.
@@ -221,7 +225,16 @@ public class EditItemActivity extends AppCompatActivity {
                     setResult(Activity.RESULT_OK, returnIntent);
 
                     // TODO: ACTUALLY PUT PHOTO CODE HERE OOPS
-
+                    // Defining the child of storageReference
+                    StorageReference ref
+                            = storageReference
+                            .child(
+                                    "images/"
+                                            + UUID.randomUUID().toString());
+                    for (int i = 0; i < imageURIs.size(); i++) {
+                        // upload file 2 cloud storage :3
+                        ref.putFile(imageURIs.get(i));
+                    }
 
                     finish();
                 }
@@ -326,7 +339,8 @@ public class EditItemActivity extends AppCompatActivity {
                     for (int i = 0; i < clipData.getItemCount(); i++) {
                         ClipData.Item item = clipData.getItemAt(i);
                         Uri uri = item.getUri();
-                        
+                        imageURIs.add(uri);
+
 
                         // Load the image from the Uri
                         Bitmap imageBitmap = loadImageFromUri(uri);
@@ -338,19 +352,12 @@ public class EditItemActivity extends AppCompatActivity {
                             selectedImages.add(new Photo(uri, imageBitmap));
                         }
 
-                        // Defining the child of storageReference
-                        StorageReference ref
-                                = storageReference
-                                .child(
-                                        "images/"
-                                                + UUID.randomUUID().toString());
 
-                        // upload file 2 cloud storage :3
-                        ref.putFile(uri);
                     }
                 } else {
                     // Single image selected
                     Uri uri = data.getData();
+                    imageURIs.add(uri);
 
                     // Load the image from the Uri
                     Bitmap imageBitmap = loadImageFromUri(uri);
