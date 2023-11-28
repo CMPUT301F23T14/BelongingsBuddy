@@ -10,4 +10,5 @@
     <color name="light_purple2">#DDBDFD</color>
     <color name="light_red">#F17878</color>
     <color name="light_green">#B4F1BE</color>
+    <color name="login_background">#E8D8A8</color>
 </resources>
