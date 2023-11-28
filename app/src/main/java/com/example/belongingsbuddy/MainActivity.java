@@ -316,6 +316,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
         }
     }
 
+    @Override
+    public void onFilterOkPressed() {
+    }
+
 /**
      * Part of the Listener interface.
      * When the user selects "Input manually" from the Scar or Manual prompt, MainActivity starts an

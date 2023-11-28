@@ -129,9 +129,10 @@ public class FilterItemsFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 // get all text written into edit texts
-                String keywords = selectedKeywords.getText().toString();
-                String makes = selectedMakes.getText().toString();
-                String tags = selectedTags.getText().toString();
+                String[] keywords = selectedKeywords.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
+                String[] makes = selectedMakes.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
+                String[] tags = selectedTags.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
+                listener.onFilterOkPressed();
                 dialog.dismiss();
             }
         });
