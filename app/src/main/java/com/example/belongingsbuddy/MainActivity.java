@@ -162,6 +162,12 @@ public class MainActivity extends AppCompatActivity implements Listener{
             new SortItemsFragment().show(getSupportFragmentManager(), "Sort Item:");
         });
 
+        // click listener for filter:
+        final Button filterButton = findViewById(R.id.filter_button);
+        filterButton.setOnClickListener(v -> {
+            new FilterItemsFragment().show(getSupportFragmentManager(), "Filter Item:");
+        });
+
         // create dialog from clicking username
         username_button.setOnClickListener(new View.OnClickListener() {
             @Override
