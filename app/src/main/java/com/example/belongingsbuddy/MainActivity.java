@@ -22,6 +22,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 
 public class MainActivity extends AppCompatActivity implements Listener{
     private ArrayList<Item> dataList;
@@ -375,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
                     Item item;
 
-                    if (serialNumber.equals("")) {
+                    if (serialNumber == null) {
                         item = new Item(name, date, description, make, model, value, comment);
                         dataList.add(item);
                     } else {
@@ -383,7 +384,11 @@ public class MainActivity extends AppCompatActivity implements Listener{
                         dataList.add(item);
                     }
 
-                    tagManager.setItemTags(item, selectedTags);
+//                    ArrayList tagSet = new ArrayList();
+//                    tagSet.add(new Tag("tag"));
+//
+//                    tagManager.setItemTags(item, tagSet);
+//                    tagManager.AddItem(item);
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup
                     originalOrderDataList.clear();
