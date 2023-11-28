@@ -5,14 +5,13 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.fragment.app.DialogFragment;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
@@ -20,8 +19,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
-
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -83,8 +80,10 @@ public class FilterItemsFragment extends DialogFragment {
         dialog.setContentView(view);
 
         // get ui elements
-        TextView selectedDate = view.findViewById(R.id.add_date_filter);
-        TextView selectedKeywords = view.findViewById(R.id.filter_keywords);
+        TextView selectedDate = view.findViewById(R.id.filter_selected_dates);
+        EditText selectedKeywords = view.findViewById(R.id.filter_selected_keywords);
+        EditText selectedMakes = view.findViewById(R.id.filter_selected_makes);
+        EditText selectedTags = view.findViewById(R.id.filter_selected_tags);
 
         // click listeners for buttons
         // date
@@ -124,36 +123,15 @@ public class FilterItemsFragment extends DialogFragment {
             }
         });
 
-//        // desc
-//        Button desc = view.findViewById(R.id.filter_add_keyword);
-//        desc.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                sortType = "desc";
-//            }
-//        });
-//        // make
-//        Button make = view.findViewById(R.id.filter_make);
-//        make.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-////                sortType = "make";
-//            }
-//        });
-//        // value
-////        Button value = view.findViewById(R.id.filter_tag);
-//        value.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-////                sortType = "value";
-//            }
-//        });
         // ok
         Button ok = view.findViewById(R.id.filter_ok);
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                listener.onSortOKPressed(sortType, isAscending);
+                // get all text written into edit texts
+                String keywords = selectedKeywords.getText().toString();
+                String makes = selectedMakes.getText().toString();
+                String tags = selectedTags.getText().toString();
                 dialog.dismiss();
             }
         });
