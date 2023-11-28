@@ -96,6 +96,31 @@
         </Button>
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/filter_type_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/filter_type_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:textSize="20dp">
+        </TextView>
+
+        <Button
+            android:id="@+id/filter_type_rollback"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="X"
+            android:textSize="30dp">
+        </Button>
+    </LinearLayout>
+
     <ListView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -140,7 +165,8 @@
             android:clickable="true"
             android:focusable="true"
             android:text="+"
-            android:textSize="30dp"></Button>
+            android:textSize="30dp">
+        </Button>
 
 
     </LinearLayout>
