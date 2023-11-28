@@ -97,7 +97,8 @@ public class AddItemActivity extends AppCompatActivity{
         Button openTagsButton = findViewById(R.id.add_tags_button);
         openTagsButton.setOnClickListener(v -> {
             Bundle arg = new Bundle();
-            arg.putSerializable("tagManager", getIntent().getSerializableExtra("Manager"));
+            Intent i = getIntent();
+            arg.putSerializable("tagManager", i.getSerializableExtra("Manager"));
             arg.putSerializable("selectedTags", tags);
             TagActivity TagFragment = new TagActivity();
             TagFragment.setArguments(arg);
