@@ -3,11 +3,14 @@ package com.example.belongingsbuddy;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,6 +65,8 @@ public class ItemViewActivity extends AppCompatActivity {
         comment.setText(getIntent().getStringExtra("comment"));
 
 
+
+
         // BACK button implementation
         final Button backButton = findViewById(R.id.view_back);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -98,4 +103,6 @@ public class ItemViewActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }
