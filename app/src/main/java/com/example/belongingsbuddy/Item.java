@@ -82,7 +82,7 @@ public class Item implements Serializable {
         this.estimatedValue = estimatedValue;
         this.comment = comment;
         tags = new ArrayList<Tag>();
-        photos = new ArrayList<Photo>();
+        this.photos = new ArrayList<Photo>();
     }
 
     /**

@@ -5,7 +5,11 @@ import androidx.fragment.app.DialogFragment;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -77,6 +81,14 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 "Ikea", "Table 9000", (float) 400, "I like this table");
         Item testItem3 = new Item("Lamp", new Date(), "A lamp",
                 "Amazon", "Lamp 9000", (float) 50, "I like this lamp");
+        Photo placeholderPhoto = createPlaceholderPhoto();
+
+// Add the placeholder photo to the item
+        testItem3.addPhoto(placeholderPhoto);
+
+
+
+        //testItem3.addPhoto();
         itemListView = findViewById(R.id.item_list);
         dataList.add(testItem1);
         dataList.add(testItem2);
@@ -213,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 totalTextView.setText(String.format("$%.2f", newTotal));
 
                 // Update the total variable
-                total = newTotal;
+                //total = newTotal;
 
 
                 // Clear the selected items list
@@ -246,8 +258,23 @@ public class MainActivity extends AppCompatActivity implements Listener{
         cancelButton.setVisibility(View.GONE);
         deleteButton.setVisibility(View.GONE);
     }
+    private Photo createPlaceholderPhoto() {
+        // Create a placeholder image
+        Bitmap placeholderBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        placeholderBitmap.eraseColor(getResources().getColor(android.R.color.darker_gray));
+
+        // Create and return a Photo instance with a placeholder URI and bitmap
+        return new Photo(null, placeholderBitmap);    }
 
 
+
+
+
+    /**
+     * Handles sorting of the data based on the selected sort type and order.
+     * @param sortType the type of sorting (e.g. "date", "desc", "make", "value", or "NONE")
+     * @param isAscending a boolean saying whether to sort in ascending order (true) or descending order (false)
+     */
     @Override
     public void onSortOKPressed(String sortType, Boolean isAscending) {
         sortTypeLayout.setVisibility(View.VISIBLE);
