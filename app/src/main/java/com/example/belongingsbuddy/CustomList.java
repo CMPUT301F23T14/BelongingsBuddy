@@ -1,5 +1,6 @@
 package com.example.belongingsbuddy;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,9 +83,14 @@ public class CustomList extends ArrayAdapter<Item> {
         Item item = items.get(position);
         TextView itemName = view.findViewById(R.id.item_name);
         TextView itemValue = view.findViewById(R.id.item_value);
+        TextView itemModel = view.findViewById(R.id.item_model);
+        TextView itemMake = view.findViewById(R.id.item_make);
 
         itemName.setText(item.getName());
-        itemValue.setText(item.getEstimatedValue().toString());
+        @SuppressLint("DefaultLocale") String value = String.format("$%.2f", item.getEstimatedValue());
+        itemValue.setText(value);
+        itemModel.setText(item.getModel());
+        itemMake.setText(item.getMake());
         CheckBox checkBox = view.findViewById(R.id.checkbox);
         // Hide checkboxes by default
         checkBox.setVisibility(multiSelectMode ? View.VISIBLE : View.GONE);
