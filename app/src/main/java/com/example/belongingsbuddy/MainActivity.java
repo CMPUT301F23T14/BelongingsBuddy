@@ -156,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 intent.putExtra("serialNum", i.getSerialNumber());
                 intent.putExtra("comment", i.getComment());
                 intent.putExtra("index", position);
+                intent.putExtra("tags", tagManager.printItemTags(i));
                 startActivityForResult(intent, REQUEST_CODE_VIEW);
             }
         });
@@ -183,6 +184,16 @@ public class MainActivity extends AppCompatActivity implements Listener{
         final Button sortButton = findViewById(R.id.sort_button);
         sortButton.setOnClickListener(v -> {
             new SortItemsFragment().show(getSupportFragmentManager(), "Sort Item:");
+        });
+
+        // click listener for tag creation
+        final Button tagButton = findViewById(R.id.tag_button);
+        tagButton.setOnClickListener(v -> {
+            Bundle arg = new Bundle();
+            arg.putSerializable("Manager", tagManager);
+            CreateTagActivity TagFragment = new CreateTagActivity();
+            TagFragment.setArguments(arg);
+            TagFragment.show(getSupportFragmentManager(), "createTagDialog");
         });
 
         // create dialog from clicking username
@@ -416,8 +427,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
 //                    ArrayList tagSet = new ArrayList();
 //                    tagSet.add(new Tag("tag"));
-//
-//                    tagManager.setItemTags(item, tagSet);
+                    tagManager.setItemTags(item, selectedTags);
 //                    tagManager.AddItem(item);
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup
