@@ -23,7 +23,8 @@
     <ScrollView
         android:id="@+id/add_scroller"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -370,41 +371,42 @@
                 </Button>
 
             </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginHorizontal="20dp">
-
-                <Button
-                    android:id="@+id/add_cancel"
-                    android:clickable="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="CANCEL"
-                    android:backgroundTint="@color/light_red"
-                    android:textColor="@color/black"
-                    android:layout_gravity="center"
-                    android:layout_weight="0.5"
-                    android:focusable="true">
-                </Button>
-
-                <Button
-                    android:id="@+id/add_confirm"
-                    android:clickable="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="CONFIRM"
-                    android:backgroundTint="@color/light_green"
-                    android:textColor="@color/black"
-                    android:layout_gravity="center"
-                    android:layout_weight="0.5"
-                    android:focusable="true">
-                </Button>
-
-            </LinearLayout>
         </LinearLayout>
     </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="20dp"
+        android:layout_weight="0">
+
+        <Button
+            android:id="@+id/add_cancel"
+            android:clickable="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CANCEL"
+            android:backgroundTint="@color/light_red"
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            android:layout_weight="0.5"
+            android:focusable="true">
+        </Button>
+
+        <Button
+            android:id="@+id/add_confirm"
+            android:clickable="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CONFIRM"
+            android:backgroundTint="@color/light_green"
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            android:layout_weight="0.5"
+            android:focusable="true">
+        </Button>
+
+    </LinearLayout>
 
 </LinearLayout>

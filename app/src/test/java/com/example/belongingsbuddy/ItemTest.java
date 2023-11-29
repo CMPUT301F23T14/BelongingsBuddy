@@ -27,7 +27,7 @@ public class ItemTest {
     private Item mockItem2(){
         // constructs a mock item (with a serial number)
         Date d = new Date(11,11,2011);
-        Item i = new Item("chair", d, "this is a very cool chair", "make", "model", (float)123.45, "no comments", 101010);
+        Item i = new Item("chair", d, "this is a very cool chair", "make", "model", (float)123.45, "no comments", "101010");
         return i;
     }
 
@@ -41,7 +41,7 @@ public class ItemTest {
         Item item2 = mockItem2();
         // check the serial numbers for these items
         assertEquals(null, item1.getSerialNumber());
-        assertEquals((Integer)101010, item2.getSerialNumber());
+        assertEquals("101010", item2.getSerialNumber());
         // if this test works, then both constructors work as intended
     }
 

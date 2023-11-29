@@ -34,13 +34,10 @@ public class EditItemActivity extends AppCompatActivity{
     private EditText value_text;
     private  Float new_val;
     private EditText serialNum_text;
-    private Integer serialNum;
+    private String serialNum;
     private EditText comment_text;
     private String comment;
 
-    private Integer day = null;
-    private Integer month = null;
-    private Integer year = null;
 
     /**
      * Display the activity_edit_item View and wait for user input.
@@ -62,7 +59,7 @@ public class EditItemActivity extends AppCompatActivity{
         // setup the view with information about the Item being edited
         // name:
         name_text = this.findViewById(R.id.edit_name);
-        name_text.setText(itemInfo.getString("name", "NA"));
+        name_text.setText(itemInfo.getString("name"));
         // date:
         date_text = this.findViewById(R.id.add_date);
         date_text.setText(itemInfo.getString("date"));
@@ -81,10 +78,7 @@ public class EditItemActivity extends AppCompatActivity{
         value_text.setText(value.toString());
         // serial number:
         serialNum_text = this.findViewById(R.id.edit_serial_number);
-        Integer serial = itemInfo.getInt("serialNum");
-        if (serial != 0){
-            serialNum_text.setText(serial.toString());
-        }
+        serialNum_text.setText(itemInfo.getString("serialNum"));
         //comment
         comment_text = this.findViewById(R.id.edit_comment);
         comment_text.setText(itemInfo.getString("comment"));
@@ -164,7 +158,7 @@ public class EditItemActivity extends AppCompatActivity{
                         // use the constructor without a serial number
                         serialNum = null;
                     } else {
-                        serialNum = Integer.parseInt(serialNum_text.getText().toString());
+                        serialNum = serialNum_text.getText().toString();
                     }
                     // create returnIntent and pass needed data as extras
                     Intent returnIntent = new Intent();

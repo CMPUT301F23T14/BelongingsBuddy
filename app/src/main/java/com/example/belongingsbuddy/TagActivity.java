@@ -33,6 +33,7 @@ public class TagActivity extends DialogFragment {
     SearchView searchView;
     GridView tagListView;
     Button Confirm;
+    Button Cancel;
     AddItemActivity mainActivity;
     TextView addTags;
     ArrayList<Tag> selectedTags;
@@ -49,20 +50,10 @@ public class TagActivity extends DialogFragment {
         tagListView = dialogView.findViewById(R.id.elementListView);
         addTags = mainActivity.findViewById(R.id.add_tags);
 
-        tagListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        tagListView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE);
 
         // Initialize your tag data and the custom adapter
         TagManager manager = (TagManager) getArguments().getSerializable("tagManager");
-        manager.addTag(new Tag("Hello"));
-        manager.addTag(new Tag("World"));
-        manager.addTag(new Tag("How"));
-        manager.addTag(new Tag("Are"));
-        manager.addTag(new Tag("You"));
-        manager.addTag(new Tag("what"));
-        manager.addTag(new Tag("can"));
-        manager.addTag(new Tag("they"));
-        manager.addTag(new Tag("tell"));
-        manager.addTag(new Tag("me"));
 
         selectedTags = (ArrayList<Tag>) getArguments().getSerializable("selectedTags");
 
@@ -117,7 +108,7 @@ public class TagActivity extends DialogFragment {
 //            }
 //        });
         Confirm = dialogView.findViewById(R.id.btnConfirm);
-
+        Cancel = dialogView.findViewById(R.id.btnCancel);
         //Upon confirm grab all the checked tags and overwrite the old one with the new ones and display them
         Confirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,6 +131,12 @@ public class TagActivity extends DialogFragment {
             }
         });
 
+        Cancel.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
 
         // Show the dialog
         dialog.show();
