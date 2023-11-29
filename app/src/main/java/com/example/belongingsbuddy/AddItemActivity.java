@@ -23,7 +23,6 @@ import java.util.ArrayList;
  * data to the calling activity (MainActivity)
  */
 public class AddItemActivity extends AppCompatActivity{
-    private Item item;
     private String name;
     private EditText name_text;
     private Date date;
@@ -176,7 +175,7 @@ public class AddItemActivity extends AppCompatActivity{
                         comment = comment_text.getText().toString();
                     }
                     // serial number is optional
-                    if (TextUtils.isEmpty(serialNumber_text.getText().toString())){
+                    if (serialNumber_text.getText().toString().trim().length() == 0){
                         // use the constructor without a serial number
                         serialNumber = null;
                     } else {
