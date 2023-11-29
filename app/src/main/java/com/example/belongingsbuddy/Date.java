@@ -2,6 +2,7 @@ package com.example.belongingsbuddy;
 
 import org.checkerframework.checker.units.qual.A;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  * Date represents a date on the calendar by its year, month, and day;
  * The Class uses standard getter and setter methods
  */
-public class Date implements Comparable<Date> {
+public class Date implements Comparable<Date>, Serializable {
     private int day;
     private int month;
     private int year;
