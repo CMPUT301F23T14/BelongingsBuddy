@@ -315,7 +315,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 break;
         }
     }
-
+    /**
+     * Part of the Listener interface.
+     * When the user selects OK from the filter dialogue, MainActivity starts handles the update to listview.
+     */
     @Override
     public void onFilterOkPressed() {
     }

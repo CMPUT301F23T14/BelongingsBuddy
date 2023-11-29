@@ -25,10 +25,9 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 /**
- * Displays a dialog with 4 selection buttons, cancel and confirm, and a radio group of 2
- * Whatever button is clicked last before hitting confirm will be the sort type to be performed.
- * Default order is ascending (alphabetical no other reason).
- * If the us presses cancel dialogue is dismissed, else they return to main and see sorted list.
+ * A {@link DialogFragment} subclass that represents a filter dialog for items in the Belongings Buddy app.
+ * Users can set various filter criteria such as date range, keywords, makes, and tags to refine the displayed items.
+ * Communicates with the hosting activity through the {@link Listener} interface.
  */
 public class FilterItemsFragment extends DialogFragment {
     public Listener listener;
@@ -38,17 +37,6 @@ public class FilterItemsFragment extends DialogFragment {
     boolean isAscending = false;
 
     // so we can communicate with main activity
-    /**
-     * Called when the fragment is attached to its host activity.
-     * This method checks if the hosting activity implements the {@link Listener} interface.
-     * If it does, it assigns the activity as the listener for communication.
-     * If not, a {@link RuntimeException} is thrown.
-     *
-     * @param context context fragement uses (should be main activity)
-     * @throws RuntimeException if the activity does not implement the {@link Listener} interface
-     *
-     * @see Listener
-     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -60,17 +48,17 @@ public class FilterItemsFragment extends DialogFragment {
         }
     }
     /**
-     * Creates and returns a sorting dialog for the BelongingsBuddy application.
-     * The dialog allows the user to choose the sorting criteria (date, description, make, or value)
-     * and specify the sorting order (ascending or descending).
+     * Creates and returns a new {@link Dialog} for the filter items functionality. Inflates the layout from
+     * {@code R.layout.filter_items}.
      *
-     * @param savedInstanceState The bundle with the saved state of the fragment, or null if not available
-     * @return a new instance of a dialogue for sorting items
+     * The date picking functionality uses the MaterialDatePicker library for selecting a date range, and the selected
+     * dates are displayed in a TextView.
      *
-     * @see View
-     * @see Dialog
-     * @see Button
-     * @see RadioGroup
+     * When the "OK" button is pressed, the entered filter settings (keywords, makes, tags, date range) are retrieved,
+     * processed, and passed to the hosting activity using the {@link Listener} interface.
+     *
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return A new instance of {@link Dialog} with the configured filter items view.
      */
     @NonNull
     @Override
@@ -103,7 +91,7 @@ public class FilterItemsFragment extends DialogFragment {
                     Long startDateLong = selection.first;
                     Long endDateLong = selection.second;
 
-                    // Formating the selected dates as strings
+                    // Formating the selected dates as strings, note mm is not months is milliseconds
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
                     String startDateString = sdf.format(new Date(startDateLong));
                     String endDateString = sdf.format(new Date(endDateLong));
@@ -130,6 +118,7 @@ public class FilterItemsFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 // get all text written into edit texts
+                // \s is not supported for some reason
                 String[] keywords = selectedKeywords.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
                 String[] makes = selectedMakes.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
                 String[] tags = selectedTags.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
