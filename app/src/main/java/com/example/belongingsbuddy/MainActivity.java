@@ -452,13 +452,19 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 }
                 break;
             case REQUEST_CODE_BARCODE:
-                //Add the rest of the item manually in case of incomplete data
-                String productInfo = data.getStringExtra("result");
-                String serialnum = data.getStringExtra("serial");
-                Intent intent = new Intent(MainActivity.this, AddItemActivity.class);
-                intent.putExtra("productInfo", productInfo);
-                intent.putExtra("serial", serialnum);
-                startActivityForResult(intent, REQUEST_CODE_ADD);
+                String productInfo = null;
+                String serialnum = null;
+                if (data != null) {
+                    productInfo = data.getStringExtra("result");
+                    serialnum = data.getStringExtra("serial");
+                }
+                if (productInfo != null && serialnum != null) {
+                    //Add the rest of the item manually in case of incomplete data
+                    Intent intent = new Intent(MainActivity.this, AddItemActivity.class);
+                    intent.putExtra("productInfo", productInfo);
+                    intent.putExtra("serial", serialnum);
+                    startActivityForResult(intent, REQUEST_CODE_ADD);
+                }
         }
     }
     /**
