@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.Toast;
 
 import androidx.annotation.OptIn;
 import androidx.camera.core.ExperimentalGetImage;
@@ -110,6 +111,7 @@ public class ScannerActivity extends CameraActivity implements CameraCreationLis
         if (!isRequestInProgress) {
             isRequestInProgress = true;
             //Use a new thread to avoid errors
+            Toast.makeText(this, "Barcode Found, please wait for API to lookup barcode", Toast.LENGTH_SHORT).show();
             new Thread(() -> {
                 //setup for api call
                 OkHttpClient client = new OkHttpClient();
@@ -123,10 +125,15 @@ public class ScannerActivity extends CameraActivity implements CameraCreationLis
                     String jsonContent = response.body().string();
                     Intent intent = new Intent();
                     intent.putExtra("result", jsonContent);
+                    intent.putExtra("serial", code);
                     setResult(Activity.RESULT_OK, intent);
                     finish();
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    Intent intent = new Intent();
+                    intent.putExtra("result", "failure");
+                    intent.putExtra("serial", code);
+                    setResult(Activity.RESULT_OK, intent);
+                    finish();
                 } finally {
                     // The request is complete, so set the flag to false to allow future requests
                     isRequestInProgress = false;

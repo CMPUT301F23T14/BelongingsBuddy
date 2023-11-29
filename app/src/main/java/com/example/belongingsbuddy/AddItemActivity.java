@@ -34,7 +34,7 @@ public class AddItemActivity extends AppCompatActivity{
     private EditText make_text;
     private String model;
     private EditText model_text;
-    private Integer serialNumber;
+    private String serialNumber;
     private EditText serialNumber_text;
     private Float value;
     private EditText value_text;
@@ -63,18 +63,24 @@ public class AddItemActivity extends AppCompatActivity{
 
         //Check if there is any info from barcodes
         String productInfo = getIntent().getStringExtra("productInfo");
-        if (productInfo != null) {
+        String serialnum = getIntent().getStringExtra("serial");
+        if (productInfo != null && !productInfo.equals("failure")) {
             try {
                 JSONObject productJSON = new JSONObject(productInfo);
                 description_text = findViewById(R.id.add_description);
-
                 if (productJSON.has("description")) {
                     String initialText = productJSON.getString("description");
                     description_text.setText(initialText.replace(" (from barcode.monster)", ""));
                 }
             } catch (JSONException e) {
-                throw new RuntimeException(e);
             }
+        }
+        else if (productInfo != null && productInfo == "failure") {
+            Toast.makeText(this, "Failed to connect to barcode monster API", Toast.LENGTH_SHORT).show();
+        }
+        if (serialnum != null) {
+            serialNumber_text = findViewById(R.id.add_serial_number);
+            serialNumber_text.setText(serialnum);
         }
 
         // SET DATE implementation
@@ -91,7 +97,8 @@ public class AddItemActivity extends AppCompatActivity{
         Button openTagsButton = findViewById(R.id.add_tags_button);
         openTagsButton.setOnClickListener(v -> {
             Bundle arg = new Bundle();
-            arg.putSerializable("tagManager", getIntent().getSerializableExtra("Manager"));
+            Intent i = getIntent();
+            arg.putSerializable("tagManager", i.getSerializableExtra("Manager"));
             arg.putSerializable("selectedTags", tags);
             TagActivity TagFragment = new TagActivity();
             TagFragment.setArguments(arg);
@@ -173,7 +180,7 @@ public class AddItemActivity extends AppCompatActivity{
                         // use the constructor without a serial number
                         serialNumber = null;
                     } else {
-                        serialNumber = Integer.parseInt(serialNumber_text.getText().toString());
+                        serialNumber = serialNumber_text.getText().toString();
                     }
                     // create returnIntent and pass needed data as extras
                     Intent returnIntent = new Intent();

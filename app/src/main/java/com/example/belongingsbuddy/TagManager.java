@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.HashMap;
+
 import com.example.belongingsbuddy.Item;
 import com.example.belongingsbuddy.Tag;
 
@@ -18,7 +19,6 @@ public class TagManager implements Serializable {
     public TagManager(List<Item> Items) {
         tags = new HashSet<>();
         ManagedItems = new HashMap<Item, Set<Tag>>();
-
         for (Item item : Items) {
             ManagedItems.put(item, new HashSet<>());
         }
@@ -75,7 +75,17 @@ public class TagManager implements Serializable {
 
     //Set the tags of an item
     public void setItemTags(Item item, ArrayList<Tag> tags) {
-        ManagedItems.put(item, new HashSet<>(tags));
+       // ManagedItems.put(item, new HashSet<>());
+    }
+    public String printItemTags(Item i) {
+        String returnString = "";
+        if (ManagedItems.containsKey(i)) {
+            Set<Tag> itemTags = ManagedItems.get(i);
+            for (Tag tag : itemTags) {
+                returnString += tag.toString() + " ";
+            }
+        }
+        return returnString;
     }
 
 }
