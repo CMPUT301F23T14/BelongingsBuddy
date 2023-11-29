@@ -165,6 +165,16 @@ public class MainActivity extends AppCompatActivity implements Listener{
             new SortItemsFragment().show(getSupportFragmentManager(), "Sort Item:");
         });
 
+        // click listener for tag creation
+        final Button tagButton = findViewById(R.id.tag_button);
+        tagButton.setOnClickListener(v -> {
+            Bundle arg = new Bundle();
+            arg.putSerializable("Manager", tagManager);
+            CreateTagActivity TagFragment = new CreateTagActivity();
+            TagFragment.setArguments(arg);
+            TagFragment.show(getSupportFragmentManager(), "createTagDialog");
+        });
+
         // create dialog from clicking username
         username_button.setOnClickListener(new View.OnClickListener() {
             @Override
