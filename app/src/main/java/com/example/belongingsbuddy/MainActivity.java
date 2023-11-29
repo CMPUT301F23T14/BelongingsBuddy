@@ -7,6 +7,7 @@ import androidx.fragment.app.DialogFragment;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -134,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 intent.putExtra("serialNum", i.getSerialNumber());
                 intent.putExtra("comment", i.getComment());
                 intent.putExtra("index", position);
+                intent.putExtra("tags", tagManager.printItemTags(i));
                 startActivityForResult(intent, REQUEST_CODE_VIEW);
             }
         });
@@ -386,8 +388,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
 //                    ArrayList tagSet = new ArrayList();
 //                    tagSet.add(new Tag("tag"));
-//
-//                    tagManager.setItemTags(item, tagSet);
+                    tagManager.setItemTags(item, selectedTags);
 //                    tagManager.AddItem(item);
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup

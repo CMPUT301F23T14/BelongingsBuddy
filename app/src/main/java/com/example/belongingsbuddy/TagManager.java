@@ -75,7 +75,7 @@ public class TagManager implements Serializable {
 
     //Set the tags of an item
     public void setItemTags(Item item, ArrayList<Tag> tags) {
-       // ManagedItems.put(item, new HashSet<>());
+       ManagedItems.put(item, new HashSet<>(tags));
     }
     public String printItemTags(Item i) {
         String returnString = "";
