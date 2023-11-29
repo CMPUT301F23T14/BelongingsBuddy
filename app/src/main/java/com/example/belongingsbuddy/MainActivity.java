@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
         itemAdapter = new CustomList(this, dataList);
         itemListView.setAdapter(itemAdapter);
 
-        // load Items from user's collection on FireStore and add those items to dataList
+        // LOAD Items from user's collection on FireStore and add those items to dataList
         user_collection.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot querySnapshots,
@@ -113,8 +113,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     }
                     itemAdapter.notifyDataSetChanged();
 
-                    // load backup list
+                    // setup backup
+                    originalOrderDataList.clear();
                     originalOrderDataList.addAll(dataList);
+
                     // set total
                     totalTextView = findViewById(R.id.total);
                     totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
