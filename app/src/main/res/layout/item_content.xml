@@ -30,6 +30,7 @@
             android:layout_height="75dp"
             android:layout_weight="0.75"
             android:paddingHorizontal="5dp"
+            android:breakStrategy="high_quality"
             android:autoSizeTextType="uniform"
             android:autoSizeMinTextSize="10sp"
             android:autoSizeMaxTextSize="30sp"/>
@@ -45,9 +46,10 @@
             android:layout_height="75dp"
             android:layout_weight="0.5"
             android:maxLines="1"
+            android:ellipsize="marquee"
             android:paddingHorizontal="5dp"
             android:autoSizeTextType="uniform"
-            android:autoSizeMinTextSize="10sp"
+            android:autoSizeMinTextSize="14sp"
             android:autoSizeMaxTextSize="30sp"/>
 
         <TextView
@@ -61,9 +63,10 @@
             android:layout_height="75dp"
             android:layout_weight="0.5"
             android:maxLines="1"
+            android:ellipsize="marquee"
             android:paddingHorizontal="5dp"
             android:autoSizeTextType="uniform"
-            android:autoSizeMinTextSize="10sp"
+            android:autoSizeMinTextSize="14sp"
             android:autoSizeMaxTextSize="30sp"/>
 
         <TextView
