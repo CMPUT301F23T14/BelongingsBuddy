@@ -63,10 +63,7 @@ public class ItemViewActivity extends AppCompatActivity {
         model.setText(getIntent().getStringExtra("model"));
         Float val = getIntent().getFloatExtra("value",0);
         value.setText(String.format("%.2f", val));
-        Integer serial = getIntent().getIntExtra("serialNum", 0);
-        if (serial != 0){
-            serialNum.setText(serial.toString());
-        }
+        serialNum.setText(getIntent().getStringExtra("serialNum"));
         comment.setText(getIntent().getStringExtra("comment"));
 
 
