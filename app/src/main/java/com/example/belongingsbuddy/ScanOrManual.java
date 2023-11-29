@@ -32,6 +32,10 @@ import java.util.Objects;
 public class ScanOrManual extends DialogFragment{
     public Listener listener;
 
+    /**
+     * setup the Listener
+     * @param context the context of the calling activity (MainActivity)
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -42,15 +46,21 @@ public class ScanOrManual extends DialogFragment{
             throw new RuntimeException(context.toString() + "OnFragmentInteractionListener is not implemented");
         }
     }
+
+    /**
+     * Setup the Dialog and its buttons
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return the Dialog to be displayed
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
         // get the View
         View view = View.inflate(getContext(), R.layout.scan_or_manual, null);
-        // view = LayoutInflater.from(getActivity()).inflate(R.layout.scan_or_manual, null);
         final Dialog dialog = new Dialog(this.requireContext());
-        //final Dialog dialog = new Dialog(this.getContext());
         dialog.setContentView(view);
 
         // SCAN BARCODE implementation:

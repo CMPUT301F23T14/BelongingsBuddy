@@ -31,4 +31,6 @@
     <string name="internalerror">internalError</string>
     <string name="test_email">test@gmail.com</string>
     <string name="test_password">test_password</string>
+    <string name="item_make_string">Make</string>
+    <string name="item_model_string">Model</string>
 </resources>

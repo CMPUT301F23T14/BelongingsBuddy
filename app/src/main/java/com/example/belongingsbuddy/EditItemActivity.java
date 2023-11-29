@@ -53,7 +53,7 @@ public class EditItemActivity extends AppCompatActivity {
     private EditText value_text;
     private Float new_val;
     private EditText serialNum_text;
-    private Integer serialNum;
+    private String serialNum;
     private EditText comment_text;
     private String comment;
 
@@ -68,8 +68,6 @@ public class EditItemActivity extends AppCompatActivity {
     private ArrayList<Photo> selectedImages = new ArrayList<>();
     private ArrayList<Photo> savedImages = new ArrayList<>();
     private ArrayList<Uri> imageURIs = new ArrayList<Uri>();
-
-
 
     /**
      * Display the activity_edit_item View and wait for user input.
@@ -93,7 +91,7 @@ public class EditItemActivity extends AppCompatActivity {
         // setup the view with information about the Item being edited
         // name:
         name_text = this.findViewById(R.id.edit_name);
-        name_text.setText(itemInfo.getString("name", "NA"));
+        name_text.setText(itemInfo.getString("name"));
         // date:
         date_text = this.findViewById(R.id.add_date);
         date_text.setText(itemInfo.getString("date"));
@@ -135,10 +133,7 @@ public class EditItemActivity extends AppCompatActivity {
             public void onClick(View v) {
                 DatePickerFragment newFragment = new DatePickerFragment();
                 newFragment.show(getSupportFragmentManager(), "Date");
-                //Integer day = newFragment.getDay();
-                //Toast.makeText(EditItemActivity.this, day.toString(), Toast.LENGTH_SHORT).show();
             }
-
         });
 
         // CONFIRM implementation:
@@ -206,8 +201,9 @@ public class EditItemActivity extends AppCompatActivity {
                         // use the constructor without a serial number
                         serialNum = null;
                     } else {
-                        serialNum = Integer.parseInt(serialNum_text.getText().toString());
+                        serialNum = serialNum_text.getText().toString();
                     }
+                    // create returnIntent and pass needed data as extras
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("name", name);
                     returnIntent.putExtra("description", description);
@@ -481,5 +477,4 @@ public class EditItemActivity extends AppCompatActivity {
         // Show the dialog
         builder.show();
     }
-
 }

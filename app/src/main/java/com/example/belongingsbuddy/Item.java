@@ -1,10 +1,17 @@
 package com.example.belongingsbuddy;
 
+import android.widget.Toast;
+
+import com.google.firebase.firestore.CollectionReference;
+
+import org.checkerframework.checker.units.qual.C;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
- * an instance of this class represent an Item that will be put the app will add to the inventory
+ * an instance of this class represent an Item that the app will add to the inventory
  * the class uses standard setter and getter methods
  */
 public class Item implements Serializable {
@@ -13,49 +20,14 @@ public class Item implements Serializable {
     private String description;
     private String make;
     private String model;
-    private Integer serialNumber;
+    private String serialNumber;
     private Float estimatedValue;
     private String comment;
     private ArrayList<Tag> tags;
     private ArrayList<Photo> photos;
 
-
     /**
-     * Constructor for the item class
-     *
-     * @param name
-     * name of the item (String)
-     * @param date
-     * date of purchase or acquisition (Date)
-     * @param description
-     * brief description of item (String)
-     * @param make
-     * make of the Item (String)
-     * @param model
-     * model of the Item (String)
-     * @param serialNumber
-     * serial number for the Item (Integer)
-     * @param estimatedValue
-     * estimated value of the Item (Float)
-     * @param comment
-     * comment(s) about the item (String)
-     */
-    public Item(String name, Date date, String description, String make, String model,
-                Integer serialNumber,Float estimatedValue, String comment){
-        this.name = name;
-        this.date = date;
-        this.description = description;
-        this.make = make;
-        this.model = model;
-        this.serialNumber = serialNumber;
-        this.estimatedValue = estimatedValue;
-        this.comment = comment;
-        tags = new ArrayList<Tag>();
-        photos = new ArrayList<Photo>();
-    }
-
-    /**
-     * Constructor for the Item class without a provided serialNumber
+     * Constructor for the Item class (without a provided serial number)
      * @param name
      * name of Item (String)
      * @param date
@@ -105,7 +77,7 @@ public class Item implements Serializable {
      * serial number of item (Integer)
      */
     public Item(String name, Date date, String description, String make, String model,
-                Float estimatedValue, String comment, Integer serialNumber){
+                Float estimatedValue, String comment, String serialNumber){
         this.name = name;
         this.date = date;
         this.description = description;
@@ -116,6 +88,13 @@ public class Item implements Serializable {
         this.comment = comment;
         tags = new ArrayList<Tag>();
         photos = new ArrayList<Photo>();
+    }
+
+    /**
+     * public constructor that takes no parameters.
+     * This is used to load items from FireStore collection
+     */
+    public Item(){
     }
     public String getName() {
         return name;
@@ -157,11 +136,11 @@ public class Item implements Serializable {
         this.model = model;
     }
 
-    public Integer getSerialNumber() {
+    public String getSerialNumber() {
         return serialNumber;
     }
 
-    public void setSerialNumber(Integer serialNumber) {
+    public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
     }
 
@@ -214,4 +193,20 @@ public class Item implements Serializable {
     public  void addPhoto(Photo p){
         photos.add(p);
     }
+
+    /**
+     * Add the Item to the FireStore CollectionReference passed in as a parameter
+     * @param collection Firestore CollectionReference the Item is being added to
+     */
+    public void addToDatabase(CollectionReference collection){
+        collection.document(this.name).set(this);
+    }
+
+    public void updateInDatabase(CollectionReference collection, String oldName){
+        collection.document(oldName).delete();
+        collection.document(this.name).set(this);
+    }
+
 }
+
+
