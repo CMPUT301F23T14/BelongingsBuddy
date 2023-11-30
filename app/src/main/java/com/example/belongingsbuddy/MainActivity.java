@@ -186,6 +186,12 @@ public class MainActivity extends AppCompatActivity implements Listener{
             new SortItemsFragment().show(getSupportFragmentManager(), "Sort Item:");
         });
 
+        // click listener for filter:
+        final Button filterButton = findViewById(R.id.filter_button);
+        filterButton.setOnClickListener(v -> {
+            new FilterItemsFragment().show(getSupportFragmentManager(), "Filter Item:");
+        });
+
         // click listener for tag creation
         final Button tagButton = findViewById(R.id.tag_button);
         tagButton.setOnClickListener(v -> {
@@ -289,6 +295,14 @@ public class MainActivity extends AppCompatActivity implements Listener{
         addButton.setVisibility(View.VISIBLE);
         cancelButton.setVisibility(View.GONE);
         deleteButton.setVisibility(View.GONE);
+    }
+
+    /**
+     * Part of the Listener interface.
+     * When the user selects OK from the filter dialogue, MainActivity starts handles the update to listview.
+     */
+    @Override
+    public void onFilterOkPressed() {
     }
 
     /**
