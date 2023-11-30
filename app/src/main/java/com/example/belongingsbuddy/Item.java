@@ -25,6 +25,7 @@ public class Item implements Serializable {
     private String comment;
     private ArrayList<Tag> tags;
     private ArrayList<Photo> photos;
+    private ArrayList<String> photoURLs;
 
     /**
      * Constructor for the Item class (without a provided serial number)
@@ -54,7 +55,8 @@ public class Item implements Serializable {
         this.estimatedValue = estimatedValue;
         this.comment = comment;
         tags = new ArrayList<Tag>();
-        photos = new ArrayList<Photo>();
+        this.photos = new ArrayList<Photo>();
+        // this.photoURLs = new ArrayList<String>();
     }
 
     /**
@@ -174,6 +176,13 @@ public class Item implements Serializable {
 
     public void setPhotos(ArrayList<Photo> photos) {
         this.photos = photos;
+    }
+
+    public ArrayList<String> getPhotoURLs() {
+        return photoURLs;
+    }
+    public void setPhotoURLs(ArrayList<String> photoURLs) {
+        this.photoURLs = photoURLs;
     }
 
     /**
