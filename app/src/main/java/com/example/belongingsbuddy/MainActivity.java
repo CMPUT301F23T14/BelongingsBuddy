@@ -21,8 +21,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -47,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
     private String username;
     private LinearLayout sortTypeLayout;
     private TextView sortTypeTextView;
+    private FirebaseUser user;
 
     private TagManager tagManager = new TagManager();
 
@@ -71,21 +75,49 @@ public class MainActivity extends AppCompatActivity implements Listener{
         Intent intent = getIntent();
         // get authorization instance to get email of current user
         FirebaseAuth auth = FirebaseAuth.getInstance();
+
         if (auth.getCurrentUser() != null) {
             username = auth.getCurrentUser().getEmail().split("@")[0];
         } else {
             // testing user
-            auth.signInWithEmailAndPassword(getString(R.string.test_email), getString(R.string.test_password));
+            Log.d("signingIN", username);
+            auth.signInWithEmailAndPassword(getString(R.string.test_email), getString(R.string.test_password))
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
+                                Log.d("SIGNIN", "signInWithEmail:success");
+                                user = auth.getCurrentUser();
+                                //updateUI(user);
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Log.w("SIGNIN", "signInWithEmail:failure", task.getException());
+                                Toast.makeText(MainActivity.this, "Authentication failed.",
+                                        Toast.LENGTH_SHORT).show();
+                                //updateUI(null);
+                            }
+                        }
+                    });
+            username_button.setText(username);
         }
-        username_button.setText(username);
 
         // create collection for current user (I setup firestore rules to only allow users to edit their own collections)
         db = FirebaseFirestore.getInstance();
+        Log.d("DB", db.toString());
         String uID = "";
-        if (auth.getCurrentUser() != null) {
+        while (user == null);
+        if (user != null) {
             uID = auth.getCurrentUser().getUid();
             user_collection = db.collection(uID); // collection name MUST be the FirestoreAuth uID
-        }
+            Log.d("USER COLLECTION", user_collection.toString());
+            Log.d("UID333", uID);
+
+            }
+
+
+
+
 
         // First: set up dataList, itemListView, and itemAdapter
         dataList = new ArrayList<Item>();
@@ -418,6 +450,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     int day = data.getIntExtra("day", 0);
                     int month = data.getIntExtra("month", 0);
                     int year = data.getIntExtra("year", 0);
+
                   
                     ArrayList<Tag> selectedTags = (ArrayList<Tag>) data.getBundleExtra("BUNDLE").getSerializable("tagList");
                     // construct a Date object
@@ -433,6 +466,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                         item = new Item(name, date, description, make, model, value, comment, serialNumber);
                         dataList.add(item);
                     }
+
                     // add Item to FireStore database
                     item.addToDatabase(user_collection);
 
@@ -498,6 +532,12 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     item.setEstimatedValue(info.getFloat("value"));
                     item.setSerialNumber(info.getString("serial number"));
                     item.setComment(info.getString("comment"));
+                    ArrayList<String> photoURLs = new ArrayList<String>();
+                    int listSize = data.getIntExtra("url list size", 0);
+                    for (int i = 0; i < listSize; i++) {
+                        photoURLs.add(data.getStringExtra("photoURL"+i));
+                    }
+                    item.setPhotoURLs(photoURLs);
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup
                     originalOrderDataList.clear();

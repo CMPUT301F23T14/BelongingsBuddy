@@ -56,7 +56,7 @@ public class Item implements Serializable {
         this.comment = comment;
         tags = new ArrayList<Tag>();
         this.photos = new ArrayList<Photo>();
-        this.photoURLs = new ArrayList<String>();
+        // this.photoURLs = new ArrayList<String>();
     }
 
     /**

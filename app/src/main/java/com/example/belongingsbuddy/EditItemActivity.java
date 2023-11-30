@@ -56,6 +56,7 @@ public class EditItemActivity extends AppCompatActivity {
     private String serialNum;
     private EditText comment_text;
     private String comment;
+    private ArrayList<String> photoURLs;
 
     StorageReference storageReference;
 
@@ -217,6 +218,11 @@ public class EditItemActivity extends AppCompatActivity {
                     returnIntent.putExtra("year", date.getYear());
                     returnIntent.putExtra("index", itemInfo.getInt("index"));
                     returnIntent.putExtra("selectedImages", selectedImages);
+                    returnIntent.putExtra("url list size", photoURLs.size());
+                    for (int i = 0; i < photoURLs.size(); i++) {
+                        returnIntent.putExtra("photoURL"+i, photoURLs.get(i));
+                    }
+
                     //returnIntent.putParcelableArrayListExtra("selectedImages", selectedImages);
                     setResult(Activity.RESULT_OK, returnIntent);
 
@@ -348,6 +354,15 @@ public class EditItemActivity extends AppCompatActivity {
                             selectedImages.add(new Photo(uri, imageBitmap));
                         }
 
+                        // Defining the child of storageReference
+                        StorageReference ref
+                                = storageReference
+                                .child(
+                                        "images/"
+                                                + UUID.randomUUID().toString());
+                        String URL = ref.getDownloadUrl().toString();
+
+                        photoURLs.add(URL);
 
                     }
                 } else {
@@ -374,6 +389,9 @@ public class EditItemActivity extends AppCompatActivity {
 
                     // upload file 2 cloud storage :3
                     ref.putFile(uri);
+                    String URL = ref.getDownloadUrl().toString();
+
+                    photoURLs.add(URL);
                 }
 
 
