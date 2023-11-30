@@ -54,16 +54,6 @@ public class TagActivity extends DialogFragment {
 
         // Initialize your tag data and the custom adapter
         TagManager manager = (TagManager) getArguments().getSerializable("tagManager");
-        manager.addTag(new Tag("Hello"));
-        manager.addTag(new Tag("World"));
-        manager.addTag(new Tag("How"));
-        manager.addTag(new Tag("Are"));
-        manager.addTag(new Tag("You"));
-        manager.addTag(new Tag("what"));
-        manager.addTag(new Tag("can"));
-        manager.addTag(new Tag("they"));
-        manager.addTag(new Tag("tell"));
-        manager.addTag(new Tag("me"));
 
         selectedTags = (ArrayList<Tag>) getArguments().getSerializable("selectedTags");
 

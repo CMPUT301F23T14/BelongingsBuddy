@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.OptIn;
@@ -40,13 +42,23 @@ public class ScannerActivity extends CameraActivity implements CameraCreationLis
     private BarcodeScanner scanner = BarcodeScanning.getClient();
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //CameraActivity needs these fields set
         setContentViewID(R.layout.activity_scanner);
         setCameraCreationListener(this);
-
         super.onCreate(savedInstanceState);
+
+        Button backButton = findViewById(R.id.scannerBackButton);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                  finish();
+              }
+          }
+        );
     }
 
     /**
@@ -56,6 +68,7 @@ public class ScannerActivity extends CameraActivity implements CameraCreationLis
     @OptIn(markerClass = ExperimentalGetImage.class)
     @Override
     public void onCameraCreationSuccess() {
+
         cameraController.setImageAnalysisAnalyzer(Executors.newSingleThreadExecutor(), imageProxy -> {
 
             Image mediaImage = imageProxy.getImage();
@@ -67,6 +80,9 @@ public class ScannerActivity extends CameraActivity implements CameraCreationLis
 
             imageProxy.close();
         });
+        Button backButton = findViewById(R.id.scannerBackButton);
+        backButton.setVisibility(View.VISIBLE);
+
     }
 
     /**
@@ -75,6 +91,7 @@ public class ScannerActivity extends CameraActivity implements CameraCreationLis
      */
     @Override
     public void onCameraCreationFailure() {
+        setResult(Activity.RESULT_CANCELED, new Intent());
         finish();
     }
 
@@ -143,6 +160,12 @@ public class ScannerActivity extends CameraActivity implements CameraCreationLis
             // A request is already in progress; you can choose to skip or queue this request, or handle it in another way.
             System.out.println("Request in progress. Skipping this request.");
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cameraController.unbind();
     }
 }
 

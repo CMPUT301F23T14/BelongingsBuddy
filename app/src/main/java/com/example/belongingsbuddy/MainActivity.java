@@ -156,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 intent.putExtra("serialNum", i.getSerialNumber());
                 intent.putExtra("comment", i.getComment());
                 intent.putExtra("index", position);
+                intent.putExtra("tags", tagManager.printItemTags(i));
                 startActivityForResult(intent, REQUEST_CODE_VIEW);
             }
         });
@@ -183,6 +184,22 @@ public class MainActivity extends AppCompatActivity implements Listener{
         final Button sortButton = findViewById(R.id.sort_button);
         sortButton.setOnClickListener(v -> {
             new SortItemsFragment().show(getSupportFragmentManager(), "Sort Item:");
+        });
+
+        // click listener for filter:
+        final Button filterButton = findViewById(R.id.filter_button);
+        filterButton.setOnClickListener(v -> {
+            new FilterItemsFragment().show(getSupportFragmentManager(), "Filter Item:");
+        });
+
+        // click listener for tag creation
+        final Button tagButton = findViewById(R.id.tag_button);
+        tagButton.setOnClickListener(v -> {
+            Bundle arg = new Bundle();
+            arg.putSerializable("Manager", tagManager);
+            CreateTagActivity TagFragment = new CreateTagActivity();
+            TagFragment.setArguments(arg);
+            TagFragment.show(getSupportFragmentManager(), "createTagDialog");
         });
 
         // create dialog from clicking username
@@ -278,6 +295,14 @@ public class MainActivity extends AppCompatActivity implements Listener{
         addButton.setVisibility(View.VISIBLE);
         cancelButton.setVisibility(View.GONE);
         deleteButton.setVisibility(View.GONE);
+    }
+
+    /**
+     * Part of the Listener interface.
+     * When the user selects OK from the filter dialogue, MainActivity starts handles the update to listview.
+     */
+    @Override
+    public void onFilterOkPressed() {
     }
 
     /**
@@ -416,8 +441,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
 //                    ArrayList tagSet = new ArrayList();
 //                    tagSet.add(new Tag("tag"));
-//
-//                    tagManager.setItemTags(item, tagSet);
+                    tagManager.setItemTags(item, selectedTags);
 //                    tagManager.AddItem(item);
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup
@@ -488,13 +512,19 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 }
                 break;
             case REQUEST_CODE_BARCODE:
-                //Add the rest of the item manually in case of incomplete data
-                String productInfo = data.getStringExtra("result");
-                String serialnum = data.getStringExtra("serial");
-                Intent intent = new Intent(MainActivity.this, AddItemActivity.class);
-                intent.putExtra("productInfo", productInfo);
-                intent.putExtra("serial", serialnum);
-                startActivityForResult(intent, REQUEST_CODE_ADD);
+                String productInfo = null;
+                String serialnum = null;
+                if (data != null) {
+                    productInfo = data.getStringExtra("result");
+                    serialnum = data.getStringExtra("serial");
+                }
+                if (productInfo != null && serialnum != null) {
+                    //Add the rest of the item manually in case of incomplete data
+                    Intent intent = new Intent(MainActivity.this, AddItemActivity.class);
+                    intent.putExtra("productInfo", productInfo);
+                    intent.putExtra("serial", serialnum);
+                    startActivityForResult(intent, REQUEST_CODE_ADD);
+                }
         }
     }
     /**
