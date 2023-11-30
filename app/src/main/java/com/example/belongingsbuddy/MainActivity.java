@@ -186,11 +186,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
             new SortItemsFragment().show(getSupportFragmentManager(), "Sort Item:");
         });
 
-        // click listener for filter:
-        final Button filterButton = findViewById(R.id.filter_button);
-        filterButton.setOnClickListener(v -> {
-            new FilterItemsFragment().show(getSupportFragmentManager(), "Filter Item:");
-       // click listener for tag creation
+        // click listener for tag creation
         final Button tagButton = findViewById(R.id.tag_button);
         tagButton.setOnClickListener(v -> {
             Bundle arg = new Bundle();
@@ -352,13 +348,6 @@ public class MainActivity extends AppCompatActivity implements Listener{
 //                Toast.makeText(this, "No selection", Toast.LENGTH_SHORT).show();
                 break;
         }
-    }
-    /**
-     * Part of the Listener interface.
-     * When the user selects OK from the filter dialogue, MainActivity starts handles the update to listview.
-     */
-    @Override
-    public void onFilterOkPressed() {
     }
 
     /**
