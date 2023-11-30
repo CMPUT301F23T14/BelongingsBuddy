@@ -33,8 +33,12 @@ public class FilterItemsFragment extends DialogFragment {
     public Listener listener;
     String startDate = null;
     String endDate = null;
-    ArrayList<String> keywords = new ArrayList<>();
-    boolean isAscending = false;
+//    ArrayList<String> keywords = new ArrayList<>();
+//    ArrayList<String> makes = new ArrayList<>();
+//    ArrayList<String> tags = new ArrayList<>();
+    String[] keywords = {};
+    String[] makes = {};
+    String[] tags = {};
 
     // so we can communicate with main activity
     @Override
@@ -92,7 +96,7 @@ public class FilterItemsFragment extends DialogFragment {
                     Long endDateLong = selection.second;
 
                     // Formating the selected dates as strings, note mm is not months is milliseconds
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                     String startDateString = sdf.format(new Date(startDateLong));
                     String endDateString = sdf.format(new Date(endDateLong));
 
@@ -119,10 +123,16 @@ public class FilterItemsFragment extends DialogFragment {
             public void onClick(View v) {
                 // get all text written into edit texts
                 // \s is not supported for some reason
-                String[] keywords = selectedKeywords.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
-                String[] makes = selectedMakes.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
-                String[] tags = selectedTags.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
-                listener.onFilterOkPressed();
+                if (!selectedKeywords.getText().toString().isEmpty()) {
+                    keywords = selectedKeywords.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
+                }
+                if (!selectedMakes.getText().toString().isEmpty()) {
+                    makes = selectedMakes.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
+                }
+                if (!selectedTags.getText().toString().isEmpty()) {
+                    tags = selectedTags.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
+                }
+                listener.onFilterOkPressed(keywords, makes, new com.example.belongingsbuddy.Date(startDate), new com.example.belongingsbuddy.Date(endDate));
                 dialog.dismiss();
             }
         });
