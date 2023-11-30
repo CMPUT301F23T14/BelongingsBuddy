@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements Listener{
             username = auth.getCurrentUser().getEmail().split("@")[0];
         } else {
             // testing user
-            Log.d("signingIN", username);
             auth.signInWithEmailAndPassword(getString(R.string.test_email), getString(R.string.test_password))
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -101,19 +100,16 @@ public class MainActivity extends AppCompatActivity implements Listener{
                             }
                         }
                     });
-            username_button.setText(username);
         }
+        username_button.setText(username);
 
         // create collection for current user (I setup firestore rules to only allow users to edit their own collections)
         db = FirebaseFirestore.getInstance();
-        Log.d("DB", db.toString());
+
         String uID = "";
-        //while (user == null);
         if (auth.getCurrentUser() != null) {
             uID = auth.getCurrentUser().getUid();
             user_collection = db.collection(uID); // collection name MUST be the FirestoreAuth uID
-            Log.d("USER COLLECTION", user_collection.toString());
-            Log.d("UID333", uID);
 
             }
 
