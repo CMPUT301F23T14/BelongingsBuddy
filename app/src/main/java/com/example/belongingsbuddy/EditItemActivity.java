@@ -30,6 +30,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -56,7 +58,7 @@ public class EditItemActivity extends AppCompatActivity {
     private String serialNum;
     private EditText comment_text;
     private String comment;
-    private ArrayList<String> photoURLs;
+    private ArrayList<String> photoURLs = new ArrayList<>();
 
     StorageReference storageReference;
 

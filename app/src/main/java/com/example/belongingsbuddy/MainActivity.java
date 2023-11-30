@@ -34,8 +34,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -106,8 +108,8 @@ public class MainActivity extends AppCompatActivity implements Listener{
         db = FirebaseFirestore.getInstance();
         Log.d("DB", db.toString());
         String uID = "";
-        while (user == null);
-        if (user != null) {
+        //while (user == null);
+        if (auth.getCurrentUser() != null) {
             uID = auth.getCurrentUser().getUid();
             user_collection = db.collection(uID); // collection name MUST be the FirestoreAuth uID
             Log.d("USER COLLECTION", user_collection.toString());
@@ -532,10 +534,13 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     item.setEstimatedValue(info.getFloat("value"));
                     item.setSerialNumber(info.getString("serial number"));
                     item.setComment(info.getString("comment"));
-                    ArrayList<String> photoURLs = new ArrayList<String>();
+                    List<String> photoURLs = new ArrayList<>();
                     int listSize = data.getIntExtra("url list size", 0);
+                    String URL;
                     for (int i = 0; i < listSize; i++) {
-                        photoURLs.add(data.getStringExtra("photoURL"+i));
+                        URL = data.getStringExtra("photoURL"+i);
+                        Log.d("PHOTO URL RECEIVED "+i, URL);
+                        photoURLs.add(URL);
                     }
                     item.setPhotoURLs(photoURLs);
                     itemAdapter.notifyDataSetChanged();
