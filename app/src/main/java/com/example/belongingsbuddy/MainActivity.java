@@ -186,7 +186,11 @@ public class MainActivity extends AppCompatActivity implements Listener{
             new SortItemsFragment().show(getSupportFragmentManager(), "Sort Item:");
         });
 
-        // click listener for tag creation
+        // click listener for filter:
+        final Button filterButton = findViewById(R.id.filter_button);
+        filterButton.setOnClickListener(v -> {
+            new FilterItemsFragment().show(getSupportFragmentManager(), "Filter Item:");
+       // click listener for tag creation
         final Button tagButton = findViewById(R.id.tag_button);
         tagButton.setOnClickListener(v -> {
             Bundle arg = new Bundle();
@@ -349,6 +353,13 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 break;
         }
     }
+    /**
+     * Part of the Listener interface.
+     * When the user selects OK from the filter dialogue, MainActivity starts handles the update to listview.
+     */
+    @Override
+    public void onFilterOkPressed() {
+    }
 
     /**
      * Part of the Listener interface.
@@ -498,13 +509,19 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 }
                 break;
             case REQUEST_CODE_BARCODE:
-                //Add the rest of the item manually in case of incomplete data
-                String productInfo = data.getStringExtra("result");
-                String serialnum = data.getStringExtra("serial");
-                Intent intent = new Intent(MainActivity.this, AddItemActivity.class);
-                intent.putExtra("productInfo", productInfo);
-                intent.putExtra("serial", serialnum);
-                startActivityForResult(intent, REQUEST_CODE_ADD);
+                String productInfo = null;
+                String serialnum = null;
+                if (data != null) {
+                    productInfo = data.getStringExtra("result");
+                    serialnum = data.getStringExtra("serial");
+                }
+                if (productInfo != null && serialnum != null) {
+                    //Add the rest of the item manually in case of incomplete data
+                    Intent intent = new Intent(MainActivity.this, AddItemActivity.class);
+                    intent.putExtra("productInfo", productInfo);
+                    intent.putExtra("serial", serialnum);
+                    startActivityForResult(intent, REQUEST_CODE_ADD);
+                }
         }
     }
     /**
