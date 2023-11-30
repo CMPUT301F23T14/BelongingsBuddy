@@ -1,5 +1,6 @@
 package com.example.belongingsbuddy;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,6 +23,10 @@ public class TagManager implements Serializable {
         for (Item item : Items) {
             ManagedItems.put(item, new HashSet<>());
         }
+    }
+
+    public HashMap<Item, Set<Tag>> getManagedItems() {
+        return ManagedItems;
     }
 
     //Constructor

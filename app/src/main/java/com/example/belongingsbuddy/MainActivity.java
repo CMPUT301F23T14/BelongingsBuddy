@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // get the Item being clicked
                 Item i = itemAdapter.getItem(position);
+                Log.d("tag", i.getEpoch());
                 // setup the ItemViewActivity by creating a new Intent and passing Item data as extras
                 Intent intent = new Intent(MainActivity.this, ItemViewActivity.class);
                 intent.putExtra("name", i.getName());
@@ -423,11 +424,11 @@ public class MainActivity extends AppCompatActivity implements Listener{
                         dataList.add(item);
                     }
                     // add Item to FireStore database
+                    tagManager.setItemTags(item, selectedTags);
+                    Log.d("tag", item.getEpoch());
                     item.addToDatabase(user_collection);
-
 //                    ArrayList tagSet = new ArrayList();
 //                    tagSet.add(new Tag("tag"));
-                    tagManager.setItemTags(item, selectedTags);
 //                    tagManager.AddItem(item);
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup

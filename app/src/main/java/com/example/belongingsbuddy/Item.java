@@ -1,14 +1,12 @@
 package com.example.belongingsbuddy;
 
-import android.widget.Toast;
+import android.util.Log;
 
 import com.google.firebase.firestore.CollectionReference;
 
-import org.checkerframework.checker.units.qual.C;
-
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * an instance of this class represent an Item that the app will add to the inventory
@@ -25,6 +23,7 @@ public class Item implements Serializable {
     private String comment;
     private ArrayList<Tag> tags;
     private ArrayList<Photo> photos;
+    private String epoch;
 
     /**
      * Constructor for the Item class (without a provided serial number)
@@ -53,6 +52,7 @@ public class Item implements Serializable {
         this.serialNumber = null;
         this.estimatedValue = estimatedValue;
         this.comment = comment;
+        this.epoch = Long.toString(System.currentTimeMillis());
         tags = new ArrayList<Tag>();
         photos = new ArrayList<Photo>();
     }
@@ -160,6 +160,8 @@ public class Item implements Serializable {
         this.comment = comment;
     }
 
+    public String getEpoch() {return epoch;}
+
     public ArrayList<Tag> getTags() {
         return tags;
     }
@@ -206,7 +208,28 @@ public class Item implements Serializable {
         collection.document(oldName).delete();
         collection.document(this.name).set(this);
     }
-
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item i = (Item) o;
+        return i.hashCode() == o.hashCode();
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                name,
+                epoch,
+                description,
+                make,
+                model,
+                serialNumber,
+                estimatedValue,
+                comment,
+                tags,
+                photos
+        );
+    }
 }
 
 
