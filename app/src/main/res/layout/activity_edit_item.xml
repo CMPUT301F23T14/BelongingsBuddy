@@ -274,17 +274,6 @@
                     android:paddingVertical="10dp"
                     android:layout_weight="1">
                 </EditText>
-
-                <Button
-                    android:id="@+id/edit_serial_camera"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="15sp"
-                    android:text="CAM"
-                    android:layout_gravity="center"
-                    android:layout_weight="0"
-                    android:clickable="true">
-                </Button>
             </LinearLayout>
 
             <LinearLayout
