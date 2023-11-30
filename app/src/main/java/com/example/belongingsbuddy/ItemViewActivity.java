@@ -7,14 +7,21 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
 import org.w3c.dom.Text;
+
+import java.util.ArrayList;
 
 /**
  * Activity for viewing the details of an Item from the user's dataList
@@ -33,6 +40,7 @@ public class ItemViewActivity extends AppCompatActivity {
     private TextView comment;
 
     private TextView tags;
+    private ArrayList<String> photoURLs = new ArrayList<>();
 
     /**
      * Display the activity_item_view View and fill the view with information about the Item
@@ -72,6 +80,91 @@ public class ItemViewActivity extends AppCompatActivity {
         serialNum.setText(getIntent().getStringExtra("serialNum"));
         comment.setText(getIntent().getStringExtra("comment"));
         tags.setText(getIntent().getStringExtra("tags"));
+        int listSize = getIntent().getIntExtra("photoURLsize", 0);
+        for (int i = 0; i < listSize; i++) {
+            String URL = getIntent().getStringExtra("photoURL"+i);
+            Log.d("URL", URL);
+            photoURLs.add(URL);
+        }
+
+
+        Button showImagesButton = findViewById(R.id.show_images_button);
+        showImagesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // showImagesButton.setOnClickListener(new View.OnClickListener() {
+                //@Override
+                //  public void onClick(View v) {
+                // Create an AlertDialog to display the list of selected images
+                AlertDialog.Builder builder = new AlertDialog.Builder(ItemViewActivity.this);
+                builder.setTitle("Selected Images");
+                // Create a layout inflater to inflate a custom layout for the dialog
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dialog_show_images, null);
+                // Set the custom view to the dialog
+                builder.setView(dialogView);
+                // Add a "Close" button to the dialog
+                builder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Close the dialog
+                        dialog.dismiss();
+                    }
+                });
+                // Show the dialog
+                builder.show();
+
+
+                // Load the current image URL into the ImageView using Picasso
+                ImageView imageView = dialogView.findViewById(R.id.image_view);
+                Log.d("Imageview", imageView.toString());
+                for (int i = 0; i < listSize; i++) {
+                    continue;
+                }
+//                Picasso.get()
+//                        .load("https://i.imgur.com/DvpvklR.png")
+//                        .into(imageView, new Callback() {
+//                            @Override
+//                            public void onSuccess() {
+//                                // Image loaded successfully
+//                                Log.d("PICASSO", "Image loaded");
+//                            }
+//
+//                            @Override
+//                            public void onError(Exception e) {
+//                                // Handle error
+//                                e.printStackTrace();
+//                            }
+//                        });
+                if (photoURLs != null && !photoURLs.isEmpty()) {
+                    int currentImageIndex = 0;
+
+                    String URL = photoURLs.get(currentImageIndex);
+                    Picasso.get()
+                        .load(URL)
+                        .into(imageView, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                // Image loaded successfully
+                                Log.d("PICASSO", "Image loaded");
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                // Handle error
+                                Log.d("PICASSO", "Image failed to load.");
+                                e.printStackTrace();
+                            }
+                        });
+                    // Move to the next image or loop back to the first image
+                    // photoURLs.remove(currentImageIndex);
+                    currentImageIndex = (currentImageIndex + 1) % photoURLs.size();
+                }
+
+            }
+
+        });
+
 
 
 
