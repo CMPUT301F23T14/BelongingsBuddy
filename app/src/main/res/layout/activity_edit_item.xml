@@ -423,6 +423,13 @@
                     android:text="+">
                 </Button>
 
+                <!-- Add this button in your layout file -->
+                <Button
+                    android:id="@+id/show_images_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Show Images" />
+
 
             </LinearLayout>
 

@@ -9,7 +9,6 @@ import org.checkerframework.checker.units.qual.C;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * an instance of this class represent an Item that the app will add to the inventory
@@ -27,7 +26,7 @@ public class Item implements Serializable {
     private Integer quantity = 1;
     private ArrayList<Tag> tags;
     private ArrayList<Photo> photos;
-    private List<String> photoURLs;
+    private ArrayList<String> photoURLs;
 
     /**
      * Constructor for the Item class (without a provided serial number)
@@ -188,10 +187,10 @@ public class Item implements Serializable {
         this.photos = photos;
     }
 
-    public List<String> getPhotoURLs() {
+    public ArrayList<String> getPhotoURLs() {
         return photoURLs;
     }
-    public void setPhotoURLs(List<String> photoURLs) {
+    public void setPhotoURLs(ArrayList<String> photoURLs) {
         this.photoURLs = photoURLs;
     }
 

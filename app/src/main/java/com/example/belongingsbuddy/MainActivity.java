@@ -34,10 +34,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -143,11 +141,6 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     dataList.clear();
                     for (QueryDocumentSnapshot doc: querySnapshots) {
                         Item item = doc.toObject(Item.class);
-                        if (item.getPhotoURLs() != null) {
-                            if (item.getPhotoURLs().size() > 0) {
-                                Log.d("PHOTO URLS", item.getPhotoURLs().get(0));
-                            }
-                        }
                         dataList.add(item);
                     }
                     itemAdapter.notifyDataSetChanged();
@@ -197,10 +190,6 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 intent.putExtra("quantity", i.getQuantity());
                 intent.putExtra("index", position);
                 intent.putExtra("tags", tagManager.printItemTags(i));
-                intent.putExtra("photoURLsize", i.getPhotoURLs().size());
-                for (int j = 0; j <i.getPhotoURLs().size(); j++) {
-                    intent.putExtra("photoURL"+j, i.getPhotoURLs().get(j));
-                }
                 startActivityForResult(intent, REQUEST_CODE_VIEW);
             }
         });
@@ -556,13 +545,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     item.setSerialNumber(info.getString("serial number"));
                     item.setComment(info.getString("comment"));
                     item.setQuantity(info.getInt("quantity"));
-                    List<String> photoURLs = new ArrayList<>();
+                    ArrayList<String> photoURLs = new ArrayList<String>();
                     int listSize = data.getIntExtra("url list size", 0);
-                    String URL;
                     for (int i = 0; i < listSize; i++) {
-                        URL = data.getStringExtra("photoURL"+i);
-                        Log.d("PHOTO URL RECEIVED "+i, URL);
-                        photoURLs.add(URL);
+                        photoURLs.add(data.getStringExtra("photoURL"+i));
                     }
                     item.setPhotoURLs(photoURLs);
                     itemAdapter.notifyDataSetChanged();

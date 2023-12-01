@@ -2,7 +2,6 @@ package com.example.belongingsbuddy;
 
 import static androidx.core.content.ContentProviderCompat.requireContext;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.processing.SurfaceProcessorNode;
 import androidx.annotation.Nullable;
@@ -24,22 +23,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.app.AlertDialog;
 
-import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
-
-import org.checkerframework.checker.units.qual.A;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -69,7 +60,7 @@ public class EditItemActivity extends AppCompatActivity {
     private String comment;
     private EditText quantity_text;
     private Integer quantity;
-    private ArrayList<String> photoURLs = new ArrayList<>();
+    private ArrayList<String> photoURLs;
 
     StorageReference storageReference;
 
@@ -82,7 +73,6 @@ public class EditItemActivity extends AppCompatActivity {
     private ArrayList<Photo> selectedImages = new ArrayList<>();
     private ArrayList<Photo> savedImages = new ArrayList<>();
     private ArrayList<Uri> imageURIs = new ArrayList<Uri>();
-    private int currentImageIndex = 1;
 
     /**
      * Display the activity_edit_item View and wait for user input.
@@ -266,7 +256,7 @@ public class EditItemActivity extends AppCompatActivity {
                     returnIntent.putExtra("selectedImages", selectedImages);
                     returnIntent.putExtra("url list size", photoURLs.size());
                     for (int i = 0; i < photoURLs.size(); i++) {
-                        returnIntent.putExtra("photoURL" + i, photoURLs.get(i));
+                        returnIntent.putExtra("photoURL"+i, photoURLs.get(i));
                     }
 
                     //returnIntent.putParcelableArrayListExtra("selectedImages", selectedImages);
@@ -350,23 +340,13 @@ public class EditItemActivity extends AppCompatActivity {
         });
 
 
-//        Button showImagesButton = findViewById(R.id.show_images_button);
-//        showImagesButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//               // showImagesButton.setOnClickListener(new View.OnClickListener() {
-//                    //@Override
-//                  //  public void onClick(View v) {
-//                        // Load the current image URL into the ImageView using Picasso
-//                        ImageView imageView = findViewById(R.id.image_view);
-//                        if (photoURLs != null && !photoURLs.isEmpty()) {
-//                            Picasso.get().load(photoURLs.get(currentImageIndex)).into(imageView);
-//                            // Move to the next image or loop back to the first image
-//                            currentImageIndex = (currentImageIndex + 1) % photoURLs.size();
-//                        }
-//                    }
-//
-//        });
+        Button showImagesButton = findViewById(R.id.show_images_button);
+        showImagesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSelectedImages();
+            }
+        });
 
     }
 
@@ -402,7 +382,7 @@ public class EditItemActivity extends AppCompatActivity {
 
                         // Load the image from the Uri
                         Bitmap imageBitmap = loadImageFromUri(uri);
-
+                        
 
                         // Check for null before adding to the list
                         if (imageBitmap != null && uri != null) {
@@ -416,38 +396,9 @@ public class EditItemActivity extends AppCompatActivity {
                                 .child(
                                         "images/"
                                                 + UUID.randomUUID().toString());
-                        // upload file 2 cloud storage :3
-                        UploadTask uploadTask = ref.putFile(uri);
-                        // Get the download URL
-                        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                            @Override
-                            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                                if (!task.isSuccessful()) {
-                                    throw task.getException();
-                                }
+                        String URL = ref.getDownloadUrl().toString();
 
-                                // Continue with the task to get the download URL
-                                return ref.getDownloadUrl();
-                            }
-                        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Uri> task) {
-                                if (task.isSuccessful()) {
-                                    // The download URL of the image
-                                    Uri downloadUri = task.getResult();
-                                    String downloadUrl = downloadUri.toString();
-                                    Log.d("Download URL", downloadUrl);
-
-                                    // Now you can use downloadUrl as needed, e.g., store it in a database
-                                    photoURLs.add(downloadUrl);
-                                } else {
-                                    // Handle failures
-                                    Log.e("Download URL", "Failed to get download URL");
-                                }
-                            }
-                        });
-
-
+                        photoURLs.add(URL);
 
                     }
                 } else {
@@ -480,6 +431,7 @@ public class EditItemActivity extends AppCompatActivity {
                 }
 
 
+
                 //currentItem.setPhotos(currentItem.getPhotos());
 
                 // Update the "photos" property of the item in the bundle
@@ -494,7 +446,7 @@ public class EditItemActivity extends AppCompatActivity {
             }
         }
 
-    }
+}
 
     private Bitmap loadImageFromUri(Uri uri) {
         try {
@@ -514,71 +466,69 @@ public class EditItemActivity extends AppCompatActivity {
     /**
      * Sets the background color of the given TextView(s) back to their original color.
      * This is needed because they may have been previously set to red to alert the user of missing input
-     *
      * @param prompts A list of TextViews containing all the prompts that need to be "reset"
      */
-    private void resetPrompts(TextView[] prompts) {
-        for (TextView p : prompts)
+    private void resetPrompts(TextView[] prompts){
+        for (TextView p: prompts)
             p.setBackgroundColor(getResources().getColor(R.color.light_purple));
     }
 
-    public void getDate(Integer day, Integer month, Integer year) {
+    public  void getDate(Integer day, Integer month, Integer year){
         this.day = day;
         this.month = month;
         this.year = year;
         Toast.makeText(this, year.toString(), Toast.LENGTH_SHORT).show();
 
     }
+    private void showSelectedImages() {
+        // Retrieve the Item object from the bundle
+        Bundle itemInfo = getIntent().getBundleExtra("item");
+        //Item currentItem = itemInfo.getParcelable("item");
 
-//    private void showSelectedImages() {
-//        // Retrieve the Item object from the bundle
-//        Bundle itemInfo = getIntent().getBundleExtra("item");
-//        Item currentItem = itemInfo.getParcelable("item");
-//        int serialNum = itemInfo.getInt("serialNum");
-//        //String serialString = serialNum.toString();
-////        currentItem = new Item(
-////                itemInfo.getString("name"),
-////                new Date(itemInfo.getString("date")),
-////                itemInfo.getString("description"),
-////                itemInfo.getString("make"),
-////                itemInfo.getString("model"),
-////                itemInfo.getFloat("value"),
-////                itemInfo.getString("comment"),
-////                itemInfo.getInt("serialNum")
-////        );
+//        Item currentItem = new Item(
+//                itemInfo.getString("name"),
+//                new Date(itemInfo.getString("date")),
+//                itemInfo.getString("description"),
+//                itemInfo.getString("make"),
+//                itemInfo.getString("model"),
+//                itemInfo.getFloat("value"),
+//                itemInfo.getString("comment"),
+//                itemInfo.getInt("serialNum")
+//        );
 //
 //        // Get the list of photos associated with the item
 //        ArrayList<Photo> itemPhotos = currentItem.getPhotos();
 //        Log.d("ImageDebug", "Number of photos: " + itemPhotos.size());
-//        // Create an AlertDialog to display the list of selected images
-//
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.setTitle("Selected Images");
-//
-//        // Create a layout inflater to inflate a custom layout for the dialog
-//        LayoutInflater inflater = getLayoutInflater();
-//        View dialogView = inflater.inflate(R.layout.dialog_show_images, null);
-//
-//        // Find the ListView in the custom layout
-//        ListView listView = dialogView.findViewById(R.id.image_list_view);
-//
-//        // Create an adapter to display the list of images
-//        ImageAdapter imageAdapter = new ImageAdapter(this, selectedImages);
-//        // ImageAdapter imageAdapter = new ImageAdapter(this, itemPhotos);
-//        listView.setAdapter(imageAdapter);
-//
-//        // Set the custom view to the dialog
-//        builder.setView(dialogView);
-//
-//        // Add a "Close" button to the dialog
-//        builder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                // Close the dialog
-//                dialog.dismiss();
-//            }
-//        });
-//
-//        Picasso.get().load("https://i.imgur.com/DvpvklR.png").into(imageDisplay);
-//    }
+        // Create an AlertDialog to display the list of selected images
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Selected Images");
+
+        // Create a layout inflater to inflate a custom layout for the dialog
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_show_images, null);
+
+        // Find the ListView in the custom layout
+        ListView listView = dialogView.findViewById(R.id.image_list_view);
+
+        // Create an adapter to display the list of images
+        ImageAdapter imageAdapter = new ImageAdapter(this,selectedImages);
+       // ImageAdapter imageAdapter = new ImageAdapter(this, itemPhotos);
+        listView.setAdapter(imageAdapter);
+
+        // Set the custom view to the dialog
+        builder.setView(dialogView);
+
+        // Add a "Close" button to the dialog
+        builder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Close the dialog
+                dialog.dismiss();
+            }
+        });
+
+        // Show the dialog
+        builder.show();
+    }
 }
