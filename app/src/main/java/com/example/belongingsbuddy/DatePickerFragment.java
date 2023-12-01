@@ -16,6 +16,7 @@ import org.w3c.dom.Text;
 
 import java.util.Calendar;
 import java.util.Objects;
+import java.util.TimeZone;
 
 /**
  * Intuitive Dialog from which the user may select a date from the calendar
@@ -36,6 +37,7 @@ public class DatePickerFragment extends DialogFragment
         // Use the current date as the default date in the picker.
         this.onAttach(getContext());
         final Calendar c = Calendar.getInstance();
+        c.setTimeZone(TimeZone.getTimeZone("UTC"));
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
@@ -59,6 +61,7 @@ public class DatePickerFragment extends DialogFragment
      */
     public void onDateSet(DatePicker view, int year, int month, int day) {
         // Do something with the date the user picks.
+        month += 1;
         Date date = new Date(day, month, year);
         TextView t = Objects.requireNonNull(Objects.requireNonNull(getDialog()).getOwnerActivity()).findViewById(R.id.add_date);
         t.setText(date.getString());

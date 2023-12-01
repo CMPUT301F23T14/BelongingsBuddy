@@ -1,6 +1,7 @@
 package com.example.belongingsbuddy;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -77,6 +78,141 @@ public class ItemViewActivity extends AppCompatActivity {
         Integer q = getIntent().getIntExtra("quantity", 1);
         quantity.setText(q.toString());
         tags.setText(getIntent().getStringExtra("tags"));
+        int listSize = getIntent().getIntExtra("photoURLsize", 0);
+        for (int i = 0; i < listSize; i++) {
+            String URL = getIntent().getStringExtra("photoURL"+i);
+            Log.d("URL", URL);
+            photoURLs.add(URL);
+        }
+
+
+        Button showImagesButton = findViewById(R.id.show_images_button);
+        showImagesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // showImagesButton.setOnClickListener(new View.OnClickListener() {
+                //@Override
+                //  public void onClick(View v) {
+                // Create an AlertDialog to display the list of selected images
+                AlertDialog.Builder builder = new AlertDialog.Builder(ItemViewActivity.this);
+                builder.setTitle("Selected Images");
+                // Create a layout inflater to inflate a custom layout for the dialog
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dialog_show_images, null);
+                ViewPager viewPager = dialogView.findViewById(R.id.view_pager);
+                ImagePagerAdapter adapter = new ImagePagerAdapter(photoURLs);
+                viewPager.setAdapter(adapter);
+
+                // Set the custom view to the dialog
+                builder.setView(dialogView);
+                // Add a "Close" button to the dialog
+                builder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Close the dialog
+                        dialog.dismiss();
+                    }
+                });
+                // Show the dialog
+                builder.show();
+                Button deleteButton = dialogView.findViewById(R.id.delete_button);
+
+
+                deleteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // Handle delete action (implement as needed)
+                        // For example, you can delete the currently displayed image
+                        int currentItem = viewPager.getCurrentItem();
+//                        @Override
+//                        public void onClick(View v) {
+//                            // 1. Identify the index of the item to delete
+//                            int itemIndex = getIntent().getIntExtra("index", 0);
+//
+//                            // 2. Retrieve the item from dataList
+//                            if (itemIndex >= 0 && itemIndex < dataList.size()) {
+//                                Item itemToDelete = dataList.get(itemIndex);
+//
+//                                // 3. Delete the item from Firestore
+//                                user_collection.document(itemToDelete.getDocumentId()).delete()
+//                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                            @Override
+//                                            public void onSuccess(Void aVoid) {
+//                                                // 4. Delete the item from dataList
+//                                                dataList.remove(itemIndex);
+//                                                itemAdapter.notifyDataSetChanged();
+//
+//                                                // 5. Navigate back to MainActivity or perform other actions
+//                                                Toast.makeText(ItemViewActivity.this, "Item deleted successfully", Toast.LENGTH_SHORT).show();
+//                                                finish();
+//                                            }
+//                                        })
+//                                        .addOnFailureListener(new OnFailureListener() {
+//                                            @Override
+//                                            public void onFailure(@NonNull Exception e) {
+//                                                // Handle the failure to delete from Firestore
+//                                                Toast.makeText(ItemViewActivity.this, "Failed to delete item", Toast.LENGTH_SHORT).show();
+//                                            }
+//                                        });
+//                            }
+//                        }
+//                    });
+             //   }
+                    }
+                });
+
+
+
+                // Load the current image URL into the ImageView using Picasso
+//                ImageView imageView = dialogView.findViewById(R.id.image_view);
+//                Log.d("Imageview", imageView.toString());
+//                for (int i = 0; i < listSize; i++) {
+//                    continue;
+//                }
+//                Picasso.get()
+//                        .load("https://i.imgur.com/DvpvklR.png")
+//                        .into(imageView, new Callback() {
+//                            @Override
+//                            public void onSuccess() {
+//                                // Image loaded successfully
+//                                Log.d("PICASSO", "Image loaded");
+//                            }
+//
+//                            @Override
+//                            public void onError(Exception e) {
+//                                // Handle error
+//                                e.printStackTrace();
+//                            }
+//                        });
+//                if (photoURLs != null && !photoURLs.isEmpty()) {
+//                    int currentImageIndex = 0;
+//
+//                    String URL = photoURLs.get(currentImageIndex);
+//                    Picasso.get()
+//                        .load(URL)
+//                        .into(imageView, new Callback() {
+//                            @Override
+//                            public void onSuccess() {
+//                                // Image loaded successfully
+//                                Log.d("PICASSO", "Image loaded");
+//                            }
+//
+//                            @Override
+//                            public void onError(Exception e) {
+//                                // Handle error
+//                                Log.d("PICASSO", "Image failed to load.");
+//                                e.printStackTrace();
+//                            }
+//                        });
+//                    // Move to the next image or loop back to the first image
+//                    // photoURLs.remove(currentImageIndex);
+//                    currentImageIndex = (currentImageIndex + 1) % photoURLs.size();
+//                }
+
+            }
+
+        });
+
 
 
 
