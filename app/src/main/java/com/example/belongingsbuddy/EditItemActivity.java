@@ -5,6 +5,8 @@ import static androidx.core.content.ContentProviderCompat.requireContext;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.processing.SurfaceProcessorNode;
 import androidx.annotation.Nullable;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.DialogInterface;
@@ -56,6 +58,8 @@ public class EditItemActivity extends AppCompatActivity {
     private String serialNum;
     private EditText comment_text;
     private String comment;
+    private EditText quantity_text;
+    private Integer quantity;
     private ArrayList<String> photoURLs;
 
     StorageReference storageReference;
@@ -102,7 +106,6 @@ public class EditItemActivity extends AppCompatActivity {
         // make:
         make_text = this.findViewById(R.id.edit_make);
         make_text.setText(itemInfo.getString("make"));
-
         // model:
         model_text = this.findViewById(R.id.edit_model);
         model_text.setText(itemInfo.getString("model"));
@@ -136,6 +139,37 @@ public class EditItemActivity extends AppCompatActivity {
                 newFragment.show(getSupportFragmentManager(), "Date");
             }
         });
+
+        // QUANTITY implementation:
+        quantity_text = this.findViewById(R.id.edit_quantity);
+        Integer q  = itemInfo.getInt("quantity");
+        quantity_text.setText(q.toString());
+        quantity = Integer.parseInt(quantity_text.getText().toString());
+        // PLUS button
+        Button plus = findViewById(R.id.edit_plus_button);
+        plus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                quantity = Integer.parseInt(quantity_text.getText().toString());
+                quantity += 1;
+                quantity_text.setText(quantity.toString());
+
+            }
+        });
+        // MINUS button
+        Button minus = findViewById(R.id.edit_minus_button);
+        minus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                quantity = Integer.parseInt(quantity_text.getText().toString());
+                if (quantity > 0){
+                    quantity -= 1;
+                    quantity_text.setText(quantity.toString());
+                }
+            }
+        });
+
+
 
         // CONFIRM implementation:
         Button confirm = findViewById(R.id.edit_confirm);
@@ -191,6 +225,7 @@ public class EditItemActivity extends AppCompatActivity {
                     make = make_text.getText().toString();
                     model = model_text.getText().toString();
                     new_val = Float.parseFloat(value_text.getText().toString());
+                    quantity = Integer.parseInt(quantity_text.getText().toString());
                     // comment is optional
                     if (TextUtils.isEmpty(comment_text.getText().toString())) {
                         comment = "NA";
@@ -217,6 +252,7 @@ public class EditItemActivity extends AppCompatActivity {
                     returnIntent.putExtra("month", date.getMonth());
                     returnIntent.putExtra("year", date.getYear());
                     returnIntent.putExtra("index", itemInfo.getInt("index"));
+                    returnIntent.putExtra("quantity", quantity);
                     returnIntent.putExtra("selectedImages", selectedImages);
                     returnIntent.putExtra("url list size", photoURLs.size());
                     for (int i = 0; i < photoURLs.size(); i++) {
