@@ -23,6 +23,7 @@ public class Item implements Serializable {
     private String serialNumber;
     private Float estimatedValue;
     private String comment;
+    private Integer quantity = 1;
     private ArrayList<Tag> tags;
     private ArrayList<Photo> photos;
     private ArrayList<String> photoURLs;
@@ -160,6 +161,14 @@ public class Item implements Serializable {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 
     public ArrayList<Tag> getTags() {

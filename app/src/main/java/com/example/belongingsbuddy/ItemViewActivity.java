@@ -31,6 +31,7 @@ public class ItemViewActivity extends AppCompatActivity {
     private TextView value;
     private TextView serialNum;
     private TextView comment;
+    private TextView quantity;
 
     private TextView tags;
 
@@ -59,7 +60,9 @@ public class ItemViewActivity extends AppCompatActivity {
         value = this.findViewById(R.id.view_value);
         serialNum = this.findViewById(R.id.view_serial_number);
         comment = this.findViewById(R.id.view_comment);
+        quantity = this.findViewById(R.id.view_quantity);
         tags = this.findViewById(R.id.view_tags);
+
 
         // set up the TextViews with the information from the Item
         name.setText(getIntent().getStringExtra("name"));
@@ -71,6 +74,8 @@ public class ItemViewActivity extends AppCompatActivity {
         value.setText(String.format("%.2f", val));
         serialNum.setText(getIntent().getStringExtra("serialNum"));
         comment.setText(getIntent().getStringExtra("comment"));
+        Integer q = getIntent().getIntExtra("quantity", 1);
+        quantity.setText(q.toString());
         tags.setText(getIntent().getStringExtra("tags"));
 
 

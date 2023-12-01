@@ -87,10 +87,20 @@ public class CustomList extends ArrayAdapter<Item> {
         TextView itemMake = view.findViewById(R.id.item_make);
 
         itemName.setText(item.getName());
-        @SuppressLint("DefaultLocale") String value = String.format("$%.2f", item.getEstimatedValue());
-        itemValue.setText(value);
         itemModel.setText(item.getModel());
         itemMake.setText(item.getMake());
+        // Value field has 2 cases:
+        // if quantity = 1, then just show the value of one instance of Item
+        // if quantity > 1, then show value of one instance of Item + number of Items
+        Integer q = item.getQuantity();
+        if (q == 1){
+            @SuppressLint("DefaultLocale") String value = String.format("$%.2f", item.getEstimatedValue());
+            itemValue.setText(value);
+        } else{
+            @SuppressLint("DefaultLocale") String value = String.format("$%.2f x %d", item.getEstimatedValue(), q);
+            itemValue.setText(value);
+        }
+
         CheckBox checkBox = view.findViewById(R.id.checkbox);
         // Hide checkboxes by default
         checkBox.setVisibility(multiSelectMode ? View.VISIBLE : View.GONE);
