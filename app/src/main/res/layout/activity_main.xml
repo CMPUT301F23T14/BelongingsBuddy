@@ -74,31 +74,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/filter_type_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone">
-
-<!--        <TextView-->
-<!--            android:id="@+id/filter_type_textview"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text=""-->
-<!--            android:paddingStart="10dp"-->
-<!--            android:paddingEnd="10dp"-->
-<!--            android:textSize="20dp">-->
-<!--        </TextView>-->
-
-        <Button
-            android:id="@+id/filter_type_rollback"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Dismiss Filter"
-            android:textSize="20dp">
-        </Button>
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/sort_type_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -119,7 +94,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="X"
-            android:textSize="25dp">
+            android:textSize="30dp">
         </Button>
     </LinearLayout>
 
