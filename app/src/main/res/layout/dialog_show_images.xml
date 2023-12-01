@@ -1,22 +1,22 @@
-<!-- res/layout/dialog_show_images.xml -->
+<!-- dialog_show_images.xml -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
-    <!-- ListView to display images -->
-    <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/image_view"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:scaleType="centerCrop"/>
-    <ListView
-        android:id="@+id/image_list_view"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="1dp"
-        android:padding="16dp"
-        android:background="#FFF" />
+        android:layout_height="match_parent"/>
 
+    <!-- Add any other UI elements here, e.g., delete button -->
+    <Button
+        android:id="@+id/delete_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Delete"/>
 </RelativeLayout>
+
+
 
