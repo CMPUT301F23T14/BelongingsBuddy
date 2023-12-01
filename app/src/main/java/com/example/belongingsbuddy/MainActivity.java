@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
         });
 
         // view filter click listener
-        final Button viewFilterButton = findViewById(R.id.filter_view);
+        final Button viewFilterButton = findViewById(R.id.filter_type_rollback);
         viewFilterButton.setOnClickListener(v -> {
             new ViewFilterFragment().show(getSupportFragmentManager(), "View Filter:");
         });
@@ -325,6 +325,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
      */
     @Override
     public void onFilterOkPressed(String[] keywords, String[] makes, Date startDate, Date endDate) {
+        // desc keywords
         if (keywords.length != 0) {
             // Filter the list based on the condition that the description contains any string from the array
             ArrayList<Item> filteredList = (ArrayList<Item>) dataList.stream()
@@ -334,6 +335,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
             dataList.addAll(filteredList);
         }
 
+        // makes
         if (makes.length != 0) {
             // Filter the list based on the condition that the make contains any string from the array
             ArrayList<Item> filteredList = (ArrayList<Item>) dataList.stream()
@@ -343,19 +345,18 @@ public class MainActivity extends AppCompatActivity implements Listener{
             dataList.addAll(filteredList);
         }
 
+        // date
         if (startDate != null) {
             ArrayList<Item> filteredList = filterItemsByDateRange(dataList, startDate, endDate);
             dataList.clear();
             dataList.addAll(filteredList);
         }
 
+        // if a filter is present
         if (keywords.length != 0 || makes.length != 0 || startDate != null) {
-            String filterString = String.join(", ", keywords);
-
             filterTypeLayout.setVisibility(View.VISIBLE);
-//            filterTypeTextView.setText(filterString);
         }
-
+        // if nothing matches filter
         if (dataList.isEmpty()) {
             Toast.makeText(this, "No items match your filter.", Toast.LENGTH_SHORT).show();
         }
@@ -591,7 +592,6 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
         for (Item item : dataList) {
             Date itemDate = item.getDate();
-
             // Check if the item's date is within the specified range (inclusive)
             if (itemDate.compareTo(startDate) >= 0 && itemDate.compareTo(endDate) <= 0) {
                 filteredList.add(item);

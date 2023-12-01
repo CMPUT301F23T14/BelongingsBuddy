@@ -14,15 +14,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.DateValidatorPointBackward;
 import com.google.android.material.datepicker.MaterialDatePicker;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * A {@link DialogFragment} subclass that represents a filter dialog for items in the Belongings Buddy app.
@@ -86,6 +90,11 @@ public class FilterItemsFragment extends DialogFragment {
                 MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
                 builder.setTitleText("Select a date range");
 
+                // Adding a date validator to ensure no future dates are selected
+                builder.setCalendarConstraints(new CalendarConstraints.Builder()
+                        .setValidator(DateValidatorPointBackward.now())
+                        .build());
+
                 // Building the date picker dialog
                 MaterialDatePicker<Pair<Long, Long>> datePicker = builder.build();
                 datePicker.addOnPositiveButtonClickListener(selection -> {
@@ -95,7 +104,8 @@ public class FilterItemsFragment extends DialogFragment {
                     Long endDateLong = selection.second;
 
                     // Formating the selected dates as strings, note mm is not months is milliseconds
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
                     String startDateString = sdf.format(new Date(startDateLong));
                     String endDateString = sdf.format(new Date(endDateLong));
 
