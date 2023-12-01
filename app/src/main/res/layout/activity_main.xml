@@ -76,25 +76,33 @@
     <LinearLayout
         android:id="@+id/filter_type_layout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/filter_type_textview"
+        <Button
+            android:id="@+id/filter_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Date"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:textSize="20dp">
-        </TextView>
+            android:text="View Filter"
+            android:backgroundTint="@color/light_purple"
+            android:textSize="25dp">
+        </Button>
+
+<!--        <TextView-->
+<!--            android:id="@+id/filter_type_textview"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Date"-->
+<!--            android:paddingStart="10dp"-->
+<!--            android:paddingEnd="10dp"-->
+<!--            android:textSize="20dp">-->
+<!--        </TextView>-->
 
         <Button
             android:id="@+id/filter_type_rollback"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="X"
-            android:textSize="30dp">
+            android:textSize="25dp">
         </Button>
     </LinearLayout>
 
@@ -119,7 +127,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="X"
-            android:textSize="30dp">
+            android:textSize="25dp">
         </Button>
     </LinearLayout>
 

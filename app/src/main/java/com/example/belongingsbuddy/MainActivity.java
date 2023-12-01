@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
         // get ui objects for filter
         filterTypeLayout = findViewById(R.id.filter_type_layout);
-        filterTypeTextView = findViewById(R.id.filter_type_textview);
+//        filterTypeTextView = findViewById(R.id.filter_type_textview);
 
         // click listener for items in ListView
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -188,7 +188,13 @@ public class MainActivity extends AppCompatActivity implements Listener{
         // click listener for sort:
         final Button sortButton = findViewById(R.id.sort_button);
         sortButton.setOnClickListener(v -> {
-            new SortItemsFragment().show(getSupportFragmentManager(), "Sort Item:");
+            new SortItemsFragment().show(getSupportFragmentManager(), "Sort Items:");
+        });
+
+        // view filter click listener
+        final Button viewFilterButton = findViewById(R.id.filter_view);
+        viewFilterButton.setOnClickListener(v -> {
+            new ViewFilterFragment().show(getSupportFragmentManager(), "View Filter:");
         });
 
         // click listener filter rollback
@@ -319,9 +325,6 @@ public class MainActivity extends AppCompatActivity implements Listener{
      */
     @Override
     public void onFilterOkPressed(String[] keywords, String[] makes, Date startDate, Date endDate) {
-        filterTypeLayout.setVisibility(View.VISIBLE);
-        filterTypeTextView.setText("Gotta do this");
-
         if (keywords.length != 0) {
             // Filter the list based on the condition that the description contains any string from the array
             ArrayList<Item> filteredList = (ArrayList<Item>) dataList.stream()
@@ -346,7 +349,18 @@ public class MainActivity extends AppCompatActivity implements Listener{
             dataList.addAll(filteredList);
         }
 
+        if (keywords.length != 0 || makes.length != 0 || startDate != null) {
+            String filterString = String.join(", ", keywords);
 
+            filterTypeLayout.setVisibility(View.VISIBLE);
+//            filterTypeTextView.setText(filterString);
+        }
+
+        if (dataList.isEmpty()) {
+            Toast.makeText(this, "No items match your filter.", Toast.LENGTH_SHORT).show();
+        }
+
+        itemAdapter.notifyDataSetChanged();
     }
 
     /**

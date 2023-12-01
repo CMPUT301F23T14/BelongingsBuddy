@@ -33,9 +33,8 @@ public class FilterItemsFragment extends DialogFragment {
     public Listener listener;
     String startDate = null;
     String endDate = null;
-//    ArrayList<String> keywords = new ArrayList<>();
-//    ArrayList<String> makes = new ArrayList<>();
-//    ArrayList<String> tags = new ArrayList<>();
+    com.example.belongingsbuddy.Date startDateAsDate;
+    com.example.belongingsbuddy.Date endDateAsDate;
     String[] keywords = {};
     String[] makes = {};
     String[] tags = {};
@@ -132,7 +131,12 @@ public class FilterItemsFragment extends DialogFragment {
                 if (!selectedTags.getText().toString().isEmpty()) {
                     tags = selectedTags.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
                 }
-                listener.onFilterOkPressed(keywords, makes, new com.example.belongingsbuddy.Date(startDate), new com.example.belongingsbuddy.Date(endDate));
+                if (startDate != null) {
+                    startDateAsDate = new com.example.belongingsbuddy.Date(startDate);
+                    endDateAsDate = new com.example.belongingsbuddy.Date(endDate);
+
+                }
+                listener.onFilterOkPressed(keywords, makes, startDateAsDate, endDateAsDate);
                 dialog.dismiss();
             }
         });
