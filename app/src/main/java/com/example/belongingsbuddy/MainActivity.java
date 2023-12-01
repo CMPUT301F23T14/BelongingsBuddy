@@ -196,10 +196,12 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 intent.putExtra("comment", i.getComment());
                 intent.putExtra("index", position);
                 intent.putExtra("tags", tagManager.printItemTags(i));
-                intent.putExtra("photoURLsize", i.getPhotoURLs().size());
-                for (int j = 0; j <i.getPhotoURLs().size(); j++) {
-                    intent.putExtra("photoURL"+j, i.getPhotoURLs().get(j));
-                }
+                if (i.getPhotoURLs() != null) {
+                    intent.putExtra("photoURLsize", i.getPhotoURLs().size());
+                    for (int j = 0; j <i.getPhotoURLs().size(); j++) {
+                        intent.putExtra("photoURL"+j, i.getPhotoURLs().get(j));
+                    }
+                };
                 startActivityForResult(intent, REQUEST_CODE_VIEW);
             }
         });
