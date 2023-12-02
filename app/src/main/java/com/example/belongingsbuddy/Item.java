@@ -5,11 +5,12 @@ import android.widget.Toast;
 import com.google.firebase.firestore.CollectionReference;
 
 import org.checkerframework.checker.units.qual.C;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * an instance of this class represent an Item that the app will add to the inventory
@@ -27,6 +28,8 @@ public class Item implements Serializable {
     private ArrayList<Tag> tags;
     private ArrayList<Photo> photos;
     private List<String> photoURLs;
+    private String epoch;
+    private int id;
 
     /**
      * Constructor for the Item class (without a provided serial number)
@@ -57,6 +60,19 @@ public class Item implements Serializable {
         this.comment = comment;
         tags = new ArrayList<Tag>();
         this.photos = new ArrayList<Photo>();
+        this.epoch = Long.toString(System.currentTimeMillis());
+        this.id = Objects.hash(
+                this.name,
+                this.epoch,
+                this.description,
+                this.make,
+                this.model,
+                this.serialNumber,
+                this.estimatedValue,
+                this.comment,
+                this.tags,
+                this.photos
+        );
         // this.photoURLs = new ArrayList<String>();
     }
 
@@ -91,6 +107,19 @@ public class Item implements Serializable {
         this.comment = comment;
         tags = new ArrayList<Tag>();
         photos = new ArrayList<Photo>();
+        this.epoch = Long.toString(System.currentTimeMillis());
+        this.id = Objects.hash(
+                this.name,
+                this.epoch,
+                this.description,
+                this.make,
+                this.model,
+                this.serialNumber,
+                this.estimatedValue,
+                this.comment,
+                this.tags,
+                this.photos
+        );
     }
 
     /**
@@ -204,17 +233,57 @@ public class Item implements Serializable {
         photos.add(p);
     }
 
+    public String getEpoch() {
+        return epoch;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item i = (Item) o;
+        return i.hashCode() == o.hashCode();
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id;
+    }
+
     /**
      * Add the Item to the FireStore CollectionReference passed in as a parameter
      * @param collection Firestore CollectionReference the Item is being added to
      */
     public void addToDatabase(CollectionReference collection){
-        collection.document(this.name).set(this);
+        Map<String, Object> docData = new HashMap<>();
+        docData.put("comment", this.getComment());
+        docData.put("date", this.getDate());
+        docData.put("description", this.getDescription());
+        docData.put("estimatedValue", this.getEstimatedValue());
+        docData.put("make", this.getMake());
+        docData.put("model", this.getModel());
+        docData.put("name", this.getName());
+        docData.put("photoURLs", this.getPhotoURLs());
+        docData.put("photos", this.getPhotos());
+        docData.put("serialNumber", this.getSerialNumber());
+        docData.put("tags", this.getTags());
+        collection.document(Integer.toString(hashCode())).set(docData);
     }
 
-    public void updateInDatabase(CollectionReference collection, String oldName){
-        collection.document(oldName).delete();
-        collection.document(this.name).set(this);
+    public void updateInDatabase(CollectionReference collection){
+        Map<String, Object> docData = new HashMap<>();
+        docData.put("comment", this.getComment());
+        docData.put("date", this.getDate());
+        docData.put("description", this.getDescription());
+        docData.put("estimatedValue", this.getEstimatedValue());
+        docData.put("make", this.getMake());
+        docData.put("model", this.getModel());
+        docData.put("name", this.getName());
+        docData.put("photoURLs", this.getPhotoURLs());
+        docData.put("photos", this.getPhotos());
+        docData.put("serialNumber", this.getSerialNumber());
+        docData.put("tags", this.getTags());
+        collection.document(Integer.toString(hashCode())).update(docData);
     }
 
 }
