@@ -104,6 +104,15 @@ public class SortItemsFragment extends DialogFragment {
 //                value.setBackgroundColor(0xe9e7fa);
             }
         });
+        // tags
+        Button tags = view.findViewById(R.id.sort_tags);
+        tags.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sortType = "tags";
+            }
+        });
+
         // radio group click listener
         final RadioGroup radio = (RadioGroup) dialog.findViewById(R.id.radioGroup);
         radio.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {

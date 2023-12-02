@@ -34,8 +34,7 @@ public class TagActivity extends DialogFragment {
     GridView tagListView;
     Button Confirm;
     Button Cancel;
-    AddItemActivity mainActivity;
-    TextView addTags;
+    TagListener mainActivity;
     ArrayList<Tag> selectedTags;
     HashMap<Tag, Boolean> TagBool;
     @Override
@@ -48,7 +47,6 @@ public class TagActivity extends DialogFragment {
         // Get references to your views
         searchView = dialogView.findViewById(R.id.searchView);
         tagListView = dialogView.findViewById(R.id.elementListView);
-        addTags = mainActivity.findViewById(R.id.add_tags);
 
         tagListView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE);
 
@@ -120,13 +118,7 @@ public class TagActivity extends DialogFragment {
                     }
                     // ...
                 }
-                mainActivity.setTagList(selectedTags);
-                String tagSequence = "";
-                for(Tag tagString: selectedTags) {
-                    tagSequence += tagString + " ";
-                }
-                addTags.setText(tagSequence);
-
+                mainActivity.tagListen(selectedTags);
                 dialog.dismiss();
             }
         });
@@ -150,10 +142,10 @@ public class TagActivity extends DialogFragment {
         super.onAttach(context);
 
         try {
-            mainActivity = (AddItemActivity) context;
+            mainActivity = (TagListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " must implement DataPassListener");
+                    + " must implement TagListener");
         }
     }
 

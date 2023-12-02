@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 intent.putExtra("serialNum", i.getSerialNumber());
                 intent.putExtra("comment", i.getComment());
                 intent.putExtra("index", position);
-                intent.putExtra("tags", tagManager.printItemTags(i));
+                intent.putExtra("tags", tagManager.printItemTags(i, false));
                 startActivityForResult(intent, REQUEST_CODE_VIEW);
             }
         });
@@ -351,14 +351,24 @@ public class MainActivity extends AppCompatActivity implements Listener{
             case "value":
                 if (isAscending) {
 //                    Toast.makeText(this, "SORT BY value ASC", Toast.LENGTH_SHORT).show();
+                    dataList.sort(Comparator.comparing(Item -> tagManager.printItemTags(Item, false)));
+                } else {
+//                    Toast.makeText(this, "SORT BY value DESC", Toast.LENGTH_SHORT).show();
+                    dataList.sort(Comparator.comparing(Item -> tagManager.printItemTags((com.example.belongingsbuddy.Item) Item, false)).reversed());
+                }
+                sortTypeTextView.setText("Estimated Value");
+                itemAdapter.notifyDataSetChanged();
+                break;
+            case "tags":
+                if (isAscending) {
+//                    Toast.makeText(this, "SORT BY value ASC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getEstimatedValue));
                 } else {
 //                    Toast.makeText(this, "SORT BY value DESC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getEstimatedValue).reversed());
                 }
-                sortTypeTextView.setText("Estimated Value");
+                sortTypeTextView.setText("Tags");
                 itemAdapter.notifyDataSetChanged();
-                break;
             case "NONE":
 //                Toast.makeText(this, "No selection", Toast.LENGTH_SHORT).show();
                 break;
