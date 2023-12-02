@@ -318,7 +318,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
                 // Remove Items from FireStore collection
                 for (Item i: selectedItems) {
-                    user_collection.document(i.getName()).delete();
+                    user_collection.document(Integer.toString(i.hashCode())).delete();
 
 
                 }
@@ -591,7 +591,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     Item i = dataList.get(position);
                     dataList.remove(i);
                     // remove Item from FireStore collection
-                    user_collection.document(i.getName()).delete();
+                    user_collection.document(Integer.toString(i.hashCode())).delete();
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup
                     originalOrderDataList.clear();
@@ -636,7 +636,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     originalOrderDataList.clear();
                     originalOrderDataList.addAll(dataList);
                     // update item in FireStore
-                    item.updateInDatabase(user_collection, oldName);
+                    item.updateInDatabase(user_collection);
                     // update total
                     totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
                 }
