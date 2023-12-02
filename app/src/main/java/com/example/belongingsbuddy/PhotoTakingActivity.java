@@ -1,24 +1,87 @@
 package com.example.belongingsbuddy;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.view.View;
+import android.widget.Button;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.CameraX;
 import androidx.camera.core.ExperimentalGetImage;
+import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
+import androidx.camera.core.ImageProxy;
+import androidx.lifecycle.LifecycleOwner;
 
+import java.nio.ByteBuffer;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class PhotoTakingActivity extends CameraActivity implements CameraCreationListener {
+    private Executor executor = Executors.newSingleThreadExecutor();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //CameraActivity needs these fields set
-        setContentViewID(R.layout.activity_scanner);
+        setContentViewID(R.layout.activity_picture);
         setCameraCreationListener(this);
 
         super.onCreate(savedInstanceState);
+
+
+        Button switchCamera = findViewById(R.id.swap_camera_button);
+        Button takePhoto = findViewById(R.id.take_picture_button);
+        Button backButton = findViewById(R.id.back_button_photo);
+        switchCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (cameraController.getCameraSelector() == CameraSelector.DEFAULT_BACK_CAMERA) {
+                    cameraController.setCameraSelector(CameraSelector.DEFAULT_FRONT_CAMERA);
+                }
+                else {
+                    cameraController.setCameraSelector(CameraSelector.DEFAULT_BACK_CAMERA);
+                }
+            }
+        });
+        takePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cameraController.takePicture(executor, new ImageCapture.OnImageCapturedCallback() {
+                    @Override
+                    public void onCaptureSuccess(@NonNull ImageProxy image) {
+                        ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+                        byte[] imageData = new byte[buffer.remaining()];
+                        buffer.get(imageData);
+
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("capturedImage", imageData);
+                        setResult(Activity.RESULT_OK, resultIntent);
+                        finish();
+                    }
+
+                    @Override
+                    public void onError(@NonNull ImageCaptureException exception) {
+                        finish();
+                    }
+                });
+            }
+        });
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     /**
+     /**
      * Called when camera was created successfully.
      */
     @OptIn(markerClass = ExperimentalGetImage.class)

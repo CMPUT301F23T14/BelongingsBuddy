@@ -79,6 +79,7 @@ public class EditItemActivity extends AppCompatActivity {
 
     // photo stuff !
     private static final int PICK_IMAGES_REQUEST_CODE = 1;
+    private static final int TAKE_PHOTO_REQUEST_CODE = 42069;
     private ArrayList<Photo> selectedImages = new ArrayList<>();
     private ArrayList<Photo> savedImages = new ArrayList<>();
     private ArrayList<Uri> imageURIs = new ArrayList<Uri>();
@@ -310,6 +311,16 @@ public class EditItemActivity extends AppCompatActivity {
 
                 });
 
+                takePhotoButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(EditItemActivity.this, PhotoTakingActivity.class);
+                        intent.setType("image/*");
+
+                        startActivityForResult(intent, TAKE_PHOTO_REQUEST_CODE);
+                    }
+                });
+
                 // Build the custom dialog
                 //AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
 
@@ -362,8 +373,9 @@ public class EditItemActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         // Handle delete action (implement as needed)
                         // For example, you can delete the currently displayed image
-
-
+                        if (photoURLs.size() == 0) {
+                            return;
+                        }
 
 
                         // : )
@@ -386,8 +398,14 @@ public class EditItemActivity extends AppCompatActivity {
                         newAdapter.notifyDataSetChanged();
 
                         // Set the current item to the next item after deletion
-                        int nextItem = currentItem % photoURLs.size();
-                        viewPager.setCurrentItem(nextItem);
+                        if (photoURLs.size() != 0) {
+                            int nextItem = currentItem % photoURLs.size();
+                            viewPager.setCurrentItem(nextItem);
+                        }
+                        else {
+                            int nextItem = 0;
+                            viewPager.setCurrentItem(nextItem);
+                        }
 
                         // Use URL to delete from cloud storage
                         StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(URLDelete);
