@@ -7,6 +7,8 @@ import com.google.firebase.firestore.CollectionReference;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * an instance of this class represent an Item that the app will add to the inventory
@@ -24,6 +26,7 @@ public class Item implements Serializable {
     private ArrayList<Tag> tags;
     private ArrayList<Photo> photos;
     private String epoch;
+    private List<String> photoURLs;
 
     /**
      * Constructor for the Item class (without a provided serial number)
@@ -54,7 +57,8 @@ public class Item implements Serializable {
         this.comment = comment;
         this.epoch = Long.toString(System.currentTimeMillis());
         tags = new ArrayList<Tag>();
-        photos = new ArrayList<Photo>();
+        this.photos = new ArrayList<Photo>();
+        // this.photoURLs = new ArrayList<String>();
     }
 
     /**
@@ -176,6 +180,13 @@ public class Item implements Serializable {
 
     public void setPhotos(ArrayList<Photo> photos) {
         this.photos = photos;
+    }
+
+    public List<String> getPhotoURLs() {
+        return photoURLs;
+    }
+    public void setPhotoURLs(List<String> photoURLs) {
+        this.photoURLs = photoURLs;
     }
 
     /**

@@ -1,26 +1,54 @@
 package com.example.belongingsbuddy;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.processing.SurfaceProcessorNode;
-
+import androidx.annotation.Nullable;
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.app.AlertDialog;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
+
+import org.checkerframework.checker.units.qual.A;
+
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  *  Activity for editing an Item from the user's dataList.
  *  This class gets all the necessary input from the user and then returns that
  *  data to the calling activity (MainActivity)
  */
-public class EditItemActivity extends AppCompatActivity{
+public class EditItemActivity extends AppCompatActivity {
     private EditText name_text;
     private String name;
     private TextView date_text;
@@ -32,12 +60,25 @@ public class EditItemActivity extends AppCompatActivity{
     private EditText model_text;
     private String model;
     private EditText value_text;
-    private  Float new_val;
+    private Float new_val;
     private EditText serialNum_text;
     private String serialNum;
     private EditText comment_text;
     private String comment;
+    private ArrayList<String> photoURLs = new ArrayList<>();
 
+    StorageReference storageReference;
+
+    private Integer day = null;
+    private Integer month = null;
+    private Integer year = null;
+
+    // photo stuff !
+    private static final int PICK_IMAGES_REQUEST_CODE = 1;
+    private ArrayList<Photo> selectedImages = new ArrayList<>();
+    private ArrayList<Photo> savedImages = new ArrayList<>();
+    private ArrayList<Uri> imageURIs = new ArrayList<Uri>();
+    private int currentImageIndex = 1;
 
     /**
      * Display the activity_edit_item View and wait for user input.
@@ -46,16 +87,18 @@ public class EditItemActivity extends AppCompatActivity{
      * the user, and then returns that data to the calling activity (MainActivity)
      * NOTE: if invalid input is given and the user clicks the "Confirm" button, then this class will
      * notify the user about any issues and wait for new user input
-     * @param savedInstanceState If the activity is being re-initialized after
-     *     previously being shut down then this Bundle contains the data it most
-     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
      *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *                           previously being shut down then this Bundle contains the data it most
+     *                           recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_item);
         Bundle itemInfo = getIntent().getBundleExtra("item");
+        // Initialize storage reference
+        storageReference = FirebaseStorage.getInstance().getReference();
         // setup the view with information about the Item being edited
         // name:
         name_text = this.findViewById(R.id.edit_name);
@@ -68,20 +111,31 @@ public class EditItemActivity extends AppCompatActivity{
         description_text.setText(itemInfo.getString("description"));
         // make:
         make_text = this.findViewById(R.id.edit_make);
-        make_text.setText(itemInfo.getString("make"));;
+        make_text.setText(itemInfo.getString("make"));
+
         // model:
         model_text = this.findViewById(R.id.edit_model);
         model_text.setText(itemInfo.getString("model"));
         // value:
-        value_text =this.findViewById(R.id.edit_value);
+        value_text = this.findViewById(R.id.edit_value);
         Float value = itemInfo.getFloat("value");
         value_text.setText(value.toString());
         // serial number:
         serialNum_text = this.findViewById(R.id.edit_serial_number);
-        serialNum_text.setText(itemInfo.getString("serialNum"));
+        Integer serial = itemInfo.getInt("serialNum");
+        if (serial != 0) {
+            serialNum_text.setText(serial.toString());
+        }
         //comment
         comment_text = this.findViewById(R.id.edit_comment);
         comment_text.setText(itemInfo.getString("comment"));
+
+        if (itemInfo.containsKey("selectedImages")) {
+            selectedImages = itemInfo.getParcelableArrayList("selectedImages");
+
+            // Store the selected images separately in the storedImages array
+            savedImages.addAll(selectedImages);
+        }
 
         // SET DATE implementation
         Button setDate = findViewById(R.id.edit_pick_date_button);
@@ -116,9 +170,9 @@ public class EditItemActivity extends AppCompatActivity{
 
                 // assert all required fields are filled out
                 // if they are not all filled out, alert the user and set valid to false
-                for (int i = 0; i < required.size(); i++){
-                    if (required.get(i).getText().toString().trim().length() == 0){
-                        if (valid){
+                for (int i = 0; i < required.size(); i++) {
+                    if (required.get(i).getText().toString().trim().length() == 0) {
+                        if (valid) {
                             Toast.makeText(EditItemActivity.this, "Missing required fields", Toast.LENGTH_SHORT).show();
                         }
                         prompts[i].setBackgroundColor(getResources().getColor(R.color.light_red));
@@ -128,19 +182,19 @@ public class EditItemActivity extends AppCompatActivity{
 
                 //assert a Date has been provided
                 // if it has not been provided, alert the user and set valid to false
-                if (date_text.getText().toString().equals("yyyy-mm-dd")){
+                if (date_text.getText().toString().equals("yyyy-mm-dd")) {
                     TextView prompt = prompts[5];
-                    if (valid){
+                    if (valid) {
                         Toast.makeText(EditItemActivity.this, "Missing required fields", Toast.LENGTH_SHORT).show();
                     }
                     prompt.setBackgroundColor(getResources().getColor(R.color.light_red));
                     valid = false;
-                } else{
+                } else {
                     // a date has been provided
                     date = new Date(date_text.getText().toString());
                 }
                 // all required fields have been filled out
-                if (valid){
+                if (valid) {
                     // get the updated item info
                     name = name_text.getText().toString();
                     description = description_text.getText().toString();
@@ -148,13 +202,13 @@ public class EditItemActivity extends AppCompatActivity{
                     model = model_text.getText().toString();
                     new_val = Float.parseFloat(value_text.getText().toString());
                     // comment is optional
-                    if (TextUtils.isEmpty(comment_text.getText().toString())){
+                    if (TextUtils.isEmpty(comment_text.getText().toString())) {
                         comment = "NA";
-                    } else{
+                    } else {
                         comment = comment_text.getText().toString();
                     }
                     // serial number is optional
-                    if (TextUtils.isEmpty(serialNum_text.getText().toString())){
+                    if (TextUtils.isEmpty(serialNum_text.getText().toString())) {
                         // use the constructor without a serial number
                         serialNum = null;
                     } else {
@@ -173,11 +227,32 @@ public class EditItemActivity extends AppCompatActivity{
                     returnIntent.putExtra("month", date.getMonth());
                     returnIntent.putExtra("year", date.getYear());
                     returnIntent.putExtra("index", itemInfo.getInt("index"));
-                    setResult(Activity.RESULT_OK,returnIntent);
+                    returnIntent.putExtra("selectedImages", selectedImages);
+                    returnIntent.putExtra("url list size", photoURLs.size());
+                    for (int i = 0; i < photoURLs.size(); i++) {
+                        returnIntent.putExtra("photoURL" + i, photoURLs.get(i));
+                    }
+
+                    //returnIntent.putParcelableArrayListExtra("selectedImages", selectedImages);
+                    setResult(Activity.RESULT_OK, returnIntent);
+
+                    // TODO: ACTUALLY PUT PHOTO CODE HERE OOPS
+                    // Defining the child of storageReference
+                    StorageReference ref
+                            = storageReference
+                            .child(
+                                    "images/"
+                                            + UUID.randomUUID().toString());
+                    for (int i = 0; i < imageURIs.size(); i++) {
+                        // upload file 2 cloud storage :3
+                        ref.putFile(imageURIs.get(i));
+                    }
+
                     finish();
                 }
             }
         });
+
 
         // CANCEL implementation:
         Button cancel = findViewById(R.id.edit_cancel);
@@ -189,14 +264,285 @@ public class EditItemActivity extends AppCompatActivity{
                 finish();
             }
         });
+
+        // Photo button implementation;
+        Button editPhotoButton = findViewById(R.id.edit_photo);
+        editPhotoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAddPhotoDialog();
+            }
+
+            private void showAddPhotoDialog() {
+                // Create a custom layout for the dialog
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.add_photo, null);
+
+                // Find the buttons in the custom layout
+                Button takePhotoButton = dialogView.findViewById(R.id.take_photo_button);
+                Button chooseFromGalleryButton = dialogView.findViewById(R.id.choose_from_gallery_button);
+
+                // Set click listeners for the buttons
+
+                chooseFromGalleryButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                        intent.setType("image/*");
+
+                        startActivityForResult(Intent.createChooser(intent, "Select Images"), PICK_IMAGES_REQUEST_CODE);
+
+                    }
+
+                });
+
+                // Build the custom dialog
+                //AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(EditItemActivity.this);
+                builder.setView(dialogView);
+
+                // Show the dialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+            }
+
+
+        });
+
+
+//        Button showImagesButton = findViewById(R.id.show_images_button);
+//        showImagesButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//               // showImagesButton.setOnClickListener(new View.OnClickListener() {
+//                    //@Override
+//                  //  public void onClick(View v) {
+//                        // Load the current image URL into the ImageView using Picasso
+//                        ImageView imageView = findViewById(R.id.image_view);
+//                        if (photoURLs != null && !photoURLs.isEmpty()) {
+//                            Picasso.get().load(photoURLs.get(currentImageIndex)).into(imageView);
+//                            // Move to the next image or loop back to the first image
+//                            currentImageIndex = (currentImageIndex + 1) % photoURLs.size();
+//                        }
+//                    }
+//
+//        });
+
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGES_REQUEST_CODE && resultCode == RESULT_OK) {
+            if (data != null) {
+//                Bundle itemInfo = getIntent().getBundleExtra("item");
+//                //Item currentItem = itemInfo.getParcelable("item");
+//                Item currentItem = new Item(
+//                        itemInfo.getString("name"),
+//                        new Date(itemInfo.getString("date")),
+//                        itemInfo.getString("description"),
+//                        itemInfo.getString("make"),
+//                        itemInfo.getString("model"),
+//                        itemInfo.getFloat("value"),
+//                        itemInfo.getString("comment"),
+//                        itemInfo.getInt("serialNum")
+//                );
+
+
+                // Check if the data contains multiple images
+                ClipData clipData = data.getClipData();
+                if (clipData != null) {
+                    for (int i = 0; i < clipData.getItemCount(); i++) {
+                        ClipData.Item item = clipData.getItemAt(i);
+                        Uri uri = item.getUri();
+                        imageURIs.add(uri);
+
+
+                        // Load the image from the Uri
+                        Bitmap imageBitmap = loadImageFromUri(uri);
+
+
+                        // Check for null before adding to the list
+                        if (imageBitmap != null && uri != null) {
+                            //currentItem.addPhoto(new Photo(uri, imageBitmap));
+                            selectedImages.add(new Photo(uri, imageBitmap));
+                        }
+
+                        // Defining the child of storageReference
+                        StorageReference ref
+                                = storageReference
+                                .child(
+                                        "images/"
+                                                + UUID.randomUUID().toString());
+                        // upload file 2 cloud storage :3
+                        UploadTask uploadTask = ref.putFile(uri);
+                        // Get the download URL
+                        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                            @Override
+                            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                                if (!task.isSuccessful()) {
+                                    throw task.getException();
+                                }
+
+                                // Continue with the task to get the download URL
+                                return ref.getDownloadUrl();
+                            }
+                        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Uri> task) {
+                                if (task.isSuccessful()) {
+                                    // The download URL of the image
+                                    Uri downloadUri = task.getResult();
+                                    String downloadUrl = downloadUri.toString();
+                                    Log.d("Download URL", downloadUrl);
+
+                                    // Now you can use downloadUrl as needed, e.g., store it in a database
+                                    photoURLs.add(downloadUrl);
+                                } else {
+                                    // Handle failures
+                                    Log.e("Download URL", "Failed to get download URL");
+                                }
+                            }
+                        });
+
+
+
+                    }
+                } else {
+                    // Single image selected
+                    Uri uri = data.getData();
+                    imageURIs.add(uri);
+
+                    // Load the image from the Uri
+                    Bitmap imageBitmap = loadImageFromUri(uri);
+                    //selectedImages.add(new Photo(uri, imageBitmap));
+
+                    // Check for null before adding to the list
+                    if (imageBitmap != null && uri != null) {
+                        selectedImages.add(new Photo(uri, imageBitmap));
+                        //currentItem.addPhoto(new Photo(uri, imageBitmap));
+                    }
+
+                    // Defining the child of storageReference
+                    StorageReference ref
+                            = storageReference
+                            .child(
+                                    "images/"
+                                            + UUID.randomUUID().toString());
+
+                    // upload file 2 cloud storage :3
+                    ref.putFile(uri);
+                    String URL = ref.getDownloadUrl().toString();
+
+                    photoURLs.add(URL);
+                }
+
+
+                //currentItem.setPhotos(currentItem.getPhotos());
+
+                // Update the "photos" property of the item in the bundle
+//                itemInfo.putParcelableArrayList("photos", currentItem.getPhotos());
+//                getIntent().putExtra("item", itemInfo);
+//                int numberOfPhotos = currentItem.getPhotos().size();
+//                Toast.makeText(this, "Number of photos added: " + numberOfPhotos, Toast.LENGTH_SHORT).show();
+
+
+                //int numberOfPhotos = selectedImages.size();
+                //System.out.println("Number of photos in the array: " + numberOfPhotos);
+            }
+        }
+
+    }
+
+    private Bitmap loadImageFromUri(Uri uri) {
+        try {
+            // Use ContentResolver to open an input stream from the URI
+            InputStream inputStream = getContentResolver().openInputStream(uri);
+
+            // Decode the input stream into a Bitmap
+            return BitmapFactory.decodeStream(inputStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("ImageLoading", "Error loading image from Uri: " + e.getMessage());
+            return null;
+        }
+    }
+
+
     /**
      * Sets the background color of the given TextView(s) back to their original color.
      * This is needed because they may have been previously set to red to alert the user of missing input
+     *
      * @param prompts A list of TextViews containing all the prompts that need to be "reset"
      */
-    private void resetPrompts(TextView[] prompts){
-        for (TextView p: prompts)
+    private void resetPrompts(TextView[] prompts) {
+        for (TextView p : prompts)
             p.setBackgroundColor(getResources().getColor(R.color.light_purple));
     }
+
+    public void getDate(Integer day, Integer month, Integer year) {
+        this.day = day;
+        this.month = month;
+        this.year = year;
+        Toast.makeText(this, year.toString(), Toast.LENGTH_SHORT).show();
+
+    }
+
+//    private void showSelectedImages() {
+//        // Retrieve the Item object from the bundle
+//        Bundle itemInfo = getIntent().getBundleExtra("item");
+//        Item currentItem = itemInfo.getParcelable("item");
+//        int serialNum = itemInfo.getInt("serialNum");
+//        //String serialString = serialNum.toString();
+////        currentItem = new Item(
+////                itemInfo.getString("name"),
+////                new Date(itemInfo.getString("date")),
+////                itemInfo.getString("description"),
+////                itemInfo.getString("make"),
+////                itemInfo.getString("model"),
+////                itemInfo.getFloat("value"),
+////                itemInfo.getString("comment"),
+////                itemInfo.getInt("serialNum")
+////        );
+//
+//        // Get the list of photos associated with the item
+//        ArrayList<Photo> itemPhotos = currentItem.getPhotos();
+//        Log.d("ImageDebug", "Number of photos: " + itemPhotos.size());
+//        // Create an AlertDialog to display the list of selected images
+//
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setTitle("Selected Images");
+//
+//        // Create a layout inflater to inflate a custom layout for the dialog
+//        LayoutInflater inflater = getLayoutInflater();
+//        View dialogView = inflater.inflate(R.layout.dialog_show_images, null);
+//
+//        // Find the ListView in the custom layout
+//        ListView listView = dialogView.findViewById(R.id.image_list_view);
+//
+//        // Create an adapter to display the list of images
+//        ImageAdapter imageAdapter = new ImageAdapter(this, selectedImages);
+//        // ImageAdapter imageAdapter = new ImageAdapter(this, itemPhotos);
+//        listView.setAdapter(imageAdapter);
+//
+//        // Set the custom view to the dialog
+//        builder.setView(dialogView);
+//
+//        // Add a "Close" button to the dialog
+//        builder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                // Close the dialog
+//                dialog.dismiss();
+//            }
+//        });
+//
+//        Picasso.get().load("https://i.imgur.com/DvpvklR.png").into(imageDisplay);
+//    }
 }

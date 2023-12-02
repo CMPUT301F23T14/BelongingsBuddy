@@ -6,7 +6,11 @@ import androidx.fragment.app.DialogFragment;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -17,8 +21,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -27,8 +34,11 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -43,9 +53,11 @@ public class MainActivity extends AppCompatActivity implements Listener{
     private String username;
     private LinearLayout sortTypeLayout;
     private TextView sortTypeTextView;
+    private LinearLayout filterTypeLayout;
+    private TextView filterTypeTextView;
+    private FirebaseUser user;
 
     private TagManager tagManager = new TagManager();
-
     public final static int REQUEST_CODE_ADD = 1;
     public final static int REQUEST_CODE_VIEW = 2;
     public final static int REQUEST_CODE_EDIT = 3;
@@ -67,21 +79,45 @@ public class MainActivity extends AppCompatActivity implements Listener{
         Intent intent = getIntent();
         // get authorization instance to get email of current user
         FirebaseAuth auth = FirebaseAuth.getInstance();
+
         if (auth.getCurrentUser() != null) {
             username = auth.getCurrentUser().getEmail().split("@")[0];
         } else {
             // testing user
-            auth.signInWithEmailAndPassword(getString(R.string.test_email), getString(R.string.test_password));
+            auth.signInWithEmailAndPassword(getString(R.string.test_email), getString(R.string.test_password))
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
+                                Log.d("SIGNIN", "signInWithEmail:success");
+                                user = auth.getCurrentUser();
+                                //updateUI(user);
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Log.w("SIGNIN", "signInWithEmail:failure", task.getException());
+                                Toast.makeText(MainActivity.this, "Authentication failed.",
+                                        Toast.LENGTH_SHORT).show();
+                                //updateUI(null);
+                            }
+                        }
+                    });
         }
         username_button.setText(username);
 
         // create collection for current user (I setup firestore rules to only allow users to edit their own collections)
         db = FirebaseFirestore.getInstance();
+
         String uID = "";
         if (auth.getCurrentUser() != null) {
             uID = auth.getCurrentUser().getUid();
             user_collection = db.collection(uID); // collection name MUST be the FirestoreAuth uID
-        }
+
+            }
+
+
+
+
 
         // First: set up dataList, itemListView, and itemAdapter
         dataList = new ArrayList<Item>();
@@ -109,6 +145,11 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     dataList.clear();
                     for (QueryDocumentSnapshot doc: querySnapshots) {
                         Item item = doc.toObject(Item.class);
+                        if (item.getPhotoURLs() != null) {
+                            if (item.getPhotoURLs().size() > 0) {
+                                Log.d("PHOTO URLS", item.getPhotoURLs().get(0));
+                            }
+                        }
                         dataList.add(item);
                     }
                     itemAdapter.notifyDataSetChanged();
@@ -124,11 +165,13 @@ public class MainActivity extends AppCompatActivity implements Listener{
             }
         });
 
-
-
         // get ui objects for sort
         sortTypeLayout = findViewById(R.id.sort_type_layout);
         sortTypeTextView = findViewById(R.id.sort_type_textview);
+
+        // get ui objects for filter
+        filterTypeLayout = findViewById(R.id.filter_type_layout);
+//        filterTypeTextView = findViewById(R.id.filter_type_textview);
 
         // click listener for items in ListView
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -158,6 +201,12 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 intent.putExtra("comment", i.getComment());
                 intent.putExtra("index", position);
                 intent.putExtra("tags", tagManager.printItemTags(i, false));
+                if (i.getPhotoURLs() != null) {
+                    intent.putExtra("photoURLsize", i.getPhotoURLs().size());
+                    for (int j = 0; j <i.getPhotoURLs().size(); j++) {
+                        intent.putExtra("photoURL"+j, i.getPhotoURLs().get(j));
+                    }
+                };
                 startActivityForResult(intent, REQUEST_CODE_VIEW);
             }
         });
@@ -171,8 +220,8 @@ public class MainActivity extends AppCompatActivity implements Listener{
         });
 
         // click listener sort type rollback
-        final Button rollback = findViewById(R.id.sort_type_rollback);
-        rollback.setOnClickListener(v -> {
+        final Button rollbackSort = findViewById(R.id.sort_type_rollback);
+        rollbackSort.setOnClickListener(v -> {
             // hide selected sorts
             sortTypeLayout.setVisibility(View.GONE);
             // rollback to original sort ordering
@@ -184,7 +233,24 @@ public class MainActivity extends AppCompatActivity implements Listener{
         // click listener for sort:
         final Button sortButton = findViewById(R.id.sort_button);
         sortButton.setOnClickListener(v -> {
-            new SortItemsFragment().show(getSupportFragmentManager(), "Sort Item:");
+            new SortItemsFragment().show(getSupportFragmentManager(), "Sort Items:");
+        });
+
+        // view filter click listener
+        final Button viewFilterButton = findViewById(R.id.filter_type_rollback);
+        viewFilterButton.setOnClickListener(v -> {
+            new ViewFilterFragment().show(getSupportFragmentManager(), "View Filter:");
+        });
+
+        // click listener filter rollback
+        final Button rollbackFilter = findViewById(R.id.filter_type_rollback);
+        rollbackFilter.setOnClickListener(v -> {
+            // hide selected filters
+            filterTypeLayout.setVisibility(View.GONE);
+            // rollback to original sort ordering
+            dataList.clear();
+            dataList.addAll(originalOrderDataList);
+            itemAdapter.notifyDataSetChanged();
         });
 
         // click listener for filter:
@@ -215,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 newFragment.show(getSupportFragmentManager(), "User Control");
             }
         });
-    
+
         // Set long-click listener to enter multi-select mode
         itemListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -297,13 +363,57 @@ public class MainActivity extends AppCompatActivity implements Listener{
         cancelButton.setVisibility(View.GONE);
         deleteButton.setVisibility(View.GONE);
     }
+    private Photo createPlaceholderPhoto() {
+        // Create a placeholder image
+        Bitmap placeholderBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        placeholderBitmap.eraseColor(getResources().getColor(android.R.color.darker_gray));
+
+        // Create and return a Photo instance with a placeholder URI and bitmap
+        return new Photo(null, placeholderBitmap);    }
 
     /**
      * Part of the Listener interface.
      * When the user selects OK from the filter dialogue, MainActivity starts handles the update to listview.
      */
     @Override
-    public void onFilterOkPressed() {
+    public void onFilterOkPressed(String[] keywords, String[] makes, Date startDate, Date endDate) {
+        // desc keywords
+        if (keywords.length != 0) {
+            // Filter the list based on the condition that the description contains any string from the array
+            ArrayList<Item> filteredList = (ArrayList<Item>) dataList.stream()
+                    .filter(item -> Arrays.stream(keywords).anyMatch(item.getDescription()::contains))
+                    .collect(Collectors.toList());
+            dataList.clear();
+            dataList.addAll(filteredList);
+        }
+
+        // makes
+        if (makes.length != 0) {
+            // Filter the list based on the condition that the make contains any string from the array
+            ArrayList<Item> filteredList = (ArrayList<Item>) dataList.stream()
+                    .filter(item -> Arrays.stream(keywords).anyMatch(item.getMake()::contains))
+                    .collect(Collectors.toList());
+            dataList.clear();
+            dataList.addAll(filteredList);
+        }
+
+        // date
+        if (startDate != null) {
+            ArrayList<Item> filteredList = filterItemsByDateRange(dataList, startDate, endDate);
+            dataList.clear();
+            dataList.addAll(filteredList);
+        }
+
+        // if a filter is present
+        if (keywords.length != 0 || makes.length != 0 || startDate != null) {
+            filterTypeLayout.setVisibility(View.VISIBLE);
+        }
+        // if nothing matches filter
+        if (dataList.isEmpty()) {
+            Toast.makeText(this, "No items match your filter.", Toast.LENGTH_SHORT).show();
+        }
+
+        itemAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -432,7 +542,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     int day = data.getIntExtra("day", 0);
                     int month = data.getIntExtra("month", 0);
                     int year = data.getIntExtra("year", 0);
-                  
+
                     ArrayList<Tag> selectedTags = (ArrayList<Tag>) data.getBundleExtra("BUNDLE").getSerializable("tagList");
                     // construct a Date object
                     // construct a Date object (call constructors depending on whether or not a serial number was given)
@@ -447,6 +557,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                         item = new Item(name, date, description, make, model, value, comment, serialNumber);
                         dataList.add(item);
                     }
+
                     // add Item to FireStore database
                     tagManager.setItemTags(item, selectedTags);
                     Log.d("tag", item.getEpoch());
@@ -512,6 +623,15 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     item.setEstimatedValue(info.getFloat("value"));
                     item.setSerialNumber(info.getString("serial number"));
                     item.setComment(info.getString("comment"));
+                    List<String> photoURLs = new ArrayList<>();
+                    int listSize = data.getIntExtra("url list size", 0);
+                    String URL;
+                    for (int i = 0; i < listSize; i++) {
+                        URL = data.getStringExtra("photoURL"+i);
+                        Log.d("PHOTO URL RECEIVED "+i, URL);
+                        photoURLs.add(URL);
+                    }
+                    item.setPhotoURLs(photoURLs);
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup
                     originalOrderDataList.clear();
@@ -537,6 +657,19 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     startActivityForResult(intent, REQUEST_CODE_ADD);
                 }
         }
+    }
+    // Method to filter items by date range
+    private static ArrayList<Item> filterItemsByDateRange(ArrayList<Item> dataList, Date startDate, Date endDate) {
+        ArrayList<Item> filteredList = new ArrayList<>();
+
+        for (Item item : dataList) {
+            Date itemDate = item.getDate();
+            // Check if the item's date is within the specified range (inclusive)
+            if (itemDate.compareTo(startDate) >= 0 && itemDate.compareTo(endDate) <= 0) {
+                filteredList.add(item);
+            }
+        }
+        return filteredList;
     }
     /**
      * Calculates the sum of estimated values of items in the given ArrayList.
