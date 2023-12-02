@@ -8,7 +8,7 @@ import java.util.ArrayList;
  */
 public interface Listener {
     void onSortOKPressed(String sortType, Boolean isAscending);
-    void onFilterOkPressed(String[] keywords, String[] makes, Date starDate, Date endDate);
+    void onFilterOkPressed(String[] keywords, String[] makes, String[] tags, Date starDate, Date endDate);
     void inputManually();
     void inputBarcode();
 }
