@@ -146,7 +146,7 @@ public class FilterItemsFragment extends DialogFragment {
                     endDateAsDate = new com.example.belongingsbuddy.Date(endDate);
 
                 }
-                listener.onFilterOkPressed(keywords, makes, startDateAsDate, endDateAsDate);
+                listener.onFilterOkPressed(keywords, makes, tags, startDateAsDate, endDateAsDate);
                 dialog.dismiss();
             }
         });
