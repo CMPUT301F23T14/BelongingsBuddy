@@ -2,11 +2,16 @@ package com.example.belongingsbuddy;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
@@ -18,13 +23,17 @@ import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.ImageProxy;
 import androidx.lifecycle.LifecycleOwner;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class PhotoTakingActivity extends CameraActivity implements CameraCreationListener {
     private Executor executor = Executors.newSingleThreadExecutor();
-
+    private ArrayList<Uri> takenPhotos = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //CameraActivity needs these fields set
@@ -32,7 +41,6 @@ public class PhotoTakingActivity extends CameraActivity implements CameraCreatio
         setCameraCreationListener(this);
 
         super.onCreate(savedInstanceState);
-
 
         Button switchCamera = findViewById(R.id.swap_camera_button);
         Button takePhoto = findViewById(R.id.take_picture_button);
@@ -54,14 +62,19 @@ public class PhotoTakingActivity extends CameraActivity implements CameraCreatio
                 cameraController.takePicture(executor, new ImageCapture.OnImageCapturedCallback() {
                     @Override
                     public void onCaptureSuccess(@NonNull ImageProxy image) {
+                        if (Looper.myLooper() == null) {
+                            Looper.prepare();
+                        }
                         ByteBuffer buffer = image.getPlanes()[0].getBuffer();
-                        byte[] imageData = new byte[buffer.remaining()];
-                        buffer.get(imageData);
+                        byte[] bytes = new byte[buffer.remaining()];
+                        buffer.get(bytes);
 
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra("capturedImage", imageData);
-                        setResult(Activity.RESULT_OK, resultIntent);
-                        finish();
+                        File imageFile = saveImageToFile(bytes);
+
+                        Uri imageUri = Uri.fromFile(imageFile);
+                        takenPhotos.add(imageUri);
+
+                        Toast.makeText(PhotoTakingActivity.this, "Took Photo! taken photos:" + String.valueOf(takenPhotos.size()), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -75,6 +88,10 @@ public class PhotoTakingActivity extends CameraActivity implements CameraCreatio
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("capturedImages", takenPhotos);
+
+                setResult(Activity.RESULT_OK, resultIntent);
                 finish();
             }
         });
@@ -100,4 +117,28 @@ public class PhotoTakingActivity extends CameraActivity implements CameraCreatio
         finish();
     }
 
+    private File saveImageToFile(byte[] bytes) {
+        File outputDir = getCacheDir();
+
+        File outputFile = null;
+        FileOutputStream fos = null;
+
+        try {
+            outputFile = File.createTempFile("image", ".jpg", outputDir);
+            fos = new FileOutputStream(outputFile);
+            fos.write(bytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return outputFile;
+    }
 }

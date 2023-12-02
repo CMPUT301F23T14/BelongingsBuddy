@@ -558,7 +558,6 @@ public class EditItemActivity extends AppCompatActivity {
 //                        itemInfo.getInt("serialNum")
 //                );
 
-
                 // Check if the data contains multiple images
                 ClipData clipData = data.getClipData();
                 if (clipData != null) {
@@ -567,56 +566,7 @@ public class EditItemActivity extends AppCompatActivity {
                         Uri uri = item.getUri();
                         imageURIs.add(uri);
 
-
-                        // Load the image from the Uri
-                        Bitmap imageBitmap = loadImageFromUri(uri);
-
-
-                        // Check for null before adding to the list
-                        if (imageBitmap != null && uri != null) {
-                            //currentItem.addPhoto(new Photo(uri, imageBitmap));
-                            selectedImages.add(new Photo(uri, imageBitmap));
-                        }
-
-                        // Defining the child of storageReference
-                        StorageReference ref
-                                = storageReference
-                                .child(
-                                        "images/"
-                                                + UUID.randomUUID().toString());
-                        // upload file 2 cloud storage :3
-                        UploadTask uploadTask = ref.putFile(uri);
-                        // Get the download URL
-                        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                            @Override
-                            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                                if (!task.isSuccessful()) {
-                                    throw task.getException();
-                                }
-
-                                // Continue with the task to get the download URL
-                                return ref.getDownloadUrl();
-                            }
-                        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Uri> task) {
-                                if (task.isSuccessful()) {
-                                    // The download URL of the image
-                                    Uri downloadUri = task.getResult();
-                                    String downloadUrl = downloadUri.toString();
-                                    Log.d("Download URL", downloadUrl);
-
-                                    // Now you can use downloadUrl as needed, e.g., store it in a database
-                                    photoURLs.add(downloadUrl);
-                                } else {
-                                    // Handle failures
-                                    Log.e("Download URL", "Failed to get download URL");
-                                }
-                            }
-                        });
-
-
-
+                        storeImageFromUri(uri);
                     }
                 } else {
                     // Single image selected
@@ -661,7 +611,14 @@ public class EditItemActivity extends AppCompatActivity {
                 //System.out.println("Number of photos in the array: " + numberOfPhotos);
             }
         }
-
+        else if (requestCode == TAKE_PHOTO_REQUEST_CODE && resultCode == RESULT_OK) {
+            ArrayList<Uri> uris = data.getParcelableArrayListExtra("capturedImages");
+            if (uris != null) {
+                for (int i = 0; i < uris.size(); i++) {
+                    storeImageFromUri(uris.get(i));
+                }
+            }
+        }
     }
 
     private Bitmap loadImageFromUri(Uri uri) {
@@ -676,6 +633,55 @@ public class EditItemActivity extends AppCompatActivity {
             Log.e("ImageLoading", "Error loading image from Uri: " + e.getMessage());
             return null;
         }
+    }
+
+    private void storeImageFromUri (Uri uri) {
+        // Load the image from the Uri
+        Bitmap imageBitmap = loadImageFromUri(uri);
+
+
+        // Check for null before adding to the list
+        if (imageBitmap != null && uri != null) {
+            //currentItem.addPhoto(new Photo(uri, imageBitmap));
+            selectedImages.add(new Photo(uri, imageBitmap));
+        }
+
+        // Defining the child of storageReference
+        StorageReference ref
+                = storageReference
+                .child(
+                        "images/"
+                                + UUID.randomUUID().toString());
+        // upload file 2 cloud storage :3
+        UploadTask uploadTask = ref.putFile(uri);
+        // Get the download URL
+        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+
+                // Continue with the task to get the download URL
+                return ref.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    // The download URL of the image
+                    Uri downloadUri = task.getResult();
+                    String downloadUrl = downloadUri.toString();
+                    Log.d("Download URL", downloadUrl);
+
+                    // Now you can use downloadUrl as needed, e.g., store it in a database
+                    photoURLs.add(downloadUrl);
+                } else {
+                    // Handle failures
+                    Log.e("Download URL", "Failed to get download URL");
+                }
+            }
+        });
     }
 
 
