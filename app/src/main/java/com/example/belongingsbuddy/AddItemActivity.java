@@ -1,21 +1,45 @@
 package com.example.belongingsbuddy;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ClipData;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.InputStream;
 import java.io.Serializable;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
+import java.util.UUID;
+
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
+
 
 /**
  * Activity for adding an Item to the user's dataList.
@@ -34,6 +58,7 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
     private String model;
     private EditText model_text;
     private String serialNumber;
+    StorageReference storageReference;
     private EditText serialNumber_text;
     private Float value;
     private EditText value_text;
@@ -41,6 +66,12 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
     private EditText comment_text;
     private ArrayList<Tag> tags = new ArrayList<>();
     private ArrayList<Photo> photos;
+    private ArrayList<String> photoURLs = new ArrayList<>();
+    private static final int PICK_IMAGES_REQUEST_CODE = 1;
+    private ArrayList<Photo> selectedImages = new ArrayList<>();
+    private ArrayList<Photo> savedImages = new ArrayList<>();
+    private ArrayList<Uri> imageURIs = new ArrayList<Uri>();
+    private int currentImageIndex = 1;
 
     /**
      * Display the activity_add_item View and wait for user input.
@@ -189,6 +220,26 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
                     returnIntent.putExtra("day", date.getDay());
                     returnIntent.putExtra("month", date.getMonth());
                     returnIntent.putExtra("year", date.getYear());
+                    returnIntent.putExtra("url list size", photoURLs.size());
+
+//                    for (int i = 0; i < photoURLs.size(); i++) {
+//                        returnIntent.putExtra("photoURL" + i, photoURLs.get(i));
+//                    }
+////
+//                    //returnIntent.putParcelableArrayListExtra("selectedImages", selectedImages);
+//                    setResult(Activity.RESULT_OK, returnIntent);
+//
+//                    // TODO: ACTUALLY PUT PHOTO CODE HERE OOPS
+//                    // Defining the child of storageReference
+//                    StorageReference ref
+//                            = storageReference
+//                            .child(
+//                                    "images/"
+//                                            + UUID.randomUUID().toString());
+//                    for (int i = 0; i < imageURIs.size(); i++) {
+//                        // upload file 2 cloud storage :3
+//                        ref.putFile(imageURIs.get(i));
+//                    }
 
                     Bundle args = new Bundle();
                     args.putSerializable("tagList",tags);
@@ -211,7 +262,217 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
             }
         });
 
+        // Photo button implementation;
+        Button editPhotoButton = findViewById(R.id.add_photo);
+        editPhotoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAddPhotoDialog();
+            }
+
+            private void showAddPhotoDialog() {
+                // Create a custom layout for the dialog
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.add_photo, null);
+
+                // Find the buttons in the custom layout
+                Button takePhotoButton = dialogView.findViewById(R.id.take_photo_button);
+                Button chooseFromGalleryButton = dialogView.findViewById(R.id.choose_from_gallery_button);
+
+                // Set click listeners for the buttons
+
+                chooseFromGalleryButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                        intent.setType("image/*");
+
+                        startActivityForResult(Intent.createChooser(intent, "Select Images"), PICK_IMAGES_REQUEST_CODE);
+
+                    }
+
+                });
+
+                // Build the custom dialog
+                //AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(AddItemActivity.this);
+                builder.setView(dialogView);
+
+                // Show the dialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+            }
+
+
+        });
+
+
+//        Button showImagesButton = findViewById(R.id.show_images_button);
+//        showImagesButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//               // showImagesButton.setOnClickListener(new View.OnClickListener() {
+//                    //@Override
+//                  //  public void onClick(View v) {
+//                        // Load the current image URL into the ImageView using Picasso
+//                        ImageView imageView = findViewById(R.id.image_view);
+//                        if (photoURLs != null && !photoURLs.isEmpty()) {
+//                            Picasso.get().load(photoURLs.get(currentImageIndex)).into(imageView);
+//                            // Move to the next image or loop back to the first image
+//                            currentImageIndex = (currentImageIndex + 1) % photoURLs.size();
+//                        }
+//                    }
+//
+//        });
+
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGES_REQUEST_CODE && resultCode == RESULT_OK) {
+            if (data != null) {
+//                Bundle itemInfo = getIntent().getBundleExtra("item");
+//                //Item currentItem = itemInfo.getParcelable("item");
+//                Item currentItem = new Item(
+//                        itemInfo.getString("name"),
+//                        new Date(itemInfo.getString("date")),
+//                        itemInfo.getString("description"),
+//                        itemInfo.getString("make"),
+//                        itemInfo.getString("model"),
+//                        itemInfo.getFloat("value"),
+//                        itemInfo.getString("comment"),
+//                        itemInfo.getInt("serialNum")
+//                );
+
+
+                // Check if the data contains multiple images
+                ClipData clipData = data.getClipData();
+                if (clipData != null) {
+                    for (int i = 0; i < clipData.getItemCount(); i++) {
+                        ClipData.Item item = clipData.getItemAt(i);
+                        Uri uri = item.getUri();
+                        imageURIs.add(uri);
+
+
+                        // Load the image from the Uri
+                        Bitmap imageBitmap = loadImageFromUri(uri);
+
+
+                        // Check for null before adding to the list
+                        if (imageBitmap != null && uri != null) {
+                            //currentItem.addPhoto(new Photo(uri, imageBitmap));
+                            selectedImages.add(new Photo(uri, imageBitmap));
+                        }
+
+                        // Defining the child of storageReference
+                        StorageReference ref
+                                = storageReference
+                                .child(
+                                        "images/"
+                                                + UUID.randomUUID().toString());
+                        // upload file 2 cloud storage :3
+                        UploadTask uploadTask = ref.putFile(uri);
+                        // Get the download URL
+                        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                            @Override
+                            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                                if (!task.isSuccessful()) {
+                                    throw task.getException();
+                                }
+
+                                // Continue with the task to get the download URL
+                                return ref.getDownloadUrl();
+                            }
+                        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Uri> task) {
+                                if (task.isSuccessful()) {
+                                    // The download URL of the image
+                                    Uri downloadUri = task.getResult();
+                                    String downloadUrl = downloadUri.toString();
+                                    Log.d("Download URL", downloadUrl);
+
+                                    // Now you can use downloadUrl as needed, e.g., store it in a database
+                                    photoURLs.add(downloadUrl);
+                                } else {
+                                    // Handle failures
+                                    Log.e("Download URL", "Failed to get download URL");
+                                }
+                            }
+                        });
+
+
+
+                    }
+                } else {
+                    // Single image selected
+                    Uri uri = data.getData();
+                    imageURIs.add(uri);
+
+                    // Load the image from the Uri
+                    Bitmap imageBitmap = loadImageFromUri(uri);
+                    //selectedImages.add(new Photo(uri, imageBitmap));
+
+                    // Check for null before adding to the list
+                    if (imageBitmap != null && uri != null) {
+                        selectedImages.add(new Photo(uri, imageBitmap));
+                        //currentItem.addPhoto(new Photo(uri, imageBitmap));
+                    }
+
+                    // Defining the child of storageReference
+                    StorageReference ref
+                            = storageReference
+                            .child(
+                                    "images/"
+                                            + UUID.randomUUID().toString());
+
+                    // upload file 2 cloud storage :3
+                    ref.putFile(uri);
+                    String URL = ref.getDownloadUrl().toString();
+
+                    photoURLs.add(URL);
+                }
+
+
+                //currentItem.setPhotos(currentItem.getPhotos());
+
+                // Update the "photos" property of the item in the bundle
+//                itemInfo.putParcelableArrayList("photos", currentItem.getPhotos());
+//                getIntent().putExtra("item", itemInfo);
+//                int numberOfPhotos = currentItem.getPhotos().size();
+//                Toast.makeText(this, "Number of photos added: " + numberOfPhotos, Toast.LENGTH_SHORT).show();
+
+
+                //int numberOfPhotos = selectedImages.size();
+                //System.out.println("Number of photos in the array: " + numberOfPhotos);
+            }
+        }
+
+    }
+
+    private Bitmap loadImageFromUri(Uri uri) {
+        try {
+            // Use ContentResolver to open an input stream from the URI
+            InputStream inputStream = getContentResolver().openInputStream(uri);
+
+            // Decode the input stream into a Bitmap
+            return BitmapFactory.decodeStream(inputStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("ImageLoading", "Error loading image from Uri: " + e.getMessage());
+            return null;
+        }
+    }
+
+
+
 
     /**
      * Sets the background color of the given TextView(s) back to their original color.
