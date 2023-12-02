@@ -119,6 +119,7 @@ public class ItemViewActivity extends AppCompatActivity {
                 // Show the dialog
                 builder.show();
                 Button deleteButton = dialogView.findViewById(R.id.delete_button);
+                deleteButton.setVisibility(View.INVISIBLE);
 
 
                 deleteButton.setOnClickListener(new View.OnClickListener() {
