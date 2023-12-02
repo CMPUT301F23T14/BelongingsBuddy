@@ -279,7 +279,7 @@ public class AddItemActivity extends AppCompatActivity{
                     Bundle args = new Bundle();
                     args.putSerializable("tagList",tags);
                     returnIntent.putExtra("BUNDLE",args);
-
+                    MainActivity.lastResult = Activity.RESULT_OK;
                     setResult(Activity.RESULT_OK,returnIntent);
                     finish();
                 }
@@ -292,6 +292,7 @@ public class AddItemActivity extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 Intent returnIntent = new Intent();
+                MainActivity.lastResult = Activity.RESULT_CANCELED;
                 setResult(Activity.RESULT_CANCELED, returnIntent);
                 finish();
             }
