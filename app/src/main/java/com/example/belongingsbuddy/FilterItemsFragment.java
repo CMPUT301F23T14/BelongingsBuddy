@@ -14,15 +14,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.DateValidatorPointBackward;
 import com.google.android.material.datepicker.MaterialDatePicker;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * A {@link DialogFragment} subclass that represents a filter dialog for items in the Belongings Buddy app.
@@ -33,8 +37,11 @@ public class FilterItemsFragment extends DialogFragment {
     public Listener listener;
     String startDate = null;
     String endDate = null;
-    ArrayList<String> keywords = new ArrayList<>();
-    boolean isAscending = false;
+    com.example.belongingsbuddy.Date startDateAsDate;
+    com.example.belongingsbuddy.Date endDateAsDate;
+    String[] keywords = {};
+    String[] makes = {};
+    String[] tags = {};
 
     // so we can communicate with main activity
     @Override
@@ -83,6 +90,11 @@ public class FilterItemsFragment extends DialogFragment {
                 MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
                 builder.setTitleText("Select a date range");
 
+                // Adding a date validator to ensure no future dates are selected
+                builder.setCalendarConstraints(new CalendarConstraints.Builder()
+                        .setValidator(DateValidatorPointBackward.now())
+                        .build());
+
                 // Building the date picker dialog
                 MaterialDatePicker<Pair<Long, Long>> datePicker = builder.build();
                 datePicker.addOnPositiveButtonClickListener(selection -> {
@@ -92,7 +104,8 @@ public class FilterItemsFragment extends DialogFragment {
                     Long endDateLong = selection.second;
 
                     // Formating the selected dates as strings, note mm is not months is milliseconds
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
                     String startDateString = sdf.format(new Date(startDateLong));
                     String endDateString = sdf.format(new Date(endDateLong));
 
@@ -119,10 +132,21 @@ public class FilterItemsFragment extends DialogFragment {
             public void onClick(View v) {
                 // get all text written into edit texts
                 // \s is not supported for some reason
-                String[] keywords = selectedKeywords.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
-                String[] makes = selectedMakes.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
-                String[] tags = selectedTags.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
-                listener.onFilterOkPressed();
+                if (!selectedKeywords.getText().toString().isEmpty()) {
+                    keywords = selectedKeywords.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
+                }
+                if (!selectedMakes.getText().toString().isEmpty()) {
+                    makes = selectedMakes.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
+                }
+                if (!selectedTags.getText().toString().isEmpty()) {
+                    tags = selectedTags.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
+                }
+                if (startDate != null) {
+                    startDateAsDate = new com.example.belongingsbuddy.Date(startDate);
+                    endDateAsDate = new com.example.belongingsbuddy.Date(endDate);
+
+                }
+                listener.onFilterOkPressed(keywords, makes, tags, startDateAsDate, endDateAsDate);
                 dialog.dismiss();
             }
         });

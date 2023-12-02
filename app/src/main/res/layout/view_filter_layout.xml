@@ -9,16 +9,6 @@
     android:padding="50dp">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="What attribute(s) would you like to filter your items by?"
-        android:paddingBottom="24dp"
-        android:textAlignment="center"
-        android:textSize="24sp">
-    </TextView>
-
-    <TextView
         android:id="@+id/filter_date_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -47,7 +37,7 @@
         </TextView>
 
         <TextView
-            android:id="@+id/filter_selected_dates"
+            android:id="@+id/view_filter_selected_dates"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=""
@@ -57,18 +47,6 @@
             android:layout_gravity="center"
             android:layout_weight="0.5">
         </TextView>
-
-        <Button
-            android:id="@+id/filter_pick_date_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:textSize="12sp"
-            android:focusable="true"
-            android:text="SET"
-            android:layout_gravity="end|center_vertical"
-            android:layout_weight="0.05">
-        </Button>
     </LinearLayout>
 
     <TextView
@@ -99,17 +77,16 @@
             android:layout_weight="0.05">
         </TextView>
 
-        <EditText
-            android:id="@+id/filter_selected_keywords"
+        <TextView
+            android:id="@+id/view_filter_selected_keywords"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="chair, apple, backyard"
             android:textSize="12sp"
             android:background="@color/light_purple"
             android:paddingVertical="10dp"
             android:layout_gravity="center"
             android:layout_weight="0.5">
-        </EditText>
+        </TextView>
 
     </LinearLayout>
 
@@ -141,17 +118,16 @@
             android:layout_weight="0.05">
         </TextView>
 
-        <EditText
+        <TextView
             android:id="@+id/filter_selected_makes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Acme, Mom and Pop, NewCo"
             android:textSize="12sp"
             android:background="@color/light_purple"
             android:paddingVertical="10dp"
             android:layout_gravity="center"
             android:layout_weight="0.5">
-        </EditText>
+        </TextView>
 
     </LinearLayout>
 
@@ -172,7 +148,7 @@
         android:background="@color/light_purple">
 
         <TextView
-            android:id="@+id/filter_tags_prompt"
+            android:id="@+id/view_filter_tags_prompt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Has tags:"
@@ -183,17 +159,17 @@
             android:layout_weight="0.05">
         </TextView>
 
-        <EditText
-            android:id="@+id/filter_selected_tags"
+        <TextView
+            android:id="@+id/view_filter_selected_tags"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="kitchen, office, auto"
+
             android:textSize="12sp"
             android:background="@color/light_purple"
             android:paddingVertical="10dp"
             android:layout_gravity="center"
             android:layout_weight="0.5">
-        </EditText>
+        </TextView>
 
     </LinearLayout>
 
@@ -204,30 +180,18 @@
         android:paddingTop="10sp"
         android:layout_marginHorizontal="20dp">
 
+
+
         <Button
-            android:id="@+id/filter_cancel"
+            android:id="@+id/view_filter_ok"
             android:clickable="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="CANCEL"
-
-            android:backgroundTint="@color/light_red"
-            android:textColor="@color/black"
-            android:layout_gravity="center"
-            android:layout_weight="0.5"
-            android:focusable="true">
-        </Button>
-
-        <Button
-            android:id="@+id/filter_ok"
-            android:clickable="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="CONFIRM"
+            android:text="OK"
             android:backgroundTint="@color/light_green"
             android:textColor="@color/black"
             android:layout_gravity="center"
-            android:layout_weight="0.5"
+            android:layout_weight="0.01"
             android:focusable="true">
         </Button>
 
