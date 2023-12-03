@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                         ArrayList<Tag> tags = (ArrayList<Tag>) doc.get("tags");
                         String epoch = (String) doc.get("epoch");
                         Integer quantity = ((Long) doc.get("quantity")).intValue();
-                        Item item = new Item(name, date, description, make, model, estimatedValue, comment, serialNumber, tags, photos, epoch, id, quantity);
+                        Item item = new Item(name, date, description, make, model, estimatedValue, comment, serialNumber, tags, photos, epoch, id, quantity, photoURLs);
                         if (item.getPhotoURLs() != null) {
                             if (item.getPhotoURLs().size() > 0) {
                                 Log.d("PHOTO URLS", item.getPhotoURLs().get(0));
