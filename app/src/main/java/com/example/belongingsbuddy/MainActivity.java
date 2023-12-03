@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -144,7 +145,24 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 if (querySnapshots != null){
                     dataList.clear();
                     for (QueryDocumentSnapshot doc: querySnapshots) {
-                        Item item = doc.toObject(Item.class);
+                        String id = doc.getId();
+                        String comment = (String) doc.get("comment");
+                        int day = ((Long) doc.get("day")).intValue();
+                        int month = ((Long) doc.get("month")).intValue();
+                        int year = ((Long) doc.get("year")).intValue();
+                        Date date = new Date(day, month, year);
+                        String description = (String) doc.get("description");
+                        Float estimatedValue = ((Double) doc.get("estimatedValue")).floatValue();
+                        String make = (String) doc.get("make");
+                        String model = (String) doc.get("model");
+                        String name = (String) doc.get("name");
+                        List<String> photoURLs = (List<String>) doc.get("photoURLs");
+                        ArrayList<Photo> photos = (ArrayList<Photo>) doc.get("photos");
+                        String serialNumber = (String) doc.get("serialNumber");
+                        ArrayList<Tag> tags = (ArrayList<Tag>) doc.get("tags");
+                        String epoch = (String) doc.get("epoch");
+                        Integer quantity = ((Long) doc.get("quantity")).intValue();
+                        Item item = new Item(name, date, description, make, model, estimatedValue, comment, serialNumber, tags, photos, epoch, id, quantity);
                         if (item.getPhotoURLs() != null) {
                             if (item.getPhotoURLs().size() > 0) {
                                 Log.d("PHOTO URLS", item.getPhotoURLs().get(0));
@@ -188,6 +206,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // get the Item being clicked
                 Item i = itemAdapter.getItem(position);
+                Log.d("tag", i.getEpoch());
                 // setup the ItemViewActivity by creating a new Intent and passing Item data as extras
                 Intent intent = new Intent(MainActivity.this, ItemViewActivity.class);
                 intent.putExtra("name", i.getName());
@@ -200,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 intent.putExtra("quantity", i.getQuantity());
                 intent.putExtra("comment", i.getComment());
                 intent.putExtra("index", position);
-                intent.putExtra("tags", tagManager.printItemTags(i));
+                intent.putExtra("tags", tagManager.printItemTags(i, false));
                 if (i.getPhotoURLs() != null) {
                     intent.putExtra("photoURLsize", i.getPhotoURLs().size());
                     for (int j = 0; j <i.getPhotoURLs().size(); j++) {
@@ -376,7 +395,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
      * When the user selects OK from the filter dialogue, MainActivity starts handles the update to listview.
      */
     @Override
-    public void onFilterOkPressed(String[] keywords, String[] makes, String[] tags, Date startDate, Date endDate) {
+    public void onFilterOkPressed(String[] keywords, String[] makes, ArrayList<Tag> tags, Date startDate, Date endDate) {
         // desc keywords
         if (keywords.length != 0) {
             // Filter the list based on the condition that the description contains any string from the array
@@ -398,11 +417,9 @@ public class MainActivity extends AppCompatActivity implements Listener{
         }
 
         // tags
-        if (tags.length != 0) {
+        if (tags.size() != 0) {
             // Filter the list based on the condition that the tags contains any string from the array
-            ArrayList<Item> filteredList = (ArrayList<Item>) dataList.stream()
-                    .filter(item -> Arrays.stream(tags).anyMatch(item.getTags()::contains))
-                    .collect(Collectors.toList());
+            ArrayList<Item> filteredList = tagManager.filterByTags(new HashSet<>(tags));
             dataList.clear();
             dataList.addAll(filteredList);
         }
@@ -415,7 +432,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
         }
 
         // if a filter is present
-        if (keywords.length != 0 || makes.length != 0 || tags.length != 0 || startDate != null) {
+        if (keywords.length != 0 || makes.length != 0 || tags.size() != 0 || startDate != null) {
             filterTypeLayout.setVisibility(View.VISIBLE);
         }
         // if nothing matches filter
@@ -471,14 +488,24 @@ public class MainActivity extends AppCompatActivity implements Listener{
             case "value":
                 if (isAscending) {
 //                    Toast.makeText(this, "SORT BY value ASC", Toast.LENGTH_SHORT).show();
+                    dataList.sort(Comparator.comparing(Item -> tagManager.printItemTags(Item, false)));
+                } else {
+//                    Toast.makeText(this, "SORT BY value DESC", Toast.LENGTH_SHORT).show();
+                    dataList.sort(Comparator.comparing(Item -> tagManager.printItemTags((com.example.belongingsbuddy.Item) Item, false)).reversed());
+                }
+                sortTypeTextView.setText("Estimated Value");
+                itemAdapter.notifyDataSetChanged();
+                break;
+            case "tags":
+                if (isAscending) {
+//                    Toast.makeText(this, "SORT BY value ASC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getEstimatedValue));
                 } else {
 //                    Toast.makeText(this, "SORT BY value DESC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getEstimatedValue).reversed());
                 }
-                sortTypeTextView.setText("Estimated Value");
+                sortTypeTextView.setText("Tags");
                 itemAdapter.notifyDataSetChanged();
-                break;
             case "NONE":
 //                Toast.makeText(this, "No selection", Toast.LENGTH_SHORT).show();
                 break;
@@ -559,11 +586,11 @@ public class MainActivity extends AppCompatActivity implements Listener{
                         dataList.add(item);
                     }
                     // add Item to FireStore database
+                    tagManager.setItemTags(item, selectedTags);
+                    Log.d("tag", item.getEpoch());
                     item.addToDatabase(user_collection);
-
 //                    ArrayList tagSet = new ArrayList();
 //                    tagSet.add(new Tag("tag"));
-                    tagManager.setItemTags(item, selectedTags);
 //                    tagManager.AddItem(item);
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup
@@ -686,5 +713,9 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 sum += (item.getEstimatedValue() * q);
             }
             return sum;
+    }
+
+    public TagManager getTagManager() {
+        return tagManager;
     }
 }

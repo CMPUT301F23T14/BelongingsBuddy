@@ -183,17 +183,22 @@
             android:layout_weight="0.05">
         </TextView>
 
-        <EditText
+        <TextView
             android:id="@+id/filter_selected_tags"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="kitchen, office, auto"
-            android:textSize="12sp"
-            android:background="@color/light_purple"
-            android:paddingVertical="10dp"
             android:layout_gravity="center"
-            android:layout_weight="0.5">
-        </EditText>
+            android:layout_weight="0.5"
+            android:background="@color/light_purple"
+            android:hint="kitchen, office, auto"
+            android:paddingVertical="10dp"
+            android:textSize="12sp"></TextView>
+        <Button
+            android:id="@+id/add_filter_tags_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+">
+        </Button>
 
     </LinearLayout>
 

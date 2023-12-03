@@ -1,12 +1,17 @@
 package com.example.belongingsbuddy;
 
+
+import static java.lang.Integer.parseInt;
+
 import android.widget.Toast;
+import android.util.Log;
 
 import com.google.firebase.firestore.CollectionReference;
 
 import org.checkerframework.checker.units.qual.C;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,22 +64,18 @@ public class Item implements Serializable {
         this.serialNumber = null;
         this.estimatedValue = estimatedValue;
         this.comment = comment;
+        this.tags = new ArrayList<Tag>();
         this.quantity = 1;
-        tags = new ArrayList<Tag>();
         this.photos = new ArrayList<Photo>();
         this.epoch = Long.toString(System.currentTimeMillis());
         this.id = Objects.hash(
-                this.name,
+                name,
                 this.epoch,
-                this.description,
-                this.make,
-                this.model,
-                this.serialNumber,
-                this.estimatedValue,
-                this.comment,
-                this.quantity,
-                this.tags,
-                this.photos
+                description,
+                make,
+                model,
+                estimatedValue,
+                comment
         );
         // this.photoURLs = new ArrayList<String>();
     }
@@ -99,7 +100,7 @@ public class Item implements Serializable {
      * serial number of item (Integer)
      */
     public Item(String name, Date date, String description, String make, String model,
-                Float estimatedValue, String comment, String serialNumber){
+                Float estimatedValue, String comment, String serialNumber) {
         this.name = name;
         this.date = date;
         this.description = description;
@@ -109,30 +110,39 @@ public class Item implements Serializable {
         this.estimatedValue = estimatedValue;
         this.comment = comment;
         this.quantity = 1;
-        tags = new ArrayList<Tag>();
-        photos = new ArrayList<Photo>();
+        this.tags = new ArrayList<Tag>();
+        this.photos = new ArrayList<>();
         this.epoch = Long.toString(System.currentTimeMillis());
         this.id = Objects.hash(
-                this.name,
+                name,
                 this.epoch,
-                this.description,
-                this.make,
-                this.model,
-                this.serialNumber,
-                this.estimatedValue,
-                this.comment,
-                this.quantity,
-                this.tags,
-                this.photos
+                description,
+                make,
+                model,
+                serialNumber,
+                estimatedValue,
+                comment
         );
     }
 
-    /**
-     * public constructor that takes no parameters.
-     * This is used to load items from FireStore collection
-     */
-    public Item(){
+    public Item(String name, Date date, String description, String make, String model,
+                Float estimatedValue, String comment, String serialNumber, ArrayList<Tag> tags, ArrayList<Photo> photos,
+                String epoch, String id, Integer quantity) {
+        this.name = name;
+        this.date = date;
+        this.description = description;
+        this.make = make;
+        this.model = model;
+        this.serialNumber = serialNumber;
+        this.estimatedValue = estimatedValue;
+        this.comment = comment;
+        this.tags = tags;
+        this.photos = photos;
+        this.epoch = epoch;
+        this.id = parseInt(id);
+        this.quantity = quantity;
     }
+
     public String getName() {
         return name;
     }
@@ -203,6 +213,8 @@ public class Item implements Serializable {
         this.quantity = quantity;
     }
 
+    public String getEpoch() {return epoch;}
+
     public ArrayList<Tag> getTags() {
         return tags;
     }
@@ -244,18 +256,6 @@ public class Item implements Serializable {
         photos.add(p);
     }
 
-    public String getEpoch() {
-        return epoch;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Item i = (Item) o;
-        return i.hashCode() == o.hashCode();
-    }
-
     @Override
     public int hashCode() {
         return this.id;
@@ -268,7 +268,10 @@ public class Item implements Serializable {
     public void addToDatabase(CollectionReference collection){
         Map<String, Object> docData = new HashMap<>();
         docData.put("comment", this.getComment());
-        docData.put("date", this.getDate());
+        docData.put("dateString", this.getDate().getString());
+        docData.put("day", this.getDate().getDay());
+        docData.put("month", this.getDate().getMonth());
+        docData.put("year", this.getDate().getYear());
         docData.put("description", this.getDescription());
         docData.put("estimatedValue", this.getEstimatedValue());
         docData.put("make", this.getMake());
@@ -279,13 +282,17 @@ public class Item implements Serializable {
         docData.put("quantity", this.getQuantity());
         docData.put("serialNumber", this.getSerialNumber());
         docData.put("tags", this.getTags());
+        docData.put("epoch", this.getEpoch());
         collection.document(Integer.toString(hashCode())).set(docData);
     }
 
     public void updateInDatabase(CollectionReference collection){
         Map<String, Object> docData = new HashMap<>();
         docData.put("comment", this.getComment());
-        docData.put("date", this.getDate());
+        docData.put("dateString", this.getDate().getString());
+        docData.put("day", this.getDate().getDay());
+        docData.put("month", this.getDate().getMonth());
+        docData.put("year", this.getDate().getYear());
         docData.put("description", this.getDescription());
         docData.put("estimatedValue", this.getEstimatedValue());
         docData.put("make", this.getMake());
@@ -298,7 +305,13 @@ public class Item implements Serializable {
         docData.put("tags", this.getTags());
         collection.document(Integer.toString(hashCode())).update(docData);
     }
-
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item i = (Item) o;
+        return i.hashCode() == o.hashCode();
+    }
 }
 
 

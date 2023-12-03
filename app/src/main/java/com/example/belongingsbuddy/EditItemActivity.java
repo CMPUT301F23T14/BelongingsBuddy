@@ -81,6 +81,7 @@ public class EditItemActivity extends AppCompatActivity {
 
     // photo stuff !
     private static final int PICK_IMAGES_REQUEST_CODE = 1;
+    private static final int TAKE_PHOTO_REQUEST_CODE = 42069;
     private ArrayList<Photo> selectedImages = new ArrayList<>();
     private ArrayList<Photo> savedImages = new ArrayList<>();
     private ArrayList<Uri> imageURIs = new ArrayList<Uri>();
@@ -343,6 +344,16 @@ public class EditItemActivity extends AppCompatActivity {
 
                 });
 
+                takePhotoButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(EditItemActivity.this, PhotoTakingActivity.class);
+                        intent.setType("image/*");
+
+                        startActivityForResult(intent, TAKE_PHOTO_REQUEST_CODE);
+                    }
+                });
+
                 // Build the custom dialog
                 //AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
 
@@ -395,8 +406,9 @@ public class EditItemActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         // Handle delete action (implement as needed)
                         // For example, you can delete the currently displayed image
-
-
+                        if (photoURLs.size() == 0) {
+                            return;
+                        }
 
 
                         // : )
@@ -419,8 +431,14 @@ public class EditItemActivity extends AppCompatActivity {
                         newAdapter.notifyDataSetChanged();
 
                         // Set the current item to the next item after deletion
-                        int nextItem = currentItem % photoURLs.size();
-                        viewPager.setCurrentItem(nextItem);
+                        if (photoURLs.size() != 0) {
+                            int nextItem = currentItem % photoURLs.size();
+                            viewPager.setCurrentItem(nextItem);
+                        }
+                        else {
+                            int nextItem = 0;
+                            viewPager.setCurrentItem(nextItem);
+                        }
 
                         // Use URL to delete from cloud storage
                         StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(URLDelete);
@@ -573,7 +591,6 @@ public class EditItemActivity extends AppCompatActivity {
 //                        itemInfo.getInt("serialNum")
 //                );
 
-
                 // Check if the data contains multiple images
                 ClipData clipData = data.getClipData();
                 if (clipData != null) {
@@ -582,56 +599,7 @@ public class EditItemActivity extends AppCompatActivity {
                         Uri uri = item.getUri();
                         imageURIs.add(uri);
 
-
-                        // Load the image from the Uri
-                        Bitmap imageBitmap = loadImageFromUri(uri);
-
-
-                        // Check for null before adding to the list
-                        if (imageBitmap != null && uri != null) {
-                            //currentItem.addPhoto(new Photo(uri, imageBitmap));
-                            selectedImages.add(new Photo(uri, imageBitmap));
-                        }
-
-                        // Defining the child of storageReference
-                        StorageReference ref
-                                = storageReference
-                                .child(
-                                        "images/"
-                                                + UUID.randomUUID().toString());
-                        // upload file 2 cloud storage :3
-                        UploadTask uploadTask = ref.putFile(uri);
-                        // Get the download URL
-                        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                            @Override
-                            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                                if (!task.isSuccessful()) {
-                                    throw task.getException();
-                                }
-
-                                // Continue with the task to get the download URL
-                                return ref.getDownloadUrl();
-                            }
-                        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Uri> task) {
-                                if (task.isSuccessful()) {
-                                    // The download URL of the image
-                                    Uri downloadUri = task.getResult();
-                                    String downloadUrl = downloadUri.toString();
-                                    Log.d("Download URL", downloadUrl);
-
-                                    // Now you can use downloadUrl as needed, e.g., store it in a database
-                                    photoURLs.add(downloadUrl);
-                                } else {
-                                    // Handle failures
-                                    Log.e("Download URL", "Failed to get download URL");
-                                }
-                            }
-                        });
-
-
-
+                        storeImageFromUri(uri);
                     }
                 } else {
                     // Single image selected
@@ -676,7 +644,14 @@ public class EditItemActivity extends AppCompatActivity {
                 //System.out.println("Number of photos in the array: " + numberOfPhotos);
             }
         }
-
+        else if (requestCode == TAKE_PHOTO_REQUEST_CODE && resultCode == RESULT_OK) {
+            ArrayList<Uri> uris = data.getParcelableArrayListExtra("capturedImages");
+            if (uris != null) {
+                for (int i = 0; i < uris.size(); i++) {
+                    storeImageFromUri(uris.get(i));
+                }
+            }
+        }
     }
 
     private Bitmap loadImageFromUri(Uri uri) {
@@ -691,6 +666,55 @@ public class EditItemActivity extends AppCompatActivity {
             Log.e("ImageLoading", "Error loading image from Uri: " + e.getMessage());
             return null;
         }
+    }
+
+    private void storeImageFromUri (Uri uri) {
+        // Load the image from the Uri
+        Bitmap imageBitmap = loadImageFromUri(uri);
+
+
+        // Check for null before adding to the list
+        if (imageBitmap != null && uri != null) {
+            //currentItem.addPhoto(new Photo(uri, imageBitmap));
+            selectedImages.add(new Photo(uri, imageBitmap));
+        }
+
+        // Defining the child of storageReference
+        StorageReference ref
+                = storageReference
+                .child(
+                        "images/"
+                                + UUID.randomUUID().toString());
+        // upload file 2 cloud storage :3
+        UploadTask uploadTask = ref.putFile(uri);
+        // Get the download URL
+        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+
+                // Continue with the task to get the download URL
+                return ref.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    // The download URL of the image
+                    Uri downloadUri = task.getResult();
+                    String downloadUrl = downloadUri.toString();
+                    Log.d("Download URL", downloadUrl);
+
+                    // Now you can use downloadUrl as needed, e.g., store it in a database
+                    photoURLs.add(downloadUrl);
+                } else {
+                    // Handle failures
+                    Log.e("Download URL", "Failed to get download URL");
+                }
+            }
+        });
     }
 
 
