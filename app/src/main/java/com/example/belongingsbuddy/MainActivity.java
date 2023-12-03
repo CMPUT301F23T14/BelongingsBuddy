@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -144,7 +145,43 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 if (querySnapshots != null){
                     dataList.clear();
                     for (QueryDocumentSnapshot doc: querySnapshots) {
-                        Item item = doc.toObject(Item.class);
+                        String id = doc.getId();
+                        String comment = (String) doc.get("comment");
+                        int day = ((Long) doc.get("day")).intValue();
+                        int month = ((Long) doc.get("month")).intValue();
+                        int year = ((Long) doc.get("year")).intValue();
+                        Date date = new Date(day, month, year);
+                        String description = (String) doc.get("description");
+                        Float estimatedValue;
+                        try {
+                            estimatedValue = (Float) doc.get("estimatedValue");
+                        } catch (Exception e) {
+                            estimatedValue = 0.0F;
+                        }
+                        String make = (String) doc.get("make");
+                        String model = (String) doc.get("model");
+                        String name = (String) doc.get("name");
+                        List<String> photoURLs;
+                        try {
+                            photoURLs = (List<String>) doc.get("photoURLs");
+                        } catch (Exception e) {
+                            photoURLs = new ArrayList<String>();
+                        }
+                        ArrayList<Photo> photos;
+                        try {
+                             photos = (ArrayList<Photo>) doc.get("photos");
+                        } catch (Exception e) {
+                            photos = new ArrayList<Photo>();
+                        }
+                        String serialNumber = (String) doc.get("serialNumber");
+                        ArrayList<Tag> tags;
+                        try {
+                            tags = (ArrayList<Tag>) doc.get("tags");
+                        } catch (Exception e) {
+                            tags = new ArrayList<Tag>();
+                        }
+                        String epoch = (String) doc.get("epoch");
+                        Item item = new Item(name, date, description, make, model, estimatedValue, comment, serialNumber, tags, photos, epoch, id);
                         if (item.getPhotoURLs() != null) {
                             if (item.getPhotoURLs().size() > 0) {
                                 Log.d("PHOTO URLS", item.getPhotoURLs().get(0));
@@ -622,7 +659,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     item.setEstimatedValue(info.getFloat("value"));
                     item.setSerialNumber(info.getString("serial number"));
                     item.setComment(info.getString("comment"));
-                    List<String> photoURLs = new ArrayList<>();
+                    ArrayList<String> photoURLs = new ArrayList<>();
                     int listSize = data.getIntExtra("url list size", 0);
                     String URL;
                     for (int i = 0; i < listSize; i++) {
