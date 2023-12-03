@@ -1,5 +1,9 @@
 package com.example.belongingsbuddy;
 
+
+import static java.lang.Integer.parseInt;
+
+import android.widget.Toast;
 import android.util.Log;
 
 import com.google.firebase.firestore.CollectionReference;
@@ -29,8 +33,8 @@ public class Item implements Serializable {
     private Integer quantity;
     private ArrayList<Tag> tags;
     private ArrayList<Photo> photos;
-    private String epoch;
     private List<String> photoURLs;
+    private String epoch;
     private int id;
 
     /**
@@ -60,22 +64,18 @@ public class Item implements Serializable {
         this.serialNumber = null;
         this.estimatedValue = estimatedValue;
         this.comment = comment;
+        this.tags = new ArrayList<Tag>();
         this.quantity = 1;
-        tags = new ArrayList<Tag>();
         this.photos = new ArrayList<Photo>();
         this.epoch = Long.toString(System.currentTimeMillis());
         this.id = Objects.hash(
-                this.name,
+                name,
                 this.epoch,
-                this.description,
-                this.make,
-                this.model,
-                this.serialNumber,
-                this.estimatedValue,
-                this.comment,
-                this.quantity,
-                this.tags,
-                this.photos
+                description,
+                make,
+                model,
+                estimatedValue,
+                comment
         );
         // this.photoURLs = new ArrayList<String>();
     }
@@ -100,7 +100,7 @@ public class Item implements Serializable {
      * serial number of item (Integer)
      */
     public Item(String name, Date date, String description, String make, String model,
-                Float estimatedValue, String comment, String serialNumber){
+                Float estimatedValue, String comment, String serialNumber) {
         this.name = name;
         this.date = date;
         this.description = description;
@@ -110,30 +110,39 @@ public class Item implements Serializable {
         this.estimatedValue = estimatedValue;
         this.comment = comment;
         this.quantity = 1;
-        tags = new ArrayList<Tag>();
-        photos = new ArrayList<Photo>();
+        this.tags = new ArrayList<Tag>();
+        this.photos = new ArrayList<>();
         this.epoch = Long.toString(System.currentTimeMillis());
         this.id = Objects.hash(
-                this.name,
+                name,
                 this.epoch,
-                this.description,
-                this.make,
-                this.model,
-                this.serialNumber,
-                this.estimatedValue,
-                this.comment,
-                this.quantity,
-                this.tags,
-                this.photos
+                description,
+                make,
+                model,
+                serialNumber,
+                estimatedValue,
+                comment
         );
     }
 
-    /**
-     * public constructor that takes no parameters.
-     * This is used to load items from FireStore collection
-     */
-    public Item(){
+    public Item(String name, Date date, String description, String make, String model,
+                Float estimatedValue, String comment, String serialNumber, ArrayList<Tag> tags, ArrayList<Photo> photos,
+                String epoch, String id, Integer quantity) {
+        this.name = name;
+        this.date = date;
+        this.description = description;
+        this.make = make;
+        this.model = model;
+        this.serialNumber = serialNumber;
+        this.estimatedValue = estimatedValue;
+        this.comment = comment;
+        this.tags = tags;
+        this.photos = photos;
+        this.epoch = epoch;
+        this.id = parseInt(id);
+        this.quantity = quantity;
     }
+
     public String getName() {
         return name;
     }
@@ -259,7 +268,10 @@ public class Item implements Serializable {
     public void addToDatabase(CollectionReference collection){
         Map<String, Object> docData = new HashMap<>();
         docData.put("comment", this.getComment());
-        docData.put("date", this.getDate());
+        docData.put("dateString", this.getDate().getString());
+        docData.put("day", this.getDate().getDay());
+        docData.put("month", this.getDate().getMonth());
+        docData.put("year", this.getDate().getYear());
         docData.put("description", this.getDescription());
         docData.put("estimatedValue", this.getEstimatedValue());
         docData.put("make", this.getMake());
@@ -270,13 +282,17 @@ public class Item implements Serializable {
         docData.put("quantity", this.getQuantity());
         docData.put("serialNumber", this.getSerialNumber());
         docData.put("tags", this.getTags());
+        docData.put("epoch", this.getEpoch());
         collection.document(Integer.toString(hashCode())).set(docData);
     }
 
     public void updateInDatabase(CollectionReference collection){
         Map<String, Object> docData = new HashMap<>();
         docData.put("comment", this.getComment());
-        docData.put("date", this.getDate());
+        docData.put("dateString", this.getDate().getString());
+        docData.put("day", this.getDate().getDay());
+        docData.put("month", this.getDate().getMonth());
+        docData.put("year", this.getDate().getYear());
         docData.put("description", this.getDescription());
         docData.put("estimatedValue", this.getEstimatedValue());
         docData.put("make", this.getMake());

@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -144,7 +145,24 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 if (querySnapshots != null){
                     dataList.clear();
                     for (QueryDocumentSnapshot doc: querySnapshots) {
-                        Item item = doc.toObject(Item.class);
+                        String id = doc.getId();
+                        String comment = (String) doc.get("comment");
+                        int day = ((Long) doc.get("day")).intValue();
+                        int month = ((Long) doc.get("month")).intValue();
+                        int year = ((Long) doc.get("year")).intValue();
+                        Date date = new Date(day, month, year);
+                        String description = (String) doc.get("description");
+                        Float estimatedValue = ((Double) doc.get("estimatedValue")).floatValue();
+                        String make = (String) doc.get("make");
+                        String model = (String) doc.get("model");
+                        String name = (String) doc.get("name");
+                        List<String> photoURLs = (List<String>) doc.get("photoURLs");
+                        ArrayList<Photo> photos = (ArrayList<Photo>) doc.get("photos");
+                        String serialNumber = (String) doc.get("serialNumber");
+                        ArrayList<Tag> tags = (ArrayList<Tag>) doc.get("tags");
+                        String epoch = (String) doc.get("epoch");
+                        Integer quantity = ((Long) doc.get("quantity")).intValue();
+                        Item item = new Item(name, date, description, make, model, estimatedValue, comment, serialNumber, tags, photos, epoch, id, quantity);
                         if (item.getPhotoURLs() != null) {
                             if (item.getPhotoURLs().size() > 0) {
                                 Log.d("PHOTO URLS", item.getPhotoURLs().get(0));
