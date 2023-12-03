@@ -200,6 +200,7 @@
                     android:layout_gravity="center"
                     android:layout_weight="0.5">
                 </EditText>
+
             </LinearLayout>
 
             <LinearLayout
@@ -398,6 +399,7 @@
                     android:background="@color/light_purple"
                     android:paddingVertical="10dp">
                 </TextView>
+
                 <Button
                     android:id="@+id/add_tags_button"
                     android:layout_width="wrap_content"
@@ -430,6 +432,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="+">
+                </Button>
+
+                <Button
+                    android:id="@+id/show_images_button2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Show Images">
+                    
                 </Button>
 
             </LinearLayout>
