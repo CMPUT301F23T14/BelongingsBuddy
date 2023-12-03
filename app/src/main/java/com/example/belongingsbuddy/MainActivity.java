@@ -493,7 +493,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
 //                    Toast.makeText(this, "SORT BY value DESC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item::getEstimatedValue).reversed());
                 }
-                sortTypeTextView.setText("Tags");
+                sortTypeTextView.setText("Estimated Value");
                 itemAdapter.notifyDataSetChanged();
             case "tags":
                 if (isAscending) {
@@ -503,7 +503,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
 //                    Toast.makeText(this, "SORT BY value DESC", Toast.LENGTH_SHORT).show();
                     dataList.sort(Comparator.comparing(Item -> tagManager.printItemTags((com.example.belongingsbuddy.Item) Item, false)).reversed());
                 }
-                sortTypeTextView.setText("Estimated Value");
+                sortTypeTextView.setText("Tags");
                 itemAdapter.notifyDataSetChanged();
                 break;
             case "NONE":
