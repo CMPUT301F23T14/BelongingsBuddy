@@ -92,6 +92,7 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item);
+        storageReference = FirebaseStorage.getInstance().getReference();
 
         //Check if there is any info from barcodes
         String productInfo = getIntent().getStringExtra("productInfo");
