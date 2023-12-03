@@ -33,8 +33,9 @@ import java.util.TimeZone;
  * Users can set various filter criteria such as date range, keywords, makes, and tags to refine the displayed items.
  * Communicates with the hosting activity through the {@link Listener} interface.
  */
-public class FilterItemsFragment extends DialogFragment {
+public class FilterItemsFragment extends DialogFragment implements TagListener {
     public Listener listener;
+    View view;
     String startDate = null;
     String endDate = null;
     com.example.belongingsbuddy.Date startDateAsDate;
@@ -42,6 +43,7 @@ public class FilterItemsFragment extends DialogFragment {
     String[] keywords = {};
     String[] makes = {};
     String[] tags = {};
+    ArrayList<Tag> selectedTagsArray = new ArrayList<>();
 
     // so we can communicate with main activity
     @Override
@@ -71,7 +73,7 @@ public class FilterItemsFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         // get the view
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.filter_items, null);
+        view = LayoutInflater.from(getActivity()).inflate(R.layout.filter_items, null);
         final Dialog dialog = new Dialog(this.getContext());
         dialog.setContentView(view);
 
@@ -79,7 +81,7 @@ public class FilterItemsFragment extends DialogFragment {
         TextView selectedDate = view.findViewById(R.id.filter_selected_dates);
         EditText selectedKeywords = view.findViewById(R.id.filter_selected_keywords);
         EditText selectedMakes = view.findViewById(R.id.filter_selected_makes);
-        EditText selectedTags = view.findViewById(R.id.filter_selected_tags);
+        TextView selectedTags = view.findViewById(R.id.filter_selected_tags);
 
         // click listeners for buttons
         // date
@@ -125,6 +127,13 @@ public class FilterItemsFragment extends DialogFragment {
             }
         });
 
+        //Open tag selection interface for tag filter selection
+        Button filterTags = view.findViewById(R.id.add_filter_tags_button);
+        filterTags.setOnClickListener(v -> {
+                TagManager manager = listener.getTagManager();
+                manager.openTagSelector(this, getFragmentManager(), selectedTagsArray);
+            });
+
         // ok
         Button ok = view.findViewById(R.id.filter_ok);
         ok.setOnClickListener(new View.OnClickListener() {
@@ -138,15 +147,12 @@ public class FilterItemsFragment extends DialogFragment {
                 if (!selectedMakes.getText().toString().isEmpty()) {
                     makes = selectedMakes.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
                 }
-                if (!selectedTags.getText().toString().isEmpty()) {
-                    tags = selectedTags.getText().toString().split("[\\t\\r\\n\\f ]*,[\\t\\r\\n\\f ]*");
-                }
                 if (startDate != null) {
                     startDateAsDate = new com.example.belongingsbuddy.Date(startDate);
                     endDateAsDate = new com.example.belongingsbuddy.Date(endDate);
 
                 }
-                listener.onFilterOkPressed(keywords, makes, tags, startDateAsDate, endDateAsDate);
+                listener.onFilterOkPressed(keywords, makes, selectedTagsArray, startDateAsDate, endDateAsDate);
                 dialog.dismiss();
             }
         });
@@ -162,5 +168,16 @@ public class FilterItemsFragment extends DialogFragment {
 
         dialog.show();
         return dialog;
+    }
+
+    @Override
+    public void tagListen(ArrayList<Tag> tagList) {
+        String tagSequence = "";
+        for(Tag tagString: tagList) {
+            tagSequence += tagString + ", ";
+        }
+        TextView addTags = view.findViewById(R.id.filter_selected_tags);
+        addTags.setText(tagSequence);
+        selectedTagsArray = tagList;
     }
 }

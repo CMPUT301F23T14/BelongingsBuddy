@@ -69,6 +69,19 @@
         android:textSize="14sp">
     </Button>
 
+    <Button
+        android:id="@+id/sort_tags"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/grey_button"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingHorizontal="70dp"
+        android:text="Tags"
+        android:textSize="14sp">
+    </Button>
+
     <RadioGroup
         android:id="@+id/radioGroup"
         android:layout_width="match_parent"
