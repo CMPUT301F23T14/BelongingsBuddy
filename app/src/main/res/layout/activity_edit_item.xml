@@ -397,15 +397,22 @@
                     android:textColor="@color/black">
                 </TextView>
 
-                <EditText
+                <TextView
                     android:id="@+id/edit_tags"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:hint=""
+                    android:text=""
                     android:textSize="25sp"
                     android:background="@color/light_purple"
                     android:paddingVertical="10dp">
-                </EditText>
+                </TextView>
+             
+                <Button
+                    android:id="@+id/edit_tags_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-">
+                </Button>
             </LinearLayout>
 
             <LinearLayout
