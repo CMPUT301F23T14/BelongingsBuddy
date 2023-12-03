@@ -709,10 +709,8 @@ public class MainActivity extends AppCompatActivity implements Listener{
     public float sumItems(@NonNull ArrayList<Item> dataList) {
             float sum = 0f;
             for (Item item: dataList) {
-                if (item != null) {
-                    int q = item.getQuantity();
-                    sum += (item.getEstimatedValue() * q);
-                }
+                int q = item.getQuantity();
+                sum += (item.getEstimatedValue() * q);
             }
             return sum;
     }
