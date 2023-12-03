@@ -376,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
      * When the user selects OK from the filter dialogue, MainActivity starts handles the update to listview.
      */
     @Override
-    public void onFilterOkPressed(String[] keywords, String[] makes, String[] tags, Date startDate, Date endDate) {
+    public void onFilterOkPressed(String[] keywords, String[] makes, ArrayList<Tag> tags, Date startDate, Date endDate) {
         // desc keywords
         if (keywords.length != 0) {
             // Filter the list based on the condition that the description contains any string from the array
@@ -398,11 +398,9 @@ public class MainActivity extends AppCompatActivity implements Listener{
         }
 
         // tags
-        if (tags.length != 0) {
+        if (tags.size() != 0) {
             // Filter the list based on the condition that the tags contains any string from the array
-            ArrayList<Item> filteredList = (ArrayList<Item>) dataList.stream()
-                    .filter(item -> Arrays.stream(tags).anyMatch(item.getTags()::contains))
-                    .collect(Collectors.toList());
+            ArrayList<Item> filteredList = tagManager.filterByTags(new HashSet<>(tags));
             dataList.clear();
             dataList.addAll(filteredList);
         }
@@ -415,7 +413,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
         }
 
         // if a filter is present
-        if (keywords.length != 0 || makes.length != 0 || tags.length != 0 || startDate != null) {
+        if (keywords.length != 0 || makes.length != 0 || tags.size() != 0 || startDate != null) {
             filterTypeLayout.setVisibility(View.VISIBLE);
         }
         // if nothing matches filter
@@ -693,5 +691,9 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 sum += item.getEstimatedValue();
             }
             return sum;
+    }
+
+    public TagManager getTagManager() {
+        return tagManager;
     }
 }

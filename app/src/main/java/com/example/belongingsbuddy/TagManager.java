@@ -123,12 +123,13 @@ public class TagManager implements Serializable {
         Bundle arg = new Bundle();
         arg.putSerializable("tagManager", this);
         arg.putSerializable("selectedTags", selectedTags);
+        arg.putSerializable("mainActivity", listener);
         TagActivity TagFragment = new TagActivity();
         TagFragment.setArguments(arg);
         TagFragment.show(manager, "dialog");
     }
 
-    public ArrayList<Item> filterByTags(Item i, Set<Tag> tagSet) {
+    public ArrayList<Item> filterByTags(Set<Tag> tagSet) {
         ArrayList<Item> subset = new ArrayList<>();
         for (Map.Entry<Item, Set<Tag>> entry : ManagedItems.entrySet()) {
             if (entry.getValue().containsAll(tagSet)) {

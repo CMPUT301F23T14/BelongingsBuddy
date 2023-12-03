@@ -30,7 +30,6 @@ public class Item implements Serializable {
     private ArrayList<Photo> photos;
     private String epoch;
     private List<String> photoURLs;
-    private String epoch;
     private int id;
 
     /**
@@ -238,18 +237,6 @@ public class Item implements Serializable {
         photos.add(p);
     }
 
-    public String getEpoch() {
-        return epoch;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Item i = (Item) o;
-        return i.hashCode() == o.hashCode();
-    }
-
     @Override
     public int hashCode() {
         return this.id;
@@ -296,21 +283,6 @@ public class Item implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Item i = (Item) o;
         return i.hashCode() == o.hashCode();
-    }
-    @Override
-    public int hashCode() {
-        return Objects.hash(
-                name,
-                epoch,
-                description,
-                make,
-                model,
-                serialNumber,
-                estimatedValue,
-                comment,
-                tags,
-                photos
-        );
     }
 }
 

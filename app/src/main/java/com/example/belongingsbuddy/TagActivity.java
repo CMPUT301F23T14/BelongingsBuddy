@@ -40,7 +40,7 @@ public class TagActivity extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
-        dialogView= LayoutInflater.from(getActivity()).inflate(R.layout.tag_fragment, null);
+        dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.tag_fragment, null);
         final Dialog dialog = new Dialog(this.getContext());
         dialog.setContentView(dialogView);
 
@@ -142,7 +142,7 @@ public class TagActivity extends DialogFragment {
         super.onAttach(context);
 
         try {
-            mainActivity = (TagListener) context;
+            mainActivity = (TagListener) getArguments().getSerializable("mainActivity");
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
                     + " must implement TagListener");
