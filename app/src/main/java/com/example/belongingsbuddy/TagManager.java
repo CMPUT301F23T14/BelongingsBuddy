@@ -1,16 +1,29 @@
 package com.example.belongingsbuddy;
+
+import android.content.Intent;
+import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
+
+
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import com.example.belongingsbuddy.Item;
 import com.example.belongingsbuddy.Tag;
+
+import org.checkerframework.checker.units.qual.K;
 
 public class TagManager implements Serializable {
     //Manager Class keeps track of all possible tags and the item->tags relationships via HashMaps
@@ -22,6 +35,10 @@ public class TagManager implements Serializable {
         for (Item item : Items) {
             ManagedItems.put(item, new HashSet<>());
         }
+    }
+
+    public HashMap<Item, Set<Tag>> getManagedItems() {
+        return ManagedItems;
     }
 
     //Constructor
@@ -77,15 +94,48 @@ public class TagManager implements Serializable {
     public void setItemTags(Item item, ArrayList<Tag> tags) {
        ManagedItems.put(item, new HashSet<>(tags));
     }
-    public String printItemTags(Item i) {
+
+    //Get Item tags
+    public Set<Tag> getItemTags(Item item) {
+        if (ManagedItems.containsKey(item)) {
+            return ManagedItems.get(item);
+        } else {
+            return new HashSet<>();
+        }
+    }
+    public String printItemTags(Item i, Boolean descending) {
         String returnString = "";
         if (ManagedItems.containsKey(i)) {
-            Set<Tag> itemTags = ManagedItems.get(i);
-            for (Tag tag : itemTags) {
-                returnString += tag.toString() + " ";
+            ArrayList<Tag> itemTags = new ArrayList<>(ManagedItems.get(i));
+            if (descending) {
+                itemTags.sort(Comparator.comparing(Tag::getTagName).reversed());
+            } else {
+                itemTags.sort(Comparator.comparing(Tag::getTagName));
+            }
+            for (int a = 0; a < itemTags.size(); a++) {
+                returnString += itemTags.get(a).toString() + " ";
             }
         }
         return returnString;
     }
 
+    public void openTagSelector(TagListener listener, FragmentManager manager, ArrayList<Tag> selectedTags) {
+        Bundle arg = new Bundle();
+        arg.putSerializable("tagManager", this);
+        arg.putSerializable("selectedTags", selectedTags);
+        arg.putSerializable("mainActivity", listener);
+        TagActivity TagFragment = new TagActivity();
+        TagFragment.setArguments(arg);
+        TagFragment.show(manager, "dialog");
+    }
+
+    public ArrayList<Item> filterByTags(Set<Tag> tagSet) {
+        ArrayList<Item> subset = new ArrayList<>();
+        for (Map.Entry<Item, Set<Tag>> entry : ManagedItems.entrySet()) {
+            if (entry.getValue().containsAll(tagSet)) {
+                subset.add(entry.getKey());
+            }
+        }
+        return subset;
+    }
 }

@@ -46,7 +46,7 @@ import com.squareup.picasso.Picasso;
  * This class gets all the necessary input from the user to construct a new Item and then returns that
  * data to the calling activity (MainActivity)
  */
-public class AddItemActivity extends AppCompatActivity{
+public class AddItemActivity extends AppCompatActivity implements TagListener{
     private String name;
     private EditText name_text;
     private Date date;
@@ -155,13 +155,9 @@ public class AddItemActivity extends AppCompatActivity{
         //Set Tags Implementation Dialog Frame Window
         Button openTagsButton = findViewById(R.id.add_tags_button);
         openTagsButton.setOnClickListener(v -> {
-            Bundle arg = new Bundle();
             Intent i = getIntent();
-            arg.putSerializable("tagManager", i.getSerializableExtra("Manager"));
-            arg.putSerializable("selectedTags", tags);
-            TagActivity TagFragment = new TagActivity();
-            TagFragment.setArguments(arg);
-            TagFragment.show(getSupportFragmentManager(), "dialog");
+            TagManager manager = (TagManager) i.getSerializableExtra("Manager");
+            manager.openTagSelector(this, getSupportFragmentManager(), tags);
         });
 
         // CONFIRM implementation:
@@ -520,7 +516,13 @@ public class AddItemActivity extends AppCompatActivity{
             p.setBackgroundColor(getResources().getColor(R.color.light_purple));
     }
 
-    public void setTagList(ArrayList<Tag> tagList) {
+    public void tagListen(ArrayList<Tag> tagList) {
+        String tagSequence = "";
+        for(Tag tagString: tagList) {
+            tagSequence += tagString + " ";
+        }
+        TextView addTags = findViewById(R.id.add_tags);
+        addTags.setText(tagSequence);
         tags = tagList;
     }
 }

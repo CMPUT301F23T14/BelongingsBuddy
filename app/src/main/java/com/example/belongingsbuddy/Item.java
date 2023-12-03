@@ -1,12 +1,13 @@
 package com.example.belongingsbuddy;
 
-import android.widget.Toast;
+import android.util.Log;
 
 import com.google.firebase.firestore.CollectionReference;
 
 import org.checkerframework.checker.units.qual.C;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,8 +29,8 @@ public class Item implements Serializable {
     private Integer quantity;
     private ArrayList<Tag> tags;
     private ArrayList<Photo> photos;
-    private List<String> photoURLs;
     private String epoch;
+    private List<String> photoURLs;
     private int id;
 
     /**
@@ -203,6 +204,8 @@ public class Item implements Serializable {
         this.quantity = quantity;
     }
 
+    public String getEpoch() {return epoch;}
+
     public ArrayList<Tag> getTags() {
         return tags;
     }
@@ -242,18 +245,6 @@ public class Item implements Serializable {
      */
     public  void addPhoto(Photo p){
         photos.add(p);
-    }
-
-    public String getEpoch() {
-        return epoch;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Item i = (Item) o;
-        return i.hashCode() == o.hashCode();
     }
 
     @Override
@@ -298,7 +289,13 @@ public class Item implements Serializable {
         docData.put("tags", this.getTags());
         collection.document(Integer.toString(hashCode())).update(docData);
     }
-
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item i = (Item) o;
+        return i.hashCode() == o.hashCode();
+    }
 }
 
 
