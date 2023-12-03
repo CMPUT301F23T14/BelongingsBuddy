@@ -260,24 +260,24 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
                     returnIntent.putExtra("quantity", quantity);
                     returnIntent.putExtra("url list size", photoURLs.size());
 
-//                    for (int i = 0; i < photoURLs.size(); i++) {
-//                        returnIntent.putExtra("photoURL" + i, photoURLs.get(i));
-//                    }
-////
-//                    //returnIntent.putParcelableArrayListExtra("selectedImages", selectedImages);
-//                    setResult(Activity.RESULT_OK, returnIntent);
+                    for (int i = 0; i < photoURLs.size(); i++) {
+                        returnIntent.putExtra("photoURL" + i, photoURLs.get(i));
+                    }
 //
-//                    // TODO: ACTUALLY PUT PHOTO CODE HERE OOPS
-//                    // Defining the child of storageReference
-//                    StorageReference ref
-//                            = storageReference
-//                            .child(
-//                                    "images/"
-//                                            + UUID.randomUUID().toString());
-//                    for (int i = 0; i < imageURIs.size(); i++) {
-//                        // upload file 2 cloud storage :3
-//                        ref.putFile(imageURIs.get(i));
-//                    }
+                    //returnIntent.putParcelableArrayListExtra("selectedImages", selectedImages);
+                    setResult(Activity.RESULT_OK, returnIntent);
+
+                    // TODO: ACTUALLY PUT PHOTO CODE HERE OOPS
+                    // Defining the child of storageReference
+                    StorageReference ref
+                            = storageReference
+                            .child(
+                                    "images/"
+                                            + UUID.randomUUID().toString());
+                    for (int i = 0; i < imageURIs.size(); i++) {
+                        // upload file 2 cloud storage :3
+                        ref.putFile(imageURIs.get(i));
+                    }
 
                     Bundle args = new Bundle();
                     args.putSerializable("tagList",tags);
