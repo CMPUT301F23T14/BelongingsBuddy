@@ -127,7 +127,7 @@ public class Item implements Serializable {
 
     public Item(String name, Date date, String description, String make, String model,
                 Float estimatedValue, String comment, String serialNumber, ArrayList<Tag> tags, ArrayList<Photo> photos,
-                String epoch, String id, Integer quantity) {
+                String epoch, String id, Integer quantity, List<String> photoURLs) {
         this.name = name;
         this.date = date;
         this.description = description;
@@ -141,6 +141,7 @@ public class Item implements Serializable {
         this.epoch = epoch;
         this.id = parseInt(id);
         this.quantity = quantity;
+        this.photoURLs = photoURLs;
     }
 
     public String getName() {
