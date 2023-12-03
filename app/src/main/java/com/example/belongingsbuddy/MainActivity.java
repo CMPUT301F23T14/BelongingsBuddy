@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // get the Item being clicked
                 Item i = itemAdapter.getItem(position);
-                Log.d("tag", i.getEpoch());
+                //Log.d("tag", i.getEpoch());
                 // setup the ItemViewActivity by creating a new Intent and passing Item data as extras
                 Intent intent = new Intent(MainActivity.this, ItemViewActivity.class);
                 intent.putExtra("name", i.getName());

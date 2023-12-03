@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.ImageProxy;
 import androidx.lifecycle.LifecycleOwner;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -69,7 +71,11 @@ public class PhotoTakingActivity extends CameraActivity implements CameraCreatio
                         byte[] bytes = new byte[buffer.remaining()];
                         buffer.get(bytes);
 
-                        File imageFile = saveImageToFile(bytes);
+                        int rotationDegrees = image.getImageInfo().getRotationDegrees();
+
+                        byte[] rotatedBytes = rotateImage(bytes, rotationDegrees);
+
+                        File imageFile = saveImageToFile(rotatedBytes);
 
                         Uri imageUri = Uri.fromFile(imageFile);
                         takenPhotos.add(imageUri);
@@ -95,6 +101,25 @@ public class PhotoTakingActivity extends CameraActivity implements CameraCreatio
                 finish();
             }
         });
+    }
+
+    private byte[] rotateImage(byte[] data, int rotationDegrees) {
+        // Rotate the image based on the orientation information
+        if (rotationDegrees == 0) {
+            return data; // No rotation needed
+        }
+
+        Bitmap originalBitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+        Matrix matrix = new Matrix();
+        matrix.postRotate(rotationDegrees);
+
+        // Create a new rotated bitmap
+        Bitmap rotatedBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.getWidth(), originalBitmap.getHeight(), matrix, true);
+
+        // Convert the rotated bitmap to a byte array
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+        return outputStream.toByteArray();
     }
 
     /**
