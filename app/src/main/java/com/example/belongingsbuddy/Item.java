@@ -33,7 +33,7 @@ public class Item implements Serializable {
     private Integer quantity;
     private ArrayList<Tag> tags;
     private ArrayList<Photo> photos;
-    private ArrayList<String> photoURLs;
+    private List<String> photoURLs;
     private String epoch;
     private int id;
 
@@ -110,8 +110,8 @@ public class Item implements Serializable {
         this.estimatedValue = estimatedValue;
         this.comment = comment;
         this.quantity = 1;
-        tags = new ArrayList<Tag>();
-        photos = new ArrayList<Photo>();
+        this.tags = new ArrayList<Tag>();
+        this.photos = new ArrayList<>();
         this.epoch = Long.toString(System.currentTimeMillis());
         this.id = Objects.hash(
                 name,
@@ -127,7 +127,7 @@ public class Item implements Serializable {
 
     public Item(String name, Date date, String description, String make, String model,
                 Float estimatedValue, String comment, String serialNumber, ArrayList<Tag> tags, ArrayList<Photo> photos,
-                String epoch, String id) {
+                String epoch, String id, Integer quantity) {
         this.name = name;
         this.date = date;
         this.description = description;
@@ -140,6 +140,7 @@ public class Item implements Serializable {
         this.photos = photos;
         this.epoch = epoch;
         this.id = parseInt(id);
+        this.quantity = quantity;
     }
 
     public String getName() {
@@ -233,7 +234,7 @@ public class Item implements Serializable {
     public List<String> getPhotoURLs() {
         return photoURLs;
     }
-    public void setPhotoURLs(ArrayList<String> photoURLs) {
+    public void setPhotoURLs(List<String> photoURLs) {
         this.photoURLs = photoURLs;
     }
 

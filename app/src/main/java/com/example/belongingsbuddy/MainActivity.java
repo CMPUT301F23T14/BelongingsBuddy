@@ -152,36 +152,17 @@ public class MainActivity extends AppCompatActivity implements Listener{
                         int year = ((Long) doc.get("year")).intValue();
                         Date date = new Date(day, month, year);
                         String description = (String) doc.get("description");
-                        Float estimatedValue;
-                        try {
-                            estimatedValue = (Float) doc.get("estimatedValue");
-                        } catch (Exception e) {
-                            estimatedValue = 0.0F;
-                        }
+                        Float estimatedValue = ((Double) doc.get("estimatedValue")).floatValue();
                         String make = (String) doc.get("make");
                         String model = (String) doc.get("model");
                         String name = (String) doc.get("name");
-                        List<String> photoURLs;
-                        try {
-                            photoURLs = (List<String>) doc.get("photoURLs");
-                        } catch (Exception e) {
-                            photoURLs = new ArrayList<String>();
-                        }
-                        ArrayList<Photo> photos;
-                        try {
-                             photos = (ArrayList<Photo>) doc.get("photos");
-                        } catch (Exception e) {
-                            photos = new ArrayList<Photo>();
-                        }
+                        List<String> photoURLs = (List<String>) doc.get("photoURLs");
+                        ArrayList<Photo> photos = (ArrayList<Photo>) doc.get("photos");
                         String serialNumber = (String) doc.get("serialNumber");
-                        ArrayList<Tag> tags;
-                        try {
-                            tags = (ArrayList<Tag>) doc.get("tags");
-                        } catch (Exception e) {
-                            tags = new ArrayList<Tag>();
-                        }
+                        ArrayList<Tag> tags = (ArrayList<Tag>) doc.get("tags");
                         String epoch = (String) doc.get("epoch");
-                        Item item = new Item(name, date, description, make, model, estimatedValue, comment, serialNumber, tags, photos, epoch, id);
+                        Integer quantity = ((Long) doc.get("quantity")).intValue();
+                        Item item = new Item(name, date, description, make, model, estimatedValue, comment, serialNumber, tags, photos, epoch, id, quantity);
                         if (item.getPhotoURLs() != null) {
                             if (item.getPhotoURLs().size() > 0) {
                                 Log.d("PHOTO URLS", item.getPhotoURLs().get(0));
