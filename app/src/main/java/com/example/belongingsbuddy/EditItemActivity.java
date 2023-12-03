@@ -69,6 +69,8 @@ public class EditItemActivity extends AppCompatActivity {
     private String serialNum;
     private EditText comment_text;
     private String comment;
+    private EditText quantity_text;
+    private Integer quantity;
     private ArrayList<String> photoURLs = new ArrayList<>();
 
     StorageReference storageReference;
@@ -159,6 +161,35 @@ public class EditItemActivity extends AppCompatActivity {
             }
         });
 
+        // QUANTITY implementation:
+        quantity_text = this.findViewById(R.id.edit_quantity);
+        Integer q  = itemInfo.getInt("quantity");
+        quantity_text.setText(q.toString());
+        quantity = Integer.parseInt(quantity_text.getText().toString());
+        // PLUS button
+        Button plus = findViewById(R.id.edit_plus_button);
+        plus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                quantity = Integer.parseInt(quantity_text.getText().toString());
+                quantity += 1;
+                quantity_text.setText(quantity.toString());
+
+            }
+        });
+        // MINUS button
+        Button minus = findViewById(R.id.edit_minus_button);
+        minus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                quantity = Integer.parseInt(quantity_text.getText().toString());
+                if (quantity > 0){
+                    quantity -= 1;
+                    quantity_text.setText(quantity.toString());
+                }
+            }
+        });
+
         // CONFIRM implementation:
         Button confirm = findViewById(R.id.edit_confirm);
         confirm.setOnClickListener(new View.OnClickListener() {
@@ -213,6 +244,7 @@ public class EditItemActivity extends AppCompatActivity {
                     make = make_text.getText().toString();
                     model = model_text.getText().toString();
                     new_val = Float.parseFloat(value_text.getText().toString());
+                    quantity = Integer.parseInt(quantity_text.getText().toString());
                     // comment is optional
                     if (TextUtils.isEmpty(comment_text.getText().toString())) {
                         comment = "NA";
@@ -238,6 +270,7 @@ public class EditItemActivity extends AppCompatActivity {
                     returnIntent.putExtra("day", date.getDay());
                     returnIntent.putExtra("month", date.getMonth());
                     returnIntent.putExtra("year", date.getYear());
+                    returnIntent.putExtra("quantity", quantity);
                     returnIntent.putExtra("index", itemInfo.getInt("index"));
                     returnIntent.putExtra("selectedImages", selectedImages);
                     returnIntent.putExtra("url list size", photoURLs.size());

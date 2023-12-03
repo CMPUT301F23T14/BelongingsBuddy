@@ -197,6 +197,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 intent.putExtra("model", i.getModel());
                 intent.putExtra("value", i.getEstimatedValue());
                 intent.putExtra("serialNum", i.getSerialNumber());
+                intent.putExtra("quantity", i.getQuantity());
                 intent.putExtra("comment", i.getComment());
                 intent.putExtra("index", position);
                 intent.putExtra("tags", tagManager.printItemTags(i));
@@ -541,22 +542,22 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     int day = data.getIntExtra("day", 0);
                     int month = data.getIntExtra("month", 0);
                     int year = data.getIntExtra("year", 0);
+                    Integer quantity = data.getIntExtra("quantity", 1);
 
                     ArrayList<Tag> selectedTags = (ArrayList<Tag>) data.getBundleExtra("BUNDLE").getSerializable("tagList");
                     // construct a Date object
-                    // construct a Date object (call constructors depending on whether or not a serial number was given)
                     Date date = new Date(day, month, year);
-
+                    // construct an Item object (call constructors depending on whether or not a serial number was given)
                     Item item;
-
                     if (serialNumber == null) {
                         item = new Item(name, date, description, make, model, value, comment);
+                        item.setQuantity(quantity);
                         dataList.add(item);
                     } else {
                         item = new Item(name, date, description, make, model, value, comment, serialNumber);
+                        item.setQuantity(quantity);
                         dataList.add(item);
                     }
-
                     // add Item to FireStore database
                     item.addToDatabase(user_collection);
 
@@ -592,6 +593,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     dataList.remove(i);
                     // remove Item from FireStore collection
                     user_collection.document(Integer.toString(i.hashCode())).delete();
+                    Toast.makeText(this, Integer.toString(i.hashCode()), Toast.LENGTH_SHORT).show();
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup
                     originalOrderDataList.clear();
@@ -622,6 +624,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     item.setEstimatedValue(info.getFloat("value"));
                     item.setSerialNumber(info.getString("serial number"));
                     item.setComment(info.getString("comment"));
+                    item.setQuantity(info.getInt("quantity"));
                     List<String> photoURLs = new ArrayList<>();
                     int listSize = data.getIntExtra("url list size", 0);
                     String URL;
@@ -679,7 +682,8 @@ public class MainActivity extends AppCompatActivity implements Listener{
     public float sumItems(@NonNull ArrayList<Item> dataList) {
             float sum = 0f;
             for (Item item: dataList) {
-                sum += item.getEstimatedValue();
+                int q = item.getQuantity();
+                sum += (item.getEstimatedValue() * q);
             }
             return sum;
     }

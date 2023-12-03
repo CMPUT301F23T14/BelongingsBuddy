@@ -64,6 +64,8 @@ public class AddItemActivity extends AppCompatActivity{
     private EditText value_text;
     private String comment;
     private EditText comment_text;
+    private Integer quantity;
+    private EditText quantity_text;
     private ArrayList<Tag> tags = new ArrayList<>();
     private ArrayList<Photo> photos;
     private ArrayList<String> photoURLs = new ArrayList<>();
@@ -120,6 +122,33 @@ public class AddItemActivity extends AppCompatActivity{
             public void onClick(View v) {
                 DatePickerFragment newFragment = new DatePickerFragment();
                 newFragment.show(getSupportFragmentManager(), "Date");
+            }
+        });
+
+        // QUANTITY implementation:
+        quantity_text =findViewById(R.id.add_quantity);
+        quantity = Integer.parseInt(quantity_text.getText().toString());
+        // PLUS button
+        Button plus = findViewById(R.id.add_plus_button);
+        plus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                quantity = Integer.parseInt(quantity_text.getText().toString());
+                quantity += 1;
+                quantity_text.setText(quantity.toString());
+
+            }
+        });
+        // MINUS button
+        Button minus = findViewById(R.id.add_minus_button);
+        minus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                quantity = Integer.parseInt(quantity_text.getText().toString());
+                if (quantity > 1){
+                    quantity -= 1;
+                    quantity_text.setText(quantity.toString());
+                }
             }
         });
 
@@ -199,6 +228,7 @@ public class AddItemActivity extends AppCompatActivity{
                     make = make_text.getText().toString();
                     model = model_text.getText().toString();
                     value = Float.parseFloat(value_text.getText().toString());
+                    quantity = Integer.parseInt(quantity_text.getText().toString());
                     // comment is optional
                     if (TextUtils.isEmpty(comment_text.getText().toString())){
                         comment = "NA";
@@ -224,6 +254,7 @@ public class AddItemActivity extends AppCompatActivity{
                     returnIntent.putExtra("day", date.getDay());
                     returnIntent.putExtra("month", date.getMonth());
                     returnIntent.putExtra("year", date.getYear());
+                    returnIntent.putExtra("quantity", quantity);
                     returnIntent.putExtra("url list size", photoURLs.size());
 
 //                    for (int i = 0; i < photoURLs.size(); i++) {
@@ -248,7 +279,7 @@ public class AddItemActivity extends AppCompatActivity{
                     Bundle args = new Bundle();
                     args.putSerializable("tagList",tags);
                     returnIntent.putExtra("BUNDLE",args);
-
+                    MainActivity.lastResult = Activity.RESULT_OK;
                     setResult(Activity.RESULT_OK,returnIntent);
                     finish();
                 }
@@ -261,6 +292,7 @@ public class AddItemActivity extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 Intent returnIntent = new Intent();
+                MainActivity.lastResult = Activity.RESULT_CANCELED;
                 setResult(Activity.RESULT_CANCELED, returnIntent);
                 finish();
             }
