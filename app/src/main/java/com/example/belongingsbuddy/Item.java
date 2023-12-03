@@ -26,6 +26,7 @@ public class Item implements Serializable {
     private String serialNumber;
     private Float estimatedValue;
     private String comment;
+    private Integer quantity;
     private ArrayList<Tag> tags;
     private ArrayList<Photo> photos;
     private String epoch;
@@ -59,7 +60,7 @@ public class Item implements Serializable {
         this.serialNumber = null;
         this.estimatedValue = estimatedValue;
         this.comment = comment;
-        this.epoch = Long.toString(System.currentTimeMillis());
+        this.quantity = 1;
         tags = new ArrayList<Tag>();
         this.photos = new ArrayList<Photo>();
         this.epoch = Long.toString(System.currentTimeMillis());
@@ -72,6 +73,7 @@ public class Item implements Serializable {
                 this.serialNumber,
                 this.estimatedValue,
                 this.comment,
+                this.quantity,
                 this.tags,
                 this.photos
         );
@@ -107,6 +109,7 @@ public class Item implements Serializable {
         this.serialNumber = serialNumber;
         this.estimatedValue = estimatedValue;
         this.comment = comment;
+        this.quantity = 1;
         tags = new ArrayList<Tag>();
         photos = new ArrayList<Photo>();
         this.epoch = Long.toString(System.currentTimeMillis());
@@ -119,6 +122,7 @@ public class Item implements Serializable {
                 this.serialNumber,
                 this.estimatedValue,
                 this.comment,
+                this.quantity,
                 this.tags,
                 this.photos
         );
@@ -193,6 +197,12 @@ public class Item implements Serializable {
     public void setComment(String comment) {
         this.comment = comment;
     }
+    public Integer getQuantity() {
+        return quantity;
+    }
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 
     public String getEpoch() {return epoch;}
 
@@ -257,6 +267,7 @@ public class Item implements Serializable {
         docData.put("name", this.getName());
         docData.put("photoURLs", this.getPhotoURLs());
         docData.put("photos", this.getPhotos());
+        docData.put("quantity", this.getQuantity());
         docData.put("serialNumber", this.getSerialNumber());
         docData.put("tags", this.getTags());
         collection.document(Integer.toString(hashCode())).set(docData);
@@ -273,6 +284,7 @@ public class Item implements Serializable {
         docData.put("name", this.getName());
         docData.put("photoURLs", this.getPhotoURLs());
         docData.put("photos", this.getPhotos());
+        docData.put("quantity", this.getQuantity());
         docData.put("serialNumber", this.getSerialNumber());
         docData.put("tags", this.getTags());
         collection.document(Integer.toString(hashCode())).update(docData);
