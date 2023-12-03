@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // get the Item being clicked
                 Item i = itemAdapter.getItem(position);
-                Log.d("tag", i.getEpoch());
+                //Log.d("tag", i.getEpoch());
                 // setup the ItemViewActivity by creating a new Intent and passing Item data as extras
                 Intent intent = new Intent(MainActivity.this, ItemViewActivity.class);
                 intent.putExtra("name", i.getName());
@@ -709,8 +709,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
     public float sumItems(@NonNull ArrayList<Item> dataList) {
             float sum = 0f;
             for (Item item: dataList) {
-                int q = item.getQuantity();
-                sum += (item.getEstimatedValue() * q);
+                if (item != null) {
+                    int q = item.getQuantity();
+                    sum += (item.getEstimatedValue() * q);
+                }
             }
             return sum;
     }
