@@ -33,6 +33,11 @@ import java.util.ArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+/**
+ * An activity for taking photos. Returns all photos taken when the back button is pressed.
+ * Takes a photo when the take photo button is pressed. Switches from front to back camera
+ * When the switch camera button is pressed
+ */
 public class PhotoTakingActivity extends CameraActivity implements CameraCreationListener {
     private Executor executor = Executors.newSingleThreadExecutor();
     private ArrayList<Uri> takenPhotos = new ArrayList<>();
@@ -103,6 +108,12 @@ public class PhotoTakingActivity extends CameraActivity implements CameraCreatio
         });
     }
 
+    /**
+     * Rotate the image so that the photo taken is aligned properly.
+     * @param data a byte array of the image taken
+     * @param rotationDegrees of the phone
+     * @return The rotated byte array of the image taken
+     */
     private byte[] rotateImage(byte[] data, int rotationDegrees) {
         // Rotate the image based on the orientation information
         if (rotationDegrees == 0) {
