@@ -2,6 +2,7 @@ package com.example.belongingsbuddy;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
 import android.app.Dialog;
@@ -12,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioGroup;
+
+import java.util.Objects;
 
 /**
  * Displays a dialog with 4 selection buttons, cancel and confirm, and a radio group of 2
@@ -24,6 +27,12 @@ public class SortItemsFragment extends DialogFragment {
     private String sortType = "NONE";
     private Boolean isAscending = true;
     public Listener listener;
+    private Button date;
+    private Button desc;
+    private Button make;
+    private Button value;
+    private Button tags;
+
     // so we can communicate with main activity
     /**
      * Called when the fragment is attached to its host activity.
@@ -69,47 +78,56 @@ public class SortItemsFragment extends DialogFragment {
 
         // click listeners for buttons
         // date
-        Button date = view.findViewById(R.id.sort_date);
+        date = view.findViewById(R.id.sort_date);
         date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sortType = "date";
-//                date.setBackgroundColor(0xe9e7fa);
+                clearColors();
+                date.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.purple));
             }
         });
         // desc
-        Button desc = view.findViewById(R.id.sort_desc);
+        desc = view.findViewById(R.id.sort_desc);
         desc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sortType = "desc";
-//                desc.setBackgroundColor(0xe9e7fa);
+                clearColors();
+                desc.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.purple));
             }
         });
         // make
-        Button make = view.findViewById(R.id.sort_make);
+        make = view.findViewById(R.id.sort_make);
         make.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sortType = "make";
-//                make.setBackgroundColor(0xe9e7fa);
+                clearColors();
+                make.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.purple));
+
             }
         });
         // value
-        Button value = view.findViewById(R.id.sort_value);
+        value = view.findViewById(R.id.sort_value);
         value.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sortType = "value";
-//                value.setBackgroundColor(0xe9e7fa);
+                clearColors();
+                value.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.purple));
+
             }
         });
         // tags
-        Button tags = view.findViewById(R.id.sort_tags);
+        tags = view.findViewById(R.id.sort_tags);
         tags.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sortType = "tags";
+                clearColors();
+                tags.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.purple));
+
             }
         });
 
@@ -164,5 +182,13 @@ public class SortItemsFragment extends DialogFragment {
 
         dialog.show();
         return dialog;
+    }
+
+    private void clearColors(){
+        date.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.grey_button));
+        desc.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.grey_button));
+        make.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.grey_button));
+        value.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.grey_button));
+        tags.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.grey_button));
     }
 }
