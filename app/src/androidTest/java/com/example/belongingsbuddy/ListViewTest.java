@@ -51,13 +51,13 @@ public class ListViewTest {
     @Rule
     public ActivityScenarioRule<MainActivity> scenario1 = new ActivityScenarioRule<>(MainActivity.class);
 
-    @Test
-    public void testAllListView() {
-        testAddDisplays();
-        testEditDisplays();
-        testDeleteDisplays();
-        testDeleteLongPressDisplays();
-    }
+//    @Test
+//    public void testAllListView() {
+//        testAddDisplays();
+//        testEditDisplays();
+//        testDeleteDisplays();
+//        testDeleteLongPressDisplays();
+//    }
     /**
      * Tests if adding adds to listview
      */
@@ -86,7 +86,7 @@ public class ListViewTest {
 
         // Close the keyboard and click on the "Confirm" button
         onView(withId(R.id.add_model)).perform(ViewActions.closeSoftKeyboard());
-        onView(withId(R.id.add_confirm)).perform(scrollTo());
+        //onView(withId(R.id.add_confirm)).perform(scrollTo());
         onView(withId(R.id.add_confirm)).perform(click());
 
         // Check if the added item with the name "APPL*E" is displayed
@@ -100,22 +100,23 @@ public class ListViewTest {
     // Test method for editing and displaying items
     @Test
     public void testEditDisplays() {
+        testAddDisplays();
         // Click on an item in the list
         onData(is(instanceOf(Item.class))).atPosition(0).perform(click());
 
         // Click on the "Edit" button
-        onView(withId(R.id.view_edit)).perform(scrollTo());
+        //onView(withId(R.id.view_edit)).perform(scrollTo());
         onView(withId(R.id.view_edit)).perform(click());
 
         // Scroll to the "Name" field, edit the name, and confirm the changes
         onView(withId(R.id.edit_name)).perform(scrollTo());
         onView(withId(R.id.edit_name)).perform(ViewActions.typeText("CHEESE"));
         onView(withId(R.id.edit_model)).perform(ViewActions.closeSoftKeyboard());
-        onView(withId(R.id.edit_confirm)).perform(scrollTo());
+        //onView(withId(R.id.edit_confirm)).perform(scrollTo());
         onView(withId(R.id.edit_confirm)).perform(click());
 
         // Check if the edited item with the name "CHEESE" is displayed
-        onView(withText("CHEESE"));
+        onView(withText("APPL*ECHEESE"));
     }
     /**
      * Tests if deleteing removes from listview
@@ -123,6 +124,7 @@ public class ListViewTest {
     // Test method for deleting items
     @Test
     public void testDeleteDisplays() {
+        testAddDisplays();
         // Click on an item in the list
         onData(is(instanceOf(Item.class))).atPosition(0).perform(click());
 
@@ -131,7 +133,7 @@ public class ListViewTest {
         onView(withId(R.id.view_belete)).perform(click());
 
         // Check if the deleted item with the name "Chair" is no longer displayed
-        onView(withText("CHEESE")).check(doesNotExist());
+        onView(withText("APPL*E")).check(doesNotExist());
     }
     /**
      * Tests if deleting on long press deletes from listview
@@ -139,6 +141,7 @@ public class ListViewTest {
     // Test method for deleting items with long press
     @Test
     public void testDeleteLongPressDisplays() {
+        testAddDisplays();
         // Long press on an item in the list
         onData(is(instanceOf(Item.class))).atPosition(0).perform(longClick());
 
@@ -147,6 +150,6 @@ public class ListViewTest {
         onView(withId(R.id.delete_button_multiple)).perform(click());
 
         // Check if the deleted item with the name "Chair" is no longer displayed
-        onView(withText("Table")).check(doesNotExist());
+        onView(withText("APPL*E")).check(doesNotExist());
     }
 }

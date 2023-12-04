@@ -39,6 +39,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -133,55 +134,57 @@ public class MainActivity extends AppCompatActivity implements Listener{
         itemAdapter = new CustomList(this, dataList);
         itemListView.setAdapter(itemAdapter);
 
+        totalTextView = findViewById(R.id.total);
         // LOAD Items from user's collection on FireStore and add those items to dataList
-        user_collection.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot querySnapshots,
-                                @Nullable FirebaseFirestoreException error) {
-                if (error != null){
-                    Log.e("Firestore", error.toString());
-                    return;
-                }
-                if (querySnapshots != null){
-                    dataList.clear();
-                    for (QueryDocumentSnapshot doc: querySnapshots) {
-                        String id = doc.getId();
-                        String comment = (String) doc.get("comment");
-                        int day = ((Long) doc.get("day")).intValue();
-                        int month = ((Long) doc.get("month")).intValue();
-                        int year = ((Long) doc.get("year")).intValue();
-                        Date date = new Date(day, month, year);
-                        String description = (String) doc.get("description");
-                        Float estimatedValue = ((Double) doc.get("estimatedValue")).floatValue();
-                        String make = (String) doc.get("make");
-                        String model = (String) doc.get("model");
-                        String name = (String) doc.get("name");
-                        List<String> photoURLs = (List<String>) doc.get("photoURLs");
-                        ArrayList<Photo> photos = (ArrayList<Photo>) doc.get("photos");
-                        String serialNumber = (String) doc.get("serialNumber");
-                        ArrayList<Tag> tags = (ArrayList<Tag>) doc.get("tags");
-                        String epoch = (String) doc.get("epoch");
-                        Integer quantity = ((Long) doc.get("quantity")).intValue();
-                        Item item = new Item(name, date, description, make, model, estimatedValue, comment, serialNumber, tags, photos, epoch, id, quantity, photoURLs);
-                        if (item.getPhotoURLs() != null) {
-                            if (item.getPhotoURLs().size() > 0) {
-                                Log.d("PHOTO URLS", item.getPhotoURLs().get(0));
-                            }
-                        }
-                        dataList.add(item);
+        if (user_collection != null) {
+            user_collection.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot querySnapshots,
+                                    @Nullable FirebaseFirestoreException error) {
+                    if (error != null) {
+                        Log.e("Firestore", error.toString());
+                        return;
                     }
-                    itemAdapter.notifyDataSetChanged();
+                    if (querySnapshots != null) {
+                        dataList.clear();
+                        for (QueryDocumentSnapshot doc : querySnapshots) {
+                            String id = doc.getId();
+                            String comment = (String) doc.get("comment");
+                            int day = ((Long) doc.get("day")).intValue();
+                            int month = ((Long) doc.get("month")).intValue();
+                            int year = ((Long) doc.get("year")).intValue();
+                            Date date = new Date(day, month, year);
+                            String description = (String) doc.get("description");
+                            Float estimatedValue = ((Double) doc.get("estimatedValue")).floatValue();
+                            String make = (String) doc.get("make");
+                            String model = (String) doc.get("model");
+                            String name = (String) doc.get("name");
+                            List<String> photoURLs = (List<String>) doc.get("photoURLs");
+                            ArrayList<Photo> photos = (ArrayList<Photo>) doc.get("photos");
+                            String serialNumber = (String) doc.get("serialNumber");
+                            ArrayList<Tag> tags = (ArrayList<Tag>) doc.get("tags");
+                            String epoch = (String) doc.get("epoch");
+                            Integer quantity = ((Long) doc.get("quantity")).intValue();
+                            Item item = new Item(name, date, description, make, model, estimatedValue, comment, serialNumber, tags, photos, epoch, id, quantity, photoURLs);
+                            if (item.getPhotoURLs() != null) {
+                                if (item.getPhotoURLs().size() > 0) {
+                                    Log.d("PHOTO URLS", item.getPhotoURLs().get(0));
+                                }
+                            }
+                            dataList.add(item);
+                        }
+                        itemAdapter.notifyDataSetChanged();
 
-                    // setup backup
-                    originalOrderDataList.clear();
-                    originalOrderDataList.addAll(dataList);
+                        // setup backup
+                        originalOrderDataList.clear();
+                        originalOrderDataList.addAll(dataList);
 
-                    // set total
-                    totalTextView = findViewById(R.id.total);
-                    totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
+                        // set total
+                        totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
+                    }
                 }
-            }
-        });
+            });
+        }
 
         // get ui objects for sort
         sortTypeLayout = findViewById(R.id.sort_type_layout);
@@ -337,10 +340,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 dataList.removeAll(selectedItems);
 
                 // Remove Items from FireStore collection
-                for (Item i: selectedItems) {
-                    user_collection.document(Integer.toString(i.hashCode())).delete();
-
-
+                if (user_collection != null) {
+                    for (Item i : selectedItems) {
+                        user_collection.document(Integer.toString(i.hashCode())).delete();
+                    }
                 }
                 // Notify the adapter that the data has changed
                 itemAdapter.notifyDataSetChanged();
@@ -396,40 +399,40 @@ public class MainActivity extends AppCompatActivity implements Listener{
      */
     @Override
     public void onFilterOkPressed(String[] keywords, String[] makes, ArrayList<Tag> tags, Date startDate, Date endDate) {
+        // Create a list of predicates based on conditions
+        List<Predicate<Item>> conditions = new ArrayList<>();
+
         // desc keywords
         if (keywords.length != 0) {
-            // Filter the list based on the condition that the description contains any string from the array
-            ArrayList<Item> filteredList = (ArrayList<Item>) dataList.stream()
-                    .filter(item -> Arrays.stream(keywords).anyMatch(item.getDescription()::contains))
-                    .collect(Collectors.toList());
-            dataList.clear();
-            dataList.addAll(filteredList);
+            conditions.add(item -> Arrays.stream(keywords).anyMatch(item.getDescription()::contains));
         }
 
         // makes
         if (makes.length != 0) {
-            // Filter the list based on the condition that the make contains any string from the array
-            ArrayList<Item> filteredList = (ArrayList<Item>) dataList.stream()
-                    .filter(item -> Arrays.stream(keywords).anyMatch(item.getMake()::contains))
-                    .collect(Collectors.toList());
-            dataList.clear();
-            dataList.addAll(filteredList);
+            conditions.add(item -> Arrays.stream(makes).anyMatch(item.getMake()::contains));
         }
 
         // tags
         if (tags.size() != 0) {
-            // Filter the list based on the condition that the tags contains any string from the array
-            ArrayList<Item> filteredList = tagManager.filterByTags(new HashSet<>(tags));
-            dataList.clear();
-            dataList.addAll(filteredList);
+            conditions.add(item -> tagManager.filterByTags(new HashSet<>(tags)).contains(item));
         }
 
         // date
         if (startDate != null) {
-            ArrayList<Item> filteredList = filterItemsByDateRange(dataList, startDate, endDate);
-            dataList.clear();
-            dataList.addAll(filteredList);
+            conditions.add(item -> isItemWithinDateRange(item, startDate, endDate));
         }
+
+        // combine the predicates
+        Predicate<Item> combinedCondition = conditions.stream().reduce(Predicate::and).orElse(item -> true);
+
+        // filter the list based on the combined condition
+        List<Item> filteredList = dataList.stream()
+                .filter(combinedCondition)
+                .collect(Collectors.toList());
+
+        // update dataList with the filtered results
+        dataList.clear();
+        dataList.addAll(filteredList);
 
         // if a filter is present
         if (keywords.length != 0 || makes.length != 0 || tags.size() != 0 || startDate != null) {
@@ -570,6 +573,14 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     int month = data.getIntExtra("month", 0);
                     int year = data.getIntExtra("year", 0);
                     Integer quantity = data.getIntExtra("quantity", 1);
+                    List<String> photoURLs = new ArrayList<>();
+                    int listSize = data.getIntExtra("url list size", 0);
+                    String URL;
+                    for (int i = 0; i < listSize; i++) {
+                        URL = data.getStringExtra("photoURL"+i);
+                        Log.d("PHOTO URL RECEIVED "+i, URL);
+                        photoURLs.add(URL);
+                    }
 
                     ArrayList<Tag> selectedTags = (ArrayList<Tag>) data.getBundleExtra("BUNDLE").getSerializable("tagList");
                     // construct a Date object
@@ -579,16 +590,20 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     if (serialNumber == null) {
                         item = new Item(name, date, description, make, model, value, comment);
                         item.setQuantity(quantity);
+                        item.setPhotoURLs(photoURLs);
                         dataList.add(item);
                     } else {
                         item = new Item(name, date, description, make, model, value, comment, serialNumber);
                         item.setQuantity(quantity);
+                        item.setPhotoURLs(photoURLs);
                         dataList.add(item);
                     }
                     // add Item to FireStore database
                     tagManager.setItemTags(item, selectedTags);
                     Log.d("tag", item.getEpoch());
-                    item.addToDatabase(user_collection);
+                    if (user_collection != null) {
+                        item.addToDatabase(user_collection);
+                    }
 //                    ArrayList tagSet = new ArrayList();
 //                    tagSet.add(new Tag("tag"));
 //                    tagManager.AddItem(item);
@@ -619,7 +634,9 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     Item i = dataList.get(position);
                     dataList.remove(i);
                     // remove Item from FireStore collection
-                    user_collection.document(Integer.toString(i.hashCode())).delete();
+                    if (user_collection != null) {
+                        user_collection.document(Integer.toString(i.hashCode())).delete();
+                    }
                     Toast.makeText(this, Integer.toString(i.hashCode()), Toast.LENGTH_SHORT).show();
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup
@@ -666,7 +683,9 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     originalOrderDataList.clear();
                     originalOrderDataList.addAll(dataList);
                     // update item in FireStore
-                    item.updateInDatabase(user_collection);
+                    if (user_collection != null) {
+                        item.updateInDatabase(user_collection);
+                    }
                     // update total
                     totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
                 }
@@ -687,19 +706,13 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 }
         }
     }
-    // Method to filter items by date range
-    private static ArrayList<Item> filterItemsByDateRange(ArrayList<Item> dataList, Date startDate, Date endDate) {
-        ArrayList<Item> filteredList = new ArrayList<>();
 
-        for (Item item : dataList) {
-            Date itemDate = item.getDate();
-            // Check if the item's date is within the specified range (inclusive)
-            if (itemDate.compareTo(startDate) >= 0 && itemDate.compareTo(endDate) <= 0) {
-                filteredList.add(item);
-            }
-        }
-        return filteredList;
+    private static boolean isItemWithinDateRange(Item item, Date startDate, Date endDate) {
+        Date itemDate = item.getDate();
+        // Compare the item date with the start and end dates
+        return startDate.compareTo(itemDate) <= 0 && endDate.compareTo(itemDate) >= 0;
     }
+
     /**
      * Calculates the sum of estimated values of items in the given ArrayList.
      * @param dataList the ArrayList of Items
