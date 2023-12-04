@@ -130,4 +130,10 @@ public class CustomList extends ArrayAdapter<Item> {
         notifyDataSetChanged();
     }
 
+    public void selectAll() {
+        selectedItems.clear();
+        selectedItems.addAll(items);
+        notifyDataSetChanged();
+    }
+
 }

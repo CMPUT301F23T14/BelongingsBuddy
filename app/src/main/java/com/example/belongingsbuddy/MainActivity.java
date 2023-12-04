@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -320,6 +321,16 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
                 // Set an onClickListener for the delete button
                 return true;
+            }
+        });
+
+        final Button selectAllButton = findViewById(R.id.select_all_button);
+        selectAllButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((CustomList) itemAdapter).setMultiSelectMode(true);
+                ((CustomList) itemAdapter).selectAll();
+                hideMultiSelectButtons();
             }
         });
     }
