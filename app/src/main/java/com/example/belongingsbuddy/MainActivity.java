@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
     private TextView filterTypeTextView;
     private FirebaseUser user;
 
-    private TagManager tagManager = new TagManager();
+    private TagManager tagManager;
     public final static int REQUEST_CODE_ADD = 1;
     public final static int REQUEST_CODE_VIEW = 2;
     public final static int REQUEST_CODE_EDIT = 3;
@@ -133,6 +133,9 @@ public class MainActivity extends AppCompatActivity implements Listener{
         itemAdapter = new CustomList(this, dataList);
         itemListView.setAdapter(itemAdapter);
 
+        // initialize tag manager
+        tagManager = new TagManager(user_collection);
+
         // LOAD Items from user's collection on FireStore and add those items to dataList
         user_collection.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -146,29 +149,35 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     dataList.clear();
                     for (QueryDocumentSnapshot doc: querySnapshots) {
                         String id = doc.getId();
-                        String comment = (String) doc.get("comment");
-                        int day = ((Long) doc.get("day")).intValue();
-                        int month = ((Long) doc.get("month")).intValue();
-                        int year = ((Long) doc.get("year")).intValue();
-                        Date date = new Date(day, month, year);
-                        String description = (String) doc.get("description");
-                        Float estimatedValue = ((Double) doc.get("estimatedValue")).floatValue();
-                        String make = (String) doc.get("make");
-                        String model = (String) doc.get("model");
-                        String name = (String) doc.get("name");
-                        List<String> photoURLs = (List<String>) doc.get("photoURLs");
-                        ArrayList<Photo> photos = (ArrayList<Photo>) doc.get("photos");
-                        String serialNumber = (String) doc.get("serialNumber");
-                        ArrayList<Tag> tags = (ArrayList<Tag>) doc.get("tags");
-                        String epoch = (String) doc.get("epoch");
-                        Integer quantity = ((Long) doc.get("quantity")).intValue();
-                        Item item = new Item(name, date, description, make, model, estimatedValue, comment, serialNumber, tags, photos, epoch, id, quantity, photoURLs);
-                        if (item.getPhotoURLs() != null) {
-                            if (item.getPhotoURLs().size() > 0) {
-                                Log.d("PHOTO URLS", item.getPhotoURLs().get(0));
+                        if (id == "userTags") {
+                            HashSet<Tag> userTags = new HashSet<>((List<Tag>)doc.getData().values().iterator().next());
+                            tagManager.setTags(userTags);
+                        } else {
+                            String comment = (String) doc.get("comment");
+                            int day = ((Long) doc.get("day")).intValue();
+                            int month = ((Long) doc.get("month")).intValue();
+                            int year = ((Long) doc.get("year")).intValue();
+                            Date date = new Date(day, month, year);
+                            String description = (String) doc.get("description");
+                            Float estimatedValue = ((Double) doc.get("estimatedValue")).floatValue();
+                            String make = (String) doc.get("make");
+                            String model = (String) doc.get("model");
+                            String name = (String) doc.get("name");
+                            List<String> photoURLs = (List<String>) doc.get("photoURLs");
+                            ArrayList<Photo> photos = (ArrayList<Photo>) doc.get("photos");
+                            String serialNumber = (String) doc.get("serialNumber");
+                            ArrayList<Tag> tags = (ArrayList<Tag>) doc.get("tags");
+                            String epoch = (String) doc.get("epoch");
+                            Integer quantity = ((Long) doc.get("quantity")).intValue();
+                            Item item = new Item(name, date, description, make, model, estimatedValue, comment, serialNumber, photos, epoch, id, quantity, photoURLs);
+                            tagManager.setItemTags(item, tags);
+                            if (item.getPhotoURLs() != null) {
+                                if (item.getPhotoURLs().size() > 0) {
+                                    Log.d("PHOTO URLS", item.getPhotoURLs().get(0));
+                                }
                             }
+                            dataList.add(item);
                         }
-                        dataList.add(item);
                     }
                     itemAdapter.notifyDataSetChanged();
 
@@ -598,7 +607,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     // add Item to FireStore database
                     tagManager.setItemTags(item, selectedTags);
                     Log.d("tag", item.getEpoch());
-                    item.addToDatabase(user_collection);
+                    item.addToDatabase(user_collection, tagManager);
 //                    ArrayList tagSet = new ArrayList();
 //                    tagSet.add(new Tag("tag"));
 //                    tagManager.AddItem(item);
@@ -676,7 +685,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     originalOrderDataList.clear();
                     originalOrderDataList.addAll(dataList);
                     // update item in FireStore
-                    item.updateInDatabase(user_collection);
+                    item.updateInDatabase(user_collection, tagManager);
                     // update total
                     totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
                 }

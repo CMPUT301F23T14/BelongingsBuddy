@@ -65,6 +65,7 @@ public class CreateTagActivity extends DialogFragment {
                     tagSet.add(TagAdapter.getItem(i));
                 }
                 manager.setTags(tagSet);
+                manager.updateDatabaseTags();
                 dialog.dismiss();
             }
         });

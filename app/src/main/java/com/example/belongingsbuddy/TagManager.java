@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import com.example.belongingsbuddy.Item;
 import com.example.belongingsbuddy.Tag;
+import com.google.firebase.firestore.CollectionReference;
 
 import org.checkerframework.checker.units.qual.K;
 
@@ -29,6 +30,8 @@ public class TagManager implements Serializable {
     //Manager Class keeps track of all possible tags and the item->tags relationships via HashMaps
     private Set<Tag> tags;
     private HashMap<Item, Set<Tag>> ManagedItems;
+
+    private CollectionReference collection;
     public TagManager(List<Item> Items) {
         tags = new HashSet<>();
         ManagedItems = new HashMap<Item, Set<Tag>>();
@@ -42,9 +45,16 @@ public class TagManager implements Serializable {
     }
 
     //Constructor
-    public TagManager() {
-        tags = new HashSet<>();
-        ManagedItems = new HashMap<Item, Set<Tag>>();
+    public TagManager(CollectionReference collection) {
+        this.tags = new HashSet<>();
+        this.collection = collection;
+        this.ManagedItems = new HashMap<Item, Set<Tag>>();
+    }
+
+    public TagManager(Set<Tag> initTags, CollectionReference collection) {
+        this.tags = initTags;
+        this.collection = collection;
+        this.ManagedItems = new HashMap<Item, Set<Tag>>();
     }
 
     //Add a tag to the pool of possible tags
@@ -137,5 +147,9 @@ public class TagManager implements Serializable {
             }
         }
         return subset;
+    }
+
+    public void updateDatabaseTags(){
+        this.collection.document("userTags").set(tags);
     }
 }

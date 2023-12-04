@@ -31,7 +31,6 @@ public class Item implements Serializable {
     private Float estimatedValue;
     private String comment;
     private Integer quantity;
-    private ArrayList<Tag> tags;
     private ArrayList<Photo> photos;
     private List<String> photoURLs;
     private String epoch;
@@ -64,7 +63,6 @@ public class Item implements Serializable {
         this.serialNumber = null;
         this.estimatedValue = estimatedValue;
         this.comment = comment;
-        this.tags = new ArrayList<Tag>();
         this.quantity = 1;
         this.photos = new ArrayList<Photo>();
         this.epoch = Long.toString(System.currentTimeMillis());
@@ -110,7 +108,6 @@ public class Item implements Serializable {
         this.estimatedValue = estimatedValue;
         this.comment = comment;
         this.quantity = 1;
-        this.tags = new ArrayList<Tag>();
         this.photos = new ArrayList<>();
         this.epoch = Long.toString(System.currentTimeMillis());
         this.id = Objects.hash(
@@ -126,7 +123,7 @@ public class Item implements Serializable {
     }
 
     public Item(String name, Date date, String description, String make, String model,
-                Float estimatedValue, String comment, String serialNumber, ArrayList<Tag> tags, ArrayList<Photo> photos,
+                Float estimatedValue, String comment, String serialNumber, ArrayList<Photo> photos,
                 String epoch, String id, Integer quantity, List<String> photoURLs) {
         this.name = name;
         this.date = date;
@@ -136,7 +133,6 @@ public class Item implements Serializable {
         this.serialNumber = serialNumber;
         this.estimatedValue = estimatedValue;
         this.comment = comment;
-        this.tags = tags;
         this.photos = photos;
         this.epoch = epoch;
         this.id = parseInt(id);
@@ -216,14 +212,6 @@ public class Item implements Serializable {
 
     public String getEpoch() {return epoch;}
 
-    public ArrayList<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(ArrayList<Tag> tags) {
-        this.tags = tags;
-    }
-
     public ArrayList<Photo> getPhotos() {
         return photos;
     }
@@ -237,15 +225,6 @@ public class Item implements Serializable {
     }
     public void setPhotoURLs(List<String> photoURLs) {
         this.photoURLs = photoURLs;
-    }
-
-    /**
-     * add a Tag to the Item
-     * @param t
-     * Tag to be added
-     */
-    public void addTag(Tag t){
-        tags.add(t);
     }
 
     /**
@@ -266,7 +245,7 @@ public class Item implements Serializable {
      * Add the Item to the FireStore CollectionReference passed in as a parameter
      * @param collection Firestore CollectionReference the Item is being added to
      */
-    public void addToDatabase(CollectionReference collection){
+    public void addToDatabase(CollectionReference collection, TagManager manager){
         Map<String, Object> docData = new HashMap<>();
         docData.put("comment", this.getComment());
         docData.put("dateString", this.getDate().getString());
@@ -282,12 +261,12 @@ public class Item implements Serializable {
         docData.put("photos", this.getPhotos());
         docData.put("quantity", this.getQuantity());
         docData.put("serialNumber", this.getSerialNumber());
-        docData.put("tags", this.getTags());
+        docData.put("tags", manager.getItemTags(this));
         docData.put("epoch", this.getEpoch());
         collection.document(Integer.toString(hashCode())).set(docData);
     }
 
-    public void updateInDatabase(CollectionReference collection){
+    public void updateInDatabase(CollectionReference collection, TagManager manager){
         Map<String, Object> docData = new HashMap<>();
         docData.put("comment", this.getComment());
         docData.put("dateString", this.getDate().getString());
@@ -303,7 +282,7 @@ public class Item implements Serializable {
         docData.put("photos", this.getPhotos());
         docData.put("quantity", this.getQuantity());
         docData.put("serialNumber", this.getSerialNumber());
-        docData.put("tags", this.getTags());
+        docData.put("tags", manager.getItemTags(this));
         collection.document(Integer.toString(hashCode())).update(docData);
     }
     @Override
