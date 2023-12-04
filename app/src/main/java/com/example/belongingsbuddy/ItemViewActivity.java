@@ -84,7 +84,7 @@ public class ItemViewActivity extends AppCompatActivity {
         comment.setText(getIntent().getStringExtra("comment"));
         Integer q = getIntent().getIntExtra("quantity", 1);
         quantity.setText(q.toString());
-        tags.setText(getIntent().getStringExtra("tags"));
+        tags.setText(getIntent().getStringExtra("tagsString"));
         int listSize = getIntent().getIntExtra("photoURLsize", 0);
         for (int i = 0; i < listSize; i++) {
             String URL = getIntent().getStringExtra("photoURL"+i);

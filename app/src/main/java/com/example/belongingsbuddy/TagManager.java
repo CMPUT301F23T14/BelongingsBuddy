@@ -22,13 +22,16 @@ import java.util.stream.Collectors;
 
 import com.example.belongingsbuddy.Item;
 import com.example.belongingsbuddy.Tag;
+import com.google.firebase.firestore.CollectionReference;
 
+import org.checkerframework.checker.units.qual.A;
 import org.checkerframework.checker.units.qual.K;
 
 public class TagManager implements Serializable {
     //Manager Class keeps track of all possible tags and the item->tags relationships via HashMaps
     private Set<Tag> tags;
     private HashMap<Item, Set<Tag>> ManagedItems;
+
     public TagManager(List<Item> Items) {
         tags = new HashSet<>();
         ManagedItems = new HashMap<Item, Set<Tag>>();
@@ -42,9 +45,14 @@ public class TagManager implements Serializable {
     }
 
     //Constructor
-    public TagManager() {
-        tags = new HashSet<>();
-        ManagedItems = new HashMap<Item, Set<Tag>>();
+    public TagManager(CollectionReference collection) {
+        this.tags = new HashSet<>();
+        this.ManagedItems = new HashMap<Item, Set<Tag>>();
+    }
+
+    public TagManager(Set<Tag> initTags, CollectionReference collection) {
+        this.tags = initTags;
+        this.ManagedItems = new HashMap<Item, Set<Tag>>();
     }
 
     //Add a tag to the pool of possible tags
@@ -61,6 +69,7 @@ public class TagManager implements Serializable {
     //Set the possible tags
     public void setTags(Set<Tag> tagSet) {
         tags = tagSet;
+        this.updateTags();
     }
 
     //Search a tag based on string (Not implemented yet)
@@ -93,6 +102,10 @@ public class TagManager implements Serializable {
     //Set the tags of an item
     public void setItemTags(Item item, ArrayList<Tag> tags) {
        ManagedItems.put(item, new HashSet<>(tags));
+    }
+
+    public void setItemTags(Item item, Set<Tag> tags) {
+        ManagedItems.put(item, tags);
     }
 
     //Get Item tags
@@ -137,5 +150,35 @@ public class TagManager implements Serializable {
             }
         }
         return subset;
+    }
+
+    public void updateDatabaseTags(CollectionReference collection){
+        List<Map<String, Object>> map = returnTagDatamap(tags);
+
+        // Create a data map to store the list of tags
+        Map<String, Object> data = new HashMap<>();
+        data.put("tags", map);
+
+        // Set the data to Firestore document
+        collection.document("userTags").set(data);
+    }
+
+    public List<Map<String, Object>> returnTagDatamap(Set<Tag> tagSet){
+        List<Map<String, Object>> tagMaps = new ArrayList<>();
+        for (Tag tag : tagSet) {
+            Map<String, Object> tagMap = new HashMap<>();
+            tagMap.put("tagName", tag.getTagName());
+            tagMaps.add(tagMap);
+        }
+        return tagMaps;
+    }
+
+    public Set<Tag> convertTagDatamap(List<Map<String, Object>> dataMap) {
+        HashSet<Tag> retrievedTags = new HashSet<>();
+        for (Map<String, Object> tagMap : dataMap) {
+            String tagName = (String) tagMap.get("tagName");
+            retrievedTags.add(new Tag(tagName));
+        }
+        return retrievedTags;
     }
 }

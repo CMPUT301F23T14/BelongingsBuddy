@@ -1,6 +1,7 @@
 package com.example.belongingsbuddy;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -11,9 +12,11 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,6 +27,7 @@ public class CreateTagActivity extends DialogFragment {
     GridView tagListView;
     Button Confirm;
     Button Cancel;
+    TagListener mainActivity;
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
@@ -40,17 +44,35 @@ public class CreateTagActivity extends DialogFragment {
         Set<Tag> tags = manager.getTags();
         TagAdapter = new TagArrayAdapter(this.getContext(), R.layout.deletable_item, tags);
         tagListView.setAdapter(TagAdapter);
+        //Listen for tag entry on keyboard
         addTagView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE ||
                         (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER &&
                                 event.getAction() == KeyEvent.ACTION_DOWN)) {
-                    TagAdapter.add(new Tag(addTagView.getText().toString()));
-                    addTagView.setText("");
+                    String text = addTagView.getText().toString();
+                    if (!text.equals("")) {
+                        TagAdapter.add(new Tag(text));
+                        addTagView.setText("");
+                    }
                     return true; // Consume the event
                 }
                 return false;
+            }
+        });
+
+        //Listen for tag entry on the enter button
+        Button enterButton = dialogView.findViewById(R.id.enter_button);
+        enterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = addTagView.getText().toString();
+                if (!text.equals("")) {
+                    TagAdapter.add(new Tag(text));
+                    addTagView.setText("");
+                }
+                addTagView.setText("");
             }
         });
 
@@ -60,11 +82,11 @@ public class CreateTagActivity extends DialogFragment {
         Confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Set<Tag> tagSet = new HashSet<>();
+                ArrayList<Tag> tagList = new ArrayList<>();
                 for(int i = 0; i < TagAdapter.getCount(); i++){
-                    tagSet.add(TagAdapter.getItem(i));
+                    tagList.add(TagAdapter.getItem(i));
                 }
-                manager.setTags(tagSet);
+                mainActivity.tagListen(tagList);
                 dialog.dismiss();
             }
         });
@@ -80,5 +102,16 @@ public class CreateTagActivity extends DialogFragment {
         dialog.show();
 
         return dialog;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof Listener) {
+            mainActivity = (TagListener) context;
+        }
+        else {
+            throw new RuntimeException("MUST IMPLEMENT TagListener");
+        }
     }
 }
