@@ -100,6 +100,16 @@ public class Date implements Comparable<Date>, Serializable {
         this.year = year;
     }
 
+    /**
+     * Compares this date to another Date object.
+     * More recent dates are considered greater than lder dates
+     *
+     * @param anotherDate the object to be compared.
+     * @return
+     * a positive number if this is greater then anotherDate |
+     * a negative number if this is less than anotherDate |
+     * 0 if this is the same as anotherDate
+     */
     @Override
     public int compareTo(Date anotherDate) {
         // years

@@ -268,6 +268,11 @@ public class Item implements Serializable {
         collection.document(Integer.toString(hashCode())).set(docData);
     }
 
+
+    /**
+     * Update the Item in the FireStore CollectionReference passed in as a parameter
+     * @param collection Firestore CollectionReference the Item is being updated in
+     */
     public void updateInDatabase(CollectionReference collection, TagManager manager){
         Map<String, Object> docData = new HashMap<>();
         docData.put("comment", this.getComment());
