@@ -198,8 +198,8 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
                         }
                     }
                 }
-            }
-        });
+            });
+        }
 
         // get ui objects for sort
         sortTypeLayout = findViewById(R.id.sort_type_layout);
