@@ -179,18 +179,46 @@ public class MainActivity extends AppCompatActivity implements Listener{
                             dataList.add(item);
                         }
                     }
-                    itemAdapter.notifyDataSetChanged();
+                    if (querySnapshots != null) {
+                        dataList.clear();
+                        for (QueryDocumentSnapshot doc : querySnapshots) {
+                            String id = doc.getId();
+                            String comment = (String) doc.get("comment");
+                            int day = ((Long) doc.get("day")).intValue();
+                            int month = ((Long) doc.get("month")).intValue();
+                            int year = ((Long) doc.get("year")).intValue();
+                            Date date = new Date(day, month, year);
+                            String description = (String) doc.get("description");
+                            Float estimatedValue = ((Double) doc.get("estimatedValue")).floatValue();
+                            String make = (String) doc.get("make");
+                            String model = (String) doc.get("model");
+                            String name = (String) doc.get("name");
+                            List<String> photoURLs = (List<String>) doc.get("photoURLs");
+                            ArrayList<Photo> photos = (ArrayList<Photo>) doc.get("photos");
+                            String serialNumber = (String) doc.get("serialNumber");
+                            ArrayList<Tag> tags = (ArrayList<Tag>) doc.get("tags");
+                            String epoch = (String) doc.get("epoch");
+                            Integer quantity = ((Long) doc.get("quantity")).intValue();
+                            Item item = new Item(name, date, description, make, model, estimatedValue, comment, serialNumber, tags, photos, epoch, id, quantity, photoURLs);
+                            if (item.getPhotoURLs() != null) {
+                                if (item.getPhotoURLs().size() > 0) {
+                                    Log.d("PHOTO URLS", item.getPhotoURLs().get(0));
+                                }
+                            }
+                            dataList.add(item);
+                        }
+                        itemAdapter.notifyDataSetChanged();
 
-                    // setup backup
-                    originalOrderDataList.clear();
-                    originalOrderDataList.addAll(dataList);
+                        // setup backup
+                        originalOrderDataList.clear();
+                        originalOrderDataList.addAll(dataList);
 
-                    // set total
-                    totalTextView = findViewById(R.id.total);
-                    totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
+                        // set total
+                        totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
+                    }
                 }
-            }
-        });
+            });
+        }
 
         // get ui objects for sort
         sortTypeLayout = findViewById(R.id.sort_type_layout);
@@ -346,10 +374,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 dataList.removeAll(selectedItems);
 
                 // Remove Items from FireStore collection
-                for (Item i: selectedItems) {
-                    user_collection.document(Integer.toString(i.hashCode())).delete();
-
-
+                if (user_collection != null) {
+                    for (Item i : selectedItems) {
+                        user_collection.document(Integer.toString(i.hashCode())).delete();
+                    }
                 }
                 // Notify the adapter that the data has changed
                 itemAdapter.notifyDataSetChanged();
@@ -607,7 +635,11 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     // add Item to FireStore database
                     tagManager.setItemTags(item, selectedTags);
                     Log.d("tag", item.getEpoch());
-                    item.addToDatabase(user_collection, tagManager);
+
+                    if (user_collection != null) {
+                        item.addToDatabase(user_collection, tagManager);
+                    }
+
 //                    ArrayList tagSet = new ArrayList();
 //                    tagSet.add(new Tag("tag"));
 //                    tagManager.AddItem(item);
@@ -638,7 +670,9 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     Item i = dataList.get(position);
                     dataList.remove(i);
                     // remove Item from FireStore collection
-                    user_collection.document(Integer.toString(i.hashCode())).delete();
+                    if (user_collection != null) {
+                        user_collection.document(Integer.toString(i.hashCode())).delete();
+                    }
                     Toast.makeText(this, Integer.toString(i.hashCode()), Toast.LENGTH_SHORT).show();
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup
@@ -685,7 +719,9 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     originalOrderDataList.clear();
                     originalOrderDataList.addAll(dataList);
                     // update item in FireStore
-                    item.updateInDatabase(user_collection, tagManager);
+                    if (user_collection != null) {
+                        item.updateInDatabase(user_collection, tagManager);
+                    }
                     // update total
                     totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
                 }
