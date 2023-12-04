@@ -3,6 +3,7 @@ package com.example.belongingsbuddy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import android.app.Activity;
@@ -204,7 +205,8 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
                         if (valid){
                             Toast.makeText(AddItemActivity.this, "Missing required fields", Toast.LENGTH_SHORT).show();
                         }
-                        prompts[i].setBackgroundColor(getResources().getColor(R.color.light_red));
+                        prompts[i].setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.light_red));
+
                         valid = false;
                     }
                 }
@@ -216,7 +218,7 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
                     if (valid){
                         Toast.makeText(AddItemActivity.this, "Missing required fields", Toast.LENGTH_SHORT).show();
                     }
-                    prompt.setBackgroundColor(getResources().getColor(R.color.light_red));
+                    prompt.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.light_red));
                     valid = false;
                 } else{
                     // a date has been provided
@@ -716,7 +718,7 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
      */
     private void resetPrompts(TextView[] prompts){
         for (TextView p: prompts)
-            p.setBackgroundColor(getResources().getColor(R.color.light_purple));
+            p.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.light_purple));
     }
 
     public void tagListen(ArrayList<Tag> tagList) {

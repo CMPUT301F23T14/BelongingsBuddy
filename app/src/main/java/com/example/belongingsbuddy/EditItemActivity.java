@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.processing.SurfaceProcessorNode;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import android.app.Activity;
@@ -219,7 +220,7 @@ public class EditItemActivity extends AppCompatActivity {
                         if (valid) {
                             Toast.makeText(EditItemActivity.this, "Missing required fields", Toast.LENGTH_SHORT).show();
                         }
-                        prompts[i].setBackgroundColor(getResources().getColor(R.color.light_red));
+                        prompts[i].setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.light_red));
                         valid = false;
                     }
                 }
@@ -231,7 +232,7 @@ public class EditItemActivity extends AppCompatActivity {
                     if (valid) {
                         Toast.makeText(EditItemActivity.this, "Missing required fields", Toast.LENGTH_SHORT).show();
                     }
-                    prompt.setBackgroundColor(getResources().getColor(R.color.light_red));
+                    prompt.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.light_red));
                     valid = false;
                 } else {
                     // a date has been provided
@@ -726,7 +727,7 @@ public class EditItemActivity extends AppCompatActivity {
      */
     private void resetPrompts(TextView[] prompts) {
         for (TextView p : prompts)
-            p.setBackgroundColor(getResources().getColor(R.color.light_purple));
+            p.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.light_purple));
     }
 
     public void getDate(Integer day, Integer month, Integer year) {
