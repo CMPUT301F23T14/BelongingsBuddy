@@ -122,6 +122,35 @@ public class Item implements Serializable {
         );
     }
 
+    /**
+     * Constructor from loading the items from firestore
+     * @param name
+     * name of item (String)
+     * @param date
+     * date of creation (Date)
+     * @param description
+     * description of item (String)
+     * @param make
+     * make of item (String)
+     * @param model
+     * model of item (String)
+     * @param estimatedValue
+     * value of item (Float)
+     * @param comment
+     * comment on item (String)
+     * @param serialNumber
+     * serial number of item (String)
+     * @param photos
+     * photos of item (ArrayList<Photo>)
+     * @param epoch
+     * time of creation in milliseconds (String)
+     * @param id
+     * hashed id of item (String)
+     * @param quantity
+     * quantity of item (Integer)
+     * @param photoURLs
+     * urls of photos from Firebase Storage (List<String>)
+     */
     public Item(String name, Date date, String description, String make, String model,
                 Float estimatedValue, String comment, String serialNumber, ArrayList<Photo> photos,
                 String epoch, String id, Integer quantity, List<String> photoURLs) {
@@ -292,6 +321,15 @@ public class Item implements Serializable {
         docData.put("tags", manager.returnTagDatamap(manager.getItemTags(this)));
         collection.document(Integer.toString(hashCode())).update(docData);
     }
+
+    /**
+     * Takes in another item and compares its id to the current item
+     * @param o
+     * type Object (Item) to compare to current item
+     * @return boolean
+     * if the items are equal or not
+     *
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

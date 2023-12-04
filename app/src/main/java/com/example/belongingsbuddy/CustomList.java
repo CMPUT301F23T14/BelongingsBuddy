@@ -137,6 +137,13 @@ public class CustomList extends ArrayAdapter<Item> {
         return view;
     }
 
+    /**
+     * returns the status of the checkbox at a position based on hashmap storing positions
+     * @param position
+     * int that represents which checkbox to check status
+     * @return
+     * bool of whether or not the checkbox is checked
+     */
     private boolean isItemChecked(int position) {
         return itemSelection.containsKey(position) && itemSelection.get(position);
     }

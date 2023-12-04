@@ -311,6 +311,10 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
 
         // create dialog from clicking username
         username_button.setOnClickListener(new View.OnClickListener() {
+            /**
+             * opens the username dialog for signout
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 // passes username to dialog
@@ -337,6 +341,10 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
 
         final Button selectAllButton = findViewById(R.id.select_all_button);
         selectAllButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Selects all items in ListView and moves to MultiSelectMode
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 ((CustomList) itemAdapter).setMultiSelectMode(true);
@@ -346,6 +354,9 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
         });
     }
 
+    /**
+     * transfers main activity to multi select mode
+     */
     private void hideMultiSelectButtons() {
         Button selectAllButton = findViewById(R.id.select_all_button);
         TextView totalTextView = findViewById(R.id.total);
@@ -360,6 +371,10 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
         cancelButton.setVisibility(View.VISIBLE);
         deleteButton.setVisibility(View.VISIBLE);
         deleteButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * deletes all items selected with a checkbox
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 ArrayList<Item> selectedItems = ((CustomList) itemAdapter).getSelectedItems();
@@ -392,6 +407,10 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
         });
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * exits multiselect mode back to main screen
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 ((CustomList) itemAdapter).setMultiSelectMode(false); // Exit multi-select mode
@@ -400,6 +419,9 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
         });
     }
 
+    /**
+     * transfers view elements from multiselect mode to main screen mode
+     */
     private void showMultiSelectButtons() {
         Button selectAllButton = findViewById(R.id.select_all_button);
         TextView totalTextView = findViewById(R.id.total);
