@@ -3,6 +3,7 @@ package com.example.belongingsbuddy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import android.app.Activity;
@@ -125,6 +126,10 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
         // SET DATE implementation
         Button setDate = findViewById(R.id.add_pick_date_button);
         setDate.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Opens a DatePickerFragment when the "set date" button is pressed
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 DatePickerFragment newFragment = new DatePickerFragment();
@@ -138,6 +143,10 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
         // PLUS button
         Button plus = findViewById(R.id.add_plus_button);
         plus.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Increases quantity by 1 when the "+" button is presses
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 quantity = Integer.parseInt(quantity_text.getText().toString());
@@ -149,6 +158,10 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
         // MINUS button
         Button minus = findViewById(R.id.add_minus_button);
         minus.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Decrements quantity by 1 (if quantity is greater than 1) when the "-" button is pressed
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 quantity = Integer.parseInt(quantity_text.getText().toString());
@@ -170,6 +183,12 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
         // CONFIRM implementation:
         Button confirm = findViewById(R.id.add_confirm);
         confirm.setOnClickListener(new View.OnClickListener() {
+            /**
+             * When the "Confirm" button is pressed, checks if the user has given valid input.
+             * If valid data was given: returns the data to the calling activity (MainActivity).
+             * If data is missing: notifies the user of what is missing
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 // get needed EditText views
@@ -204,7 +223,8 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
                         if (valid){
                             Toast.makeText(AddItemActivity.this, "Missing required fields", Toast.LENGTH_SHORT).show();
                         }
-                        prompts[i].setBackgroundColor(getResources().getColor(R.color.light_red));
+                        prompts[i].setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.light_red));
+
                         valid = false;
                     }
                 }
@@ -216,7 +236,7 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
                     if (valid){
                         Toast.makeText(AddItemActivity.this, "Missing required fields", Toast.LENGTH_SHORT).show();
                     }
-                    prompt.setBackgroundColor(getResources().getColor(R.color.light_red));
+                    prompt.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.light_red));
                     valid = false;
                 } else{
                     // a date has been provided
@@ -292,6 +312,10 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
         // CANCEL implementation:
         Button cancel = findViewById(R.id.add_cancel);
         cancel.setOnClickListener(new View.OnClickListener() {
+            /**
+             * When user clicks the cancel button, return to calling activity (MainActivity)
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 Intent returnIntent = new Intent();
@@ -716,7 +740,7 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
      */
     private void resetPrompts(TextView[] prompts){
         for (TextView p: prompts)
-            p.setBackgroundColor(getResources().getColor(R.color.light_purple));
+            p.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.light_purple));
     }
 
     public void tagListen(ArrayList<Tag> tagList) {

@@ -228,6 +228,10 @@ public class ItemViewActivity extends AppCompatActivity {
         // BACK button implementation
         final Button backButton = findViewById(R.id.view_back);
         backButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * When user clicks "back" button, return to calling activity (MainActivity)
+             * @param v The view that was clicked.
+             */
             public void onClick(View v) {
                 Intent returnIntent = new Intent();
                 setResult(REQUEST_CODE_BACK, returnIntent);
@@ -238,6 +242,11 @@ public class ItemViewActivity extends AppCompatActivity {
         // EDIT button implementation
         final Button editButton = findViewById(R.id.view_edit);
         editButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * When "edit" button is clicked, start an EditItemActivity and pass the Item's data
+             * as a bundle of extras through the Intent
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 Bundle extras = getIntent().getExtras();
@@ -251,6 +260,11 @@ public class ItemViewActivity extends AppCompatActivity {
         // DELETE button implementation
         final Button deleteButton = findViewById(R.id.view_belete);
         deleteButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * When the "delete" button is pressed, return to the calling activity (MainActivity)
+             * with return code REUEST_CODE_DELETE, which will notify ActivityMain to delete the Item
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 Integer i = getIntent().getIntExtra("index", 0);

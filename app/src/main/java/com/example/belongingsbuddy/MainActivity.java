@@ -66,7 +66,15 @@ public class MainActivity extends AppCompatActivity implements Listener{
     public final static int REQUEST_CODE_BARCODE = 10;
     public static Integer lastResult = 1000;
 
-
+    /**
+     * Prompt user to Login or Signup.
+     * Load user's Items and other data from their FireStore collection.
+     * Set onClickListeners for all necessary buttons
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,9 +126,6 @@ public class MainActivity extends AppCompatActivity implements Listener{
             }
 
 
-
-
-
         // First: set up dataList, itemListView, and itemAdapter
         dataList = new ArrayList<Item>();
         itemListView = findViewById(R.id.item_list);
@@ -138,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
         // LOAD Items from user's collection on FireStore and add those items to dataList
         if (user_collection != null) {
             user_collection.addSnapshotListener(new EventListener<QuerySnapshot>() {
+
                 @Override
                 public void onEvent(@Nullable QuerySnapshot querySnapshots,
                                     @Nullable FirebaseFirestoreException error) {
@@ -557,7 +563,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
         lastResult = resultCode;
         switch (requestCode){
             case REQUEST_CODE_ADD:
-                // There are 2 possible outcomes when the REQUEST_CODE_ADD requestCode is received
+                // There are 2 possible outcomes when the REQUEST_CODE_ADD requestCode is received |
                 // Only RESULT_OK requires further work from ActivityMain
                 if(resultCode == Activity.RESULT_OK) {
                     // RESULT_OK indicates that all the required fields were correctly filled out
@@ -618,7 +624,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 break;
 
             case REQUEST_CODE_VIEW:
-                // there are 3 possible outcomes when a REQUEST_CODE_VIEW requestCode is received
+                // there are 3 possible outcomes when a REQUEST_CODE_VIEW requestCode is received |
                 // only two of them require further work from MainActivity
                 if (resultCode == ItemViewActivity.REQUEST_CODE_EDIT) {
                     // CASE 1: User clicked the "Edit" button from the ItemViewActivity screen
@@ -638,7 +644,6 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     if (user_collection != null) {
                         user_collection.document(Integer.toString(i.hashCode())).delete();
                     }
-                    Toast.makeText(this, Integer.toString(i.hashCode()), Toast.LENGTH_SHORT).show();
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup
                     originalOrderDataList.clear();
@@ -647,7 +652,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
                 }
             case REQUEST_CODE_EDIT:
-                // there are 2 possible outcomes when the REQUEST_CODE_EDIT requestCode is received
+                // there are 2 possible outcomes when the REQUEST_CODE_EDIT requestCode is received |
                 // only one of them requires further work from ActivityMain
                 if (resultCode == Activity.RESULT_OK){
                     Bundle info = data.getExtras();
@@ -716,6 +721,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
     /**
      * Calculates the sum of estimated values of items in the given ArrayList.
+     * Multiplies each Item's value by the quantity of that Item
      * @param dataList the ArrayList of Items
      * @return the sum of estimated values of items
      * @throws NullPointerException if ArrayList is null
