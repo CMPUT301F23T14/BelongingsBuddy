@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * An instance of this class represents a subclass of ArrayAdapter that also supports multiselection.
@@ -24,6 +25,7 @@ public class CustomList extends ArrayAdapter<Item> {
     private ArrayList<Item> items;
     private boolean multiSelectMode;
     private ArrayList<Item> selectedItems;
+    private HashMap<Integer, Boolean> itemSelection;
 
     /**
      * Constructor for CustomList class
@@ -40,6 +42,7 @@ public class CustomList extends ArrayAdapter<Item> {
         this.context = context;
         this.multiSelectMode = false;
         this.selectedItems = new ArrayList<>();
+        this.itemSelection = new HashMap<>();
     }
     /**
      * When multi-select mode is true, the adapter will display checkboxes for
@@ -117,12 +120,14 @@ public class CustomList extends ArrayAdapter<Item> {
         checkBox.setVisibility(multiSelectMode ? View.VISIBLE : View.GONE);
 
         // Handle checkbox selection
-        checkBox.setChecked(selectedItems.contains(item));
+        checkBox.setChecked(isItemChecked(position));
 
         checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (checkBox.isChecked()) {
+                boolean isChecked = checkBox.isChecked();
+                itemSelection.put(position, isChecked);
+                if (isChecked) {
                     selectedItems.add(item);
                 } else {
                     selectedItems.remove(item);
@@ -132,11 +137,16 @@ public class CustomList extends ArrayAdapter<Item> {
         return view;
     }
 
+    private boolean isItemChecked(int position) {
+        return itemSelection.containsKey(position) && itemSelection.get(position);
+    }
+
     /**
      * Clears the list of selected items and notifies the adapter of the data set change.
      */
     public void clearSelectedItems() {
         selectedItems.clear();
+        itemSelection.clear();
         notifyDataSetChanged();
     }
 
@@ -145,7 +155,10 @@ public class CustomList extends ArrayAdapter<Item> {
      */
     public void selectAll() {
         selectedItems.clear();
-        selectedItems.addAll(items);
+        for (int i = 0; i < items.size(); i++) {
+            itemSelection.put(i, true);
+            selectedItems.add(items.get(i));
+        }
         notifyDataSetChanged();
     }
 

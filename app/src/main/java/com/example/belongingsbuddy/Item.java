@@ -296,8 +296,8 @@ public class Item implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Item i = (Item) o;
-        return i.hashCode() == o.hashCode();
+        Item other = (Item) o;
+        return id == other.id;
     }
 }
 
