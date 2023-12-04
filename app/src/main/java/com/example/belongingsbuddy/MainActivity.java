@@ -449,6 +449,25 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
      */
     @Override
     public void onFilterOkPressed(String[] keywords, String[] makes, ArrayList<Tag> tags, Date startDate, Date endDate) {
+        // if sort not closed
+        if (sortTypeLayout.getVisibility() == View.VISIBLE) {
+            // hide selected filters
+            sortTypeLayout.setVisibility(View.GONE);
+            // rollback to original ordering
+            dataList.clear();
+            dataList.addAll(originalOrderDataList);
+            itemAdapter.notifyDataSetChanged();
+        }
+        // if filter already pressed redo filter
+        if (filterTypeLayout.getVisibility() == View.VISIBLE) {
+            // hide selected filters
+            filterTypeLayout.setVisibility(View.GONE);
+            // rollback to original ordering
+            dataList.clear();
+            dataList.addAll(originalOrderDataList);
+            itemAdapter.notifyDataSetChanged();
+        }
+
         // Create a list of predicates based on conditions
         List<Predicate<Item>> conditions = new ArrayList<>();
 
@@ -503,6 +522,15 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
      */
     @Override
     public void onSortOKPressed(String sortType, Boolean isAscending) {
+        // if filter not closed
+        if (filterTypeLayout.getVisibility() == View.VISIBLE) {
+            // hide selected filters
+            filterTypeLayout.setVisibility(View.GONE);
+            // rollback to original ordering
+            dataList.clear();
+            dataList.addAll(originalOrderDataList);
+            itemAdapter.notifyDataSetChanged();
+        }
         sortTypeLayout.setVisibility(View.VISIBLE);
         switch (sortType) {
             case "date":
