@@ -44,13 +44,8 @@ public class SortingTest {
     public ActivityScenarioRule<MainActivity> rule = new ActivityScenarioRule<>(MainActivity.class);
 
     /**
-     * Tests if sort type is displayed for date
-     */
-
-    /**
      * Tests if rollback ui works
      */
-    // Check whether X works
     @Test
     public void testSortRollback() {
 //        testsSetup("test 1", 2002, 1, 1, "a",  "a",  "12.00");
@@ -189,6 +184,9 @@ public class SortingTest {
         onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_name)).check(matches(withText("1")));
         onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_name)).check(matches(withText("2")));
     }
+    /**
+     * Tests date dsc works
+     */
     @Test
     public void testDateSortDsc() {
         testsSetup("1", 2002, 1, 1, "a",  "a",  "12.00");

@@ -45,7 +45,7 @@ import org.junit.runner.RunWith;
 import java.util.Calendar;
 
 /**
- * Tests functionality of AddItemActivity
+ * Tests functionality of filter items
  */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -64,6 +64,9 @@ public class FilterItemsTest {
         try {Thread.sleep(2000);} catch (InterruptedException ignored) {}
         onView(withId(R.id.filter_type_layout)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
     }
+    /**
+     * Check if filtering with no matches works
+     */
     @Test
     public void filterByNoMatches(){
         testsSetup("Apple");
@@ -77,6 +80,9 @@ public class FilterItemsTest {
         onView(withText("Apple")).check(doesNotExist());
         onView(withText("Banana")).check(doesNotExist());
     }
+    /**
+     * Check if filtering dismiss works
+     */
     @Test
     public void filterDismiss(){
         testsSetup("Apple");
@@ -89,6 +95,9 @@ public class FilterItemsTest {
         // Check if dismiss button avaible
         onView(withId(R.id.filter_type_layout)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
     }
+    /**
+     * Check if filtering by desc works
+     */
     @Test
     public void filterByDesc(){
         testsSetup("Apple");
@@ -102,6 +111,9 @@ public class FilterItemsTest {
         onData(Matchers.is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_name)).check(matches(withText("Apple")));
         onView(withText("Banana")).check(doesNotExist());
     }
+    /**
+     * Check if filtering by make works
+     */
     @Test
     public void filterByMake(){
         testsSetup("Apple");
@@ -115,7 +127,9 @@ public class FilterItemsTest {
         onData(Matchers.is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_name)).check(matches(withText("Apple")));
         onView(withText("Banana")).check(doesNotExist());
     }
-
+    /**
+     * Check if filtering by date works
+     */
     @Test
     public void filterByDate(){
         testsSetupDate("Apple", 1989, 2, 2);

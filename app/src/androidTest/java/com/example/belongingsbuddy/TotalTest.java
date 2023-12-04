@@ -7,6 +7,7 @@ import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -27,7 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * Tests functionality of AddItemActivity
+ * Tests functionality of total feature
  */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -35,7 +36,7 @@ public class TotalTest {
     @Rule
     public ActivityScenarioRule<MainActivity> totalTestScenario = new ActivityScenarioRule<>(MainActivity.class);
     /**
-     * Check if filtering without anything shows dismiss layout (it shouldn't)
+     * Check if total update with adds
      */
     @Test
     public void totalAdd(){
@@ -44,6 +45,9 @@ public class TotalTest {
         try {Thread.sleep(2000);} catch (InterruptedException ignored) {}
         onView(withId(R.id.total)).check(matches(withText("$21.00")));
     }
+    /**
+     * Check if total update with edit
+     */
     @Test
     public void totalEdit(){
         testsSetup("Apple", "20.00");
@@ -71,6 +75,9 @@ public class TotalTest {
         // new total should be 501
         onView(withId(R.id.total)).check(matches(withText("$501.00")));
     }
+    /**
+     * Check if total update with delete
+     */
     @Test
     public void testTotalDelete() {
         testsSetup("Apple", "20.00");
@@ -84,6 +91,9 @@ public class TotalTest {
         // Check if the total updates correctly after deleting the item
         onView(withId(R.id.total)).check(matches(withText("$1.00")));
     }
+    /**
+     * Check if total update with long press
+     */
     @Test
     public void testTotalDeleteLongPress() {
 //        testsSetup("Apple", "20.00");
@@ -109,19 +119,19 @@ public class TotalTest {
         // input required information to create an Item
         // name
         onView(withId(R.id.add_name)).perform(ViewActions.scrollTo()).check(ViewAssertions.matches(isDisplayed()));
-        onView(withId(R.id.add_name)).perform(typeText(name));
+        onView(withId(R.id.add_name)).perform(replaceText(name));
         // description
         onView(withId(R.id.add_description)).perform(ViewActions.scrollTo()).check(ViewAssertions.matches(isDisplayed()));
-        onView(withId(R.id.add_description)).perform(typeText(name));
+        onView(withId(R.id.add_description)).perform(replaceText(name));
         // make
         onView(withId(R.id.add_make)).perform(ViewActions.scrollTo()).check(ViewAssertions.matches(isDisplayed()));
-        onView(withId(R.id.add_make)).perform(typeText(name));
+        onView(withId(R.id.add_make)).perform(replaceText(name));
         // model
         onView(withId(R.id.add_model)).perform(ViewActions.scrollTo()).check(ViewAssertions.matches(isDisplayed()));
-        onView(withId(R.id.add_model)).perform(typeText(name));
+        onView(withId(R.id.add_model)).perform(replaceText(name));
         // value
         onView(withId(R.id.add_value)).perform(ViewActions.scrollTo()).check(ViewAssertions.matches(isDisplayed()));
-        onView(withId(R.id.add_value)).perform(typeText(value));
+        onView(withId(R.id.add_value)).perform(replaceText(value));
         // date
         onView(withId(R.id.add_date)).perform(ViewActions.scrollTo()).check(ViewAssertions.matches(isDisplayed()));
         onView(withId(R.id.add_pick_date_button)).perform(click());
