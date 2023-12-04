@@ -39,6 +39,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -65,7 +66,15 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
     public final static int REQUEST_CODE_BARCODE = 10;
     public static Integer lastResult = 1000;
 
-
+    /**
+     * Prompt user to Login or Signup.
+     * Load user's Items and other data from their FireStore collection.
+     * Set onClickListeners for all necessary buttons
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,9 +126,6 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
             }
 
 
-
-
-
         // First: set up dataList, itemListView, and itemAdapter
         dataList = new ArrayList<Item>();
         itemListView = findViewById(R.id.item_list);
@@ -138,23 +144,24 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
 
         totalTextView = findViewById(R.id.total);
         // LOAD Items from user's collection on FireStore and add those items to dataList
-        user_collection.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot querySnapshots,
-                                @Nullable FirebaseFirestoreException error) {
-                if (error != null){
-                    Log.e("Firestore", error.toString());
-                    return;
-                }
-                if (querySnapshots != null){
-                    dataList.clear();
-                    for (QueryDocumentSnapshot doc: querySnapshots) {
-                        String id = doc.getId();
-                        Log.d("docid", id);
-                        if (id.equals("userTags")) {
-                            List<Map<String, Object>> tagMaps = (List<Map<String, Object>>) doc.get("tags");
-                            tagManager.setTags(tagManager.convertTagDatamap(tagMaps));
-                        } else {
+        if (user_collection != null) {
+            user_collection.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot querySnapshots,
+                                    @Nullable FirebaseFirestoreException error) {
+                    if (error != null){
+                        Log.e("Firestore", error.toString());
+                        return;
+                    }
+                    if (querySnapshots != null){
+                        dataList.clear();
+                        for (QueryDocumentSnapshot doc: querySnapshots) {
+                            String id = doc.getId();
+                            Log.d("docid", id);
+                            if (id.equals("userTags")) {
+                                List<Map<String, Object>> tagMaps = (List<Map<String, Object>>) doc.get("tags");
+                                tagManager.setTags(tagManager.convertTagDatamap(tagMaps));
+                            } 
                             String comment = (String) doc.get("comment");
                             int day = ((Long) doc.get("day")).intValue();
                             int month = ((Long) doc.get("month")).intValue();
@@ -408,40 +415,40 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
      */
     @Override
     public void onFilterOkPressed(String[] keywords, String[] makes, ArrayList<Tag> tags, Date startDate, Date endDate) {
+        // Create a list of predicates based on conditions
+        List<Predicate<Item>> conditions = new ArrayList<>();
+
         // desc keywords
         if (keywords.length != 0) {
-            // Filter the list based on the condition that the description contains any string from the array
-            ArrayList<Item> filteredList = (ArrayList<Item>) dataList.stream()
-                    .filter(item -> Arrays.stream(keywords).anyMatch(item.getDescription()::contains))
-                    .collect(Collectors.toList());
-            dataList.clear();
-            dataList.addAll(filteredList);
+            conditions.add(item -> Arrays.stream(keywords).anyMatch(item.getDescription()::contains));
         }
 
         // makes
         if (makes.length != 0) {
-            // Filter the list based on the condition that the make contains any string from the array
-            ArrayList<Item> filteredList = (ArrayList<Item>) dataList.stream()
-                    .filter(item -> Arrays.stream(keywords).anyMatch(item.getMake()::contains))
-                    .collect(Collectors.toList());
-            dataList.clear();
-            dataList.addAll(filteredList);
+            conditions.add(item -> Arrays.stream(makes).anyMatch(item.getMake()::contains));
         }
 
         // tags
         if (tags.size() != 0) {
-            // Filter the list based on the condition that the tags contains any string from the array
-            ArrayList<Item> filteredList = tagManager.filterByTags(new HashSet<>(tags));
-            dataList.clear();
-            dataList.addAll(filteredList);
+            conditions.add(item -> tagManager.filterByTags(new HashSet<>(tags)).contains(item));
         }
 
         // date
         if (startDate != null) {
-            ArrayList<Item> filteredList = filterItemsByDateRange(dataList, startDate, endDate);
-            dataList.clear();
-            dataList.addAll(filteredList);
+            conditions.add(item -> isItemWithinDateRange(item, startDate, endDate));
         }
+
+        // combine the predicates
+        Predicate<Item> combinedCondition = conditions.stream().reduce(Predicate::and).orElse(item -> true);
+
+        // filter the list based on the combined condition
+        List<Item> filteredList = dataList.stream()
+                .filter(combinedCondition)
+                .collect(Collectors.toList());
+
+        // update dataList with the filtered results
+        dataList.clear();
+        dataList.addAll(filteredList);
 
         // if a filter is present
         if (keywords.length != 0 || makes.length != 0 || tags.size() != 0 || startDate != null) {
@@ -507,6 +514,7 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
                 }
                 sortTypeTextView.setText("Estimated Value");
                 itemAdapter.notifyDataSetChanged();
+                break;
             case "tags":
                 if (isAscending) {
 //                    Toast.makeText(this, "SORT BY value ASC", Toast.LENGTH_SHORT).show();
@@ -565,7 +573,7 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
         lastResult = resultCode;
         switch (requestCode){
             case REQUEST_CODE_ADD:
-                // There are 2 possible outcomes when the REQUEST_CODE_ADD requestCode is received
+                // There are 2 possible outcomes when the REQUEST_CODE_ADD requestCode is received |
                 // Only RESULT_OK requires further work from ActivityMain
                 if(resultCode == Activity.RESULT_OK) {
                     // RESULT_OK indicates that all the required fields were correctly filled out
@@ -628,7 +636,7 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
                 break;
 
             case REQUEST_CODE_VIEW:
-                // there are 3 possible outcomes when a REQUEST_CODE_VIEW requestCode is received
+                // there are 3 possible outcomes when a REQUEST_CODE_VIEW requestCode is received |
                 // only two of them require further work from MainActivity
                 if (resultCode == ItemViewActivity.REQUEST_CODE_EDIT) {
                     // CASE 1: User clicked the "Edit" button from the ItemViewActivity screen
@@ -648,7 +656,6 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
                     if (user_collection != null) {
                         user_collection.document(Integer.toString(i.hashCode())).delete();
                     }
-                    Toast.makeText(this, Integer.toString(i.hashCode()), Toast.LENGTH_SHORT).show();
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup
                     originalOrderDataList.clear();
@@ -657,7 +664,7 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
                     totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
                 }
             case REQUEST_CODE_EDIT:
-                // there are 2 possible outcomes when the REQUEST_CODE_EDIT requestCode is received
+                // there are 2 possible outcomes when the REQUEST_CODE_EDIT requestCode is received |
                 // only one of them requires further work from ActivityMain
                 if (resultCode == Activity.RESULT_OK){
                     Bundle info = data.getExtras();
@@ -719,21 +726,16 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
                 }
         }
     }
-    // Method to filter items by date range
-    private static ArrayList<Item> filterItemsByDateRange(ArrayList<Item> dataList, Date startDate, Date endDate) {
-        ArrayList<Item> filteredList = new ArrayList<>();
 
-        for (Item item : dataList) {
-            Date itemDate = item.getDate();
-            // Check if the item's date is within the specified range (inclusive)
-            if (itemDate.compareTo(startDate) >= 0 && itemDate.compareTo(endDate) <= 0) {
-                filteredList.add(item);
-            }
-        }
-        return filteredList;
+    private static boolean isItemWithinDateRange(Item item, Date startDate, Date endDate) {
+        Date itemDate = item.getDate();
+        // Compare the item date with the start and end dates
+        return startDate.compareTo(itemDate) <= 0 && endDate.compareTo(itemDate) >= 0;
     }
+
     /**
      * Calculates the sum of estimated values of items in the given ArrayList.
+     * Multiplies each Item's value by the quantity of that Item
      * @param dataList the ArrayList of Items
      * @return the sum of estimated values of items
      * @throws NullPointerException if ArrayList is null

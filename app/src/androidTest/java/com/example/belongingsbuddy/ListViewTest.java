@@ -129,7 +129,7 @@ public class ListViewTest {
         onData(is(instanceOf(Item.class))).atPosition(0).perform(click());
 
         // Click on the "Delete" button
-        onView(withId(R.id.view_belete)).perform(scrollTo());
+        // onView(withId(R.id.view_belete)).perform(scrollTo());
         onView(withId(R.id.view_belete)).perform(click());
 
         // Check if the deleted item with the name "Chair" is no longer displayed
