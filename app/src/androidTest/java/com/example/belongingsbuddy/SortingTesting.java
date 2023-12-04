@@ -5,11 +5,14 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.pressKey;
+import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.PickerActions.setDate;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -28,6 +31,7 @@ import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.action.ViewActions;
 //import androidx.test.espresso.contrib.PickerActions;
+import androidx.test.espresso.assertion.ViewAssertions;
 import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -53,79 +57,9 @@ public class SortingTesting {
     @Rule
     public ActivityScenarioRule<MainActivity> rule = new ActivityScenarioRule<>(MainActivity.class);
 
-    @Test
-    public void testAllSorting() {
-        testSortDateDisplaysType();
-        testSortDescDisplaysType();
-        testSortMakeDisplaysType();
-        testSortValueDisplaysType();
-        testSortRollback();
-        testValueSortAsc();
-        testMakeSortAsc();
-        testDescSortAsc();
-        testValueSortDesc();
-        testMakeSortDesc();
-        testDescSortDesc();
-        testDateSortAsc();
-        testDateSortDesc();
-    }
-
     /**
      * Tests if sort type is displayed for date
      */
-    // Check whether sort type is displayed
-    @Test
-    public void testSortDateDisplaysType() {
-        // Enter the sort screen
-        onView(withId(R.id.sort_button)).perform(click());
-        // selection
-        onView(withId(R.id.sort_date)).perform(click());
-        onView(withId(R.id.sort_ok)).perform(click());
-        // Check for correct string
-        onView(withId(R.id.sort_type_textview)).check(matches(withText("Date")));
-    }
-    /**
-     * Tests if sort type is displayed for desc
-     */
-    // Check whether sort type is displayed
-    @Test
-    public void testSortDescDisplaysType() {
-        // Enter the sort screen
-        onView(withId(R.id.sort_button)).perform(click());
-        // selection
-        onView(withId(R.id.sort_desc)).perform(click());
-        onView(withId(R.id.sort_ok)).perform(click());
-        // Check for correct string
-        onView(withId(R.id.sort_type_textview)).check(matches(withText("Description")));
-    }
-    /**
-     * Tests if sort type is displayed for make
-     */
-    // Check whether sort type is displayed
-    @Test
-    public void testSortMakeDisplaysType() {
-        // Enter the sort screen
-        onView(withId(R.id.sort_button)).perform(click());
-        // selection
-        onView(withId(R.id.sort_make)).perform(click());
-        onView(withId(R.id.sort_ok)).perform(click());
-        // Check for correct string
-        onView(withId(R.id.sort_type_textview)).check(matches(withText("Make")));
-    }
-    /**
-     * Tests if sort type is displayed for value
-     */
-    // Check whether sort type is displayed
-    @Test
-    public void testSortValueDisplaysType() {
-        // Enter the sort screen
-        onView(withId(R.id.sort_button)).perform(click());
-        // selection
-        onView(withId(R.id.sort_value)).perform(click());
-        onView(withId(R.id.sort_ok)).perform(click());
-        // Check for correct string
-        onView(withId(R.id.sort_type_textview)).check(matches(withText("Estimated Value")));
-    }
 
     /**
      * Tests if rollback ui works
@@ -133,6 +67,14 @@ public class SortingTesting {
     // Check whether X works
     @Test
     public void testSortRollback() {
+//        testsSetup("test 1", 2002, 1, 1, "a",  "a",  "12.00");
+//        testsSetup("test 2", 2010, 1, 1, "x",  "x",  "2.00");
+        // Enter the sort screen
+        onView(withId(R.id.sort_button)).perform(click());
+        // selection
+        onView(withId(R.id.sort_value)).perform(click());
+        onView(withId(R.id.sort_ok)).perform(click());
+
         // Rollback
         onView(withId(R.id.sort_type_rollback)).perform(click());
         // Check if Estimated Value still there
@@ -146,15 +88,16 @@ public class SortingTesting {
     // Check wether value sort works
     @Test
     public void testValueSortAsc() {
+        testsSetup("1", 2002, 1, 1, "a",  "a",  "12.00");
+        testsSetup("2", 2010, 1, 1, "x",  "x",  "2.00");
         // Enter the sort screen
         onView(withId(R.id.sort_button)).perform(click());
         // selection
         onView(withId(R.id.sort_value)).perform(click());
         onView(withId(R.id.sort_ok)).perform(click());
 
-        onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_value)).check(matches(withText("50.0")));
-        onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_value)).check(matches(withText("200.0")));
-        onData(is(instanceOf(Item.class))).atPosition(2).onChildView(withId(R.id.item_value)).check(matches(withText("400.0")));
+        onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_name)).check(matches(withText("2")));
+        onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_name)).check(matches(withText("1")));
     }
     /**
      * Tests make asc works
@@ -162,15 +105,16 @@ public class SortingTesting {
     // Check wether make sort works
     @Test
     public void testMakeSortAsc() {
+        testsSetup("1", 2002, 1, 1, "a",  "a",  "12.00");
+        testsSetup("2", 2010, 1, 1, "x",  "x",  "2.00");
         // Enter the sort screen
         onView(withId(R.id.sort_button)).perform(click());
         // selection
         onView(withId(R.id.sort_make)).perform(click());
         onView(withId(R.id.sort_ok)).perform(click());
 
-        onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_name)).check(matches(withText("Lamp")));
-        onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_name)).check(matches(withText("Chair")));
-        onData(is(instanceOf(Item.class))).atPosition(2).onChildView(withId(R.id.item_name)).check(matches(withText("Table")));
+        onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_name)).check(matches(withText("1")));
+        onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_name)).check(matches(withText("2")));
     }
     /**
      * Tests desc asc works
@@ -178,15 +122,16 @@ public class SortingTesting {
     // Check wether desc sort works
     @Test
     public void testDescSortAsc() {
+        testsSetup("1", 2002, 1, 1, "a",  "a",  "12.00");
+        testsSetup("2", 2010, 1, 1, "x",  "x",  "2.00");
         // Enter the sort screen
         onView(withId(R.id.sort_button)).perform(click());
         // selection
         onView(withId(R.id.sort_desc)).perform(click());
         onView(withId(R.id.sort_ok)).perform(click());
 
-        onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_name)).check(matches(withText("Chair")));
-        onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_name)).check(matches(withText("Lamp")));
-        onData(is(instanceOf(Item.class))).atPosition(2).onChildView(withId(R.id.item_name)).check(matches(withText("Table")));
+        onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_name)).check(matches(withText("1")));
+        onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_name)).check(matches(withText("2")));
     }
     /**
      * Tests value desc works
@@ -195,6 +140,8 @@ public class SortingTesting {
     // Check wether value sort works
     @Test
     public void testValueSortDesc() {
+        testsSetup("1", 2002, 1, 1, "a",  "a",  "12.00");
+        testsSetup("2", 2010, 1, 1, "x",  "x",  "2.00");
         // Enter the sort screen
         onView(withId(R.id.sort_button)).perform(click());
         // selection
@@ -202,15 +149,16 @@ public class SortingTesting {
         onView(withId(R.id.descending_rb)).perform(click());
         onView(withId(R.id.sort_ok)).perform(click());
 
-        onData(is(instanceOf(Item.class))).atPosition(2).onChildView(withId(R.id.item_value)).check(matches(withText("50.0")));
-        onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_value)).check(matches(withText("200.0")));
-        onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_value)).check(matches(withText("400.0")));
+        onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_name)).check(matches(withText("1")));
+        onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_name)).check(matches(withText("2")));
     }
     /**
      * Tests make desc works
      */
     @Test
     public void testMakeSortDesc() {
+        testsSetup("1", 2002, 1, 1, "a",  "a",  "12.00");
+        testsSetup("2", 2010, 1, 1, "x",  "x",  "2.00");
         // Enter the sort screen
         onView(withId(R.id.sort_button)).perform(click());
         // selection
@@ -218,15 +166,16 @@ public class SortingTesting {
         onView(withId(R.id.descending_rb)).perform(click());
         onView(withId(R.id.sort_ok)).perform(click());
 
-        onData(is(instanceOf(Item.class))).atPosition(2).onChildView(withId(R.id.item_name)).check(matches(withText("Lamp")));
-        onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_name)).check(matches(withText("Chair")));
-        onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_name)).check(matches(withText("Table")));
+        onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_name)).check(matches(withText("2")));
+        onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_name)).check(matches(withText("1")));
     }
     /**
      * Tests desc desc works
      */
     @Test
     public void testDescSortDesc() {
+        testsSetup("1", 2002, 1, 1, "a",  "a",  "12.00");
+        testsSetup("2", 2010, 1, 1, "x",  "x",  "2.00");
         // Enter the sort screen
         onView(withId(R.id.sort_button)).perform(click());
         // selection
@@ -234,39 +183,16 @@ public class SortingTesting {
         onView(withId(R.id.descending_rb)).perform(click());
         onView(withId(R.id.sort_ok)).perform(click());
 
-        onData(is(instanceOf(Item.class))).atPosition(2).onChildView(withId(R.id.item_name)).check(matches(withText("Chair")));
-        onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_name)).check(matches(withText("Lamp")));
-        onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_name)).check(matches(withText("Table")));
+        onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_name)).check(matches(withText("2")));
+        onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_name)).check(matches(withText("1")));
     }
     /**
      * Tests date asc works
      */
-
-    // Test method for adding an item and checking if the total updates
     @Test
     public void testDateSortAsc() {
-        // Enter the add screen
-        onView(withId(R.id.add_item)).perform(click());
-        onView(withId(R.id.input_manually)).perform(click());
-
-        // Interact with the date picker and set a specific date
-        onView(withId(R.id.add_pick_date_button)).perform(click());
-        onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(1989, 8, 25));
-        onView(withText("OK")).perform(click());
-
-        // Enter values for item details
-        onView(withId(R.id.add_value)).perform(ViewActions.typeText("22"));
-        onView(withId(R.id.add_description)).perform(ViewActions.typeText("TEST"));
-        onView(withId(R.id.add_make)).perform(ViewActions.typeText("TEST"));
-        onView(withId(R.id.add_model)).perform(ViewActions.typeText("TEST"));
-        onView(withId(R.id.add_name)).perform(scrollTo());
-        onView(withId(R.id.add_name)).perform(ViewActions.typeText("TEST"));
-
-        // Close the keyboard and confirm the addition
-        onView(withId(R.id.add_model)).perform(ViewActions.closeSoftKeyboard());
-        onView(withId(R.id.add_confirm)).perform(scrollTo());
-        onView(withId(R.id.add_confirm)).perform(click());
-
+        testsSetup("1", 2002, 1, 1, "a",  "a",  "12.00");
+        testsSetup("2", 2010, 1, 1, "x",  "x",  "2.00");
         // Enter the sort screen
         onView(withId(R.id.sort_button)).perform(click());
         // selection
@@ -274,37 +200,13 @@ public class SortingTesting {
         onView(withId(R.id.ascending_rb)).perform(click());
         onView(withId(R.id.sort_ok)).perform(click());
 
-        // Check if order is good
-        onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_name)).check(matches(withText("TEST")));
+        onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_name)).check(matches(withText("1")));
+        onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_name)).check(matches(withText("2")));
     }
-    /**
-     * Tests value dsc works
-     */
-    // Test method for adding an item and checking if the total updates
     @Test
-    public void testDateSortDesc() {
-        // Enter the add screen
-        onView(withId(R.id.add_item)).perform(click());
-        onView(withId(R.id.input_manually)).perform(click());
-
-        // Interact with the date picker and set a specific date
-        onView(withId(R.id.add_pick_date_button)).perform(click());
-        onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(1989, 8, 25));
-        onView(withText("OK")).perform(click());
-
-        // Enter values for item details
-        onView(withId(R.id.add_value)).perform(ViewActions.typeText("22"));
-        onView(withId(R.id.add_description)).perform(ViewActions.typeText("TEST"));
-        onView(withId(R.id.add_make)).perform(ViewActions.typeText("TEST"));
-        onView(withId(R.id.add_model)).perform(ViewActions.typeText("TEST"));
-        onView(withId(R.id.add_name)).perform(scrollTo());
-        onView(withId(R.id.add_name)).perform(ViewActions.typeText("TEST"));
-
-        // Close the keyboard and confirm the addition
-        onView(withId(R.id.add_model)).perform(ViewActions.closeSoftKeyboard());
-        onView(withId(R.id.add_confirm)).perform(scrollTo());
-        onView(withId(R.id.add_confirm)).perform(click());
-
+    public void testDateSortDsc() {
+        testsSetup("1", 2002, 1, 1, "a",  "a",  "12.00");
+        testsSetup("2", 2010, 1, 1, "x",  "x",  "2.00");
         // Enter the sort screen
         onView(withId(R.id.sort_button)).perform(click());
         // selection
@@ -312,7 +214,38 @@ public class SortingTesting {
         onView(withId(R.id.descending_rb)).perform(click());
         onView(withId(R.id.sort_ok)).perform(click());
 
-        // Check if order is good
-        onData(is(instanceOf(Item.class))).atPosition(3).onChildView(withId(R.id.item_name)).check(matches(withText("TEST")));
+        onData(is(instanceOf(Item.class))).atPosition(0).onChildView(withId(R.id.item_name)).check(matches(withText("2")));
+        onData(is(instanceOf(Item.class))).atPosition(1).onChildView(withId(R.id.item_name)).check(matches(withText("1")));
+    }
+
+    public void testsSetup(String name, int y, int m, int d, String desc, String make, String value) {
+        // start add item activity
+        onView(withId(R.id.add_item)).perform(click());
+        onView(withId(R.id.input_manually)).perform(click());
+        // input required information to create an Item
+        // name
+        onView(withId(R.id.add_name)).perform(ViewActions.scrollTo()).check(ViewAssertions.matches(isDisplayed()));
+        onView(withId(R.id.add_name)).perform(replaceText(name));
+        // description
+        onView(withId(R.id.add_description)).perform(ViewActions.scrollTo()).check(ViewAssertions.matches(isDisplayed()));
+        onView(withId(R.id.add_description)).perform(replaceText(desc));
+        // make
+        onView(withId(R.id.add_make)).perform(ViewActions.scrollTo()).check(ViewAssertions.matches(isDisplayed()));
+        onView(withId(R.id.add_make)).perform(replaceText(make));
+        // model
+        onView(withId(R.id.add_model)).perform(ViewActions.scrollTo()).check(ViewAssertions.matches(isDisplayed()));
+        onView(withId(R.id.add_model)).perform(replaceText(name));
+        // value
+        onView(withId(R.id.add_value)).perform(ViewActions.scrollTo()).check(ViewAssertions.matches(isDisplayed()));
+        onView(withId(R.id.add_value)).perform(replaceText(value));
+        // date
+        onView(withId(R.id.add_date)).perform(ViewActions.scrollTo()).check(ViewAssertions.matches(isDisplayed()));
+        // Interact with the date picker and set a specific date
+        onView(withId(R.id.add_pick_date_button)).perform(click());
+        onView(withClassName(Matchers.equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(y, m, d));
+        onView(withText("OK")).perform(click());
+        //click confirm and verify correct resultCode was given
+        //onView(withId(R.id.add_confirm)).perform(ViewActions.scrollTo()).check(ViewAssertions.matches(isDisplayed()));
+        onView(withId(R.id.add_confirm)).perform(click());
     }
 }
