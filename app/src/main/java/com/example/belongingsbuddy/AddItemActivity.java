@@ -3,10 +3,12 @@ package com.example.belongingsbuddy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ClipData;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -24,6 +26,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -70,6 +74,7 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
     private ArrayList<Photo> photos;
     private ArrayList<String> photoURLs = new ArrayList<>();
     private static final int PICK_IMAGES_REQUEST_CODE = 1;
+    private static final int TAKE_PHOTO_REQUEST_CODE = 42069;
     private ArrayList<Photo> selectedImages = new ArrayList<>();
     private ArrayList<Photo> savedImages = new ArrayList<>();
     private ArrayList<Uri> imageURIs = new ArrayList<Uri>();
@@ -92,6 +97,8 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item);
+
+        storageReference = FirebaseStorage.getInstance().getReference();
 
         //Check if there is any info from barcodes
         String productInfo = getIntent().getStringExtra("productInfo");
@@ -253,24 +260,24 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
                     returnIntent.putExtra("quantity", quantity);
                     returnIntent.putExtra("url list size", photoURLs.size());
 
-//                    for (int i = 0; i < photoURLs.size(); i++) {
-//                        returnIntent.putExtra("photoURL" + i, photoURLs.get(i));
-//                    }
-////
-//                    //returnIntent.putParcelableArrayListExtra("selectedImages", selectedImages);
-//                    setResult(Activity.RESULT_OK, returnIntent);
+                    for (int i = 0; i < photoURLs.size(); i++) {
+                        returnIntent.putExtra("photoURL" + i, photoURLs.get(i));
+                    }
 //
-//                    // TODO: ACTUALLY PUT PHOTO CODE HERE OOPS
-//                    // Defining the child of storageReference
-//                    StorageReference ref
-//                            = storageReference
-//                            .child(
-//                                    "images/"
-//                                            + UUID.randomUUID().toString());
-//                    for (int i = 0; i < imageURIs.size(); i++) {
-//                        // upload file 2 cloud storage :3
-//                        ref.putFile(imageURIs.get(i));
-//                    }
+                    //returnIntent.putParcelableArrayListExtra("selectedImages", selectedImages);
+                    setResult(Activity.RESULT_OK, returnIntent);
+
+                    // TODO: ACTUALLY PUT PHOTO CODE HERE OOPS
+                    // Defining the child of storageReference
+                    StorageReference ref
+                            = storageReference
+                            .child(
+                                    "images/"
+                                            + UUID.randomUUID().toString());
+                    for (int i = 0; i < imageURIs.size(); i++) {
+                        // upload file 2 cloud storage :3
+                        ref.putFile(imageURIs.get(i));
+                    }
 
                     Bundle args = new Bundle();
                     args.putSerializable("tagList",tags);
@@ -327,6 +334,16 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
 
                 });
 
+                takePhotoButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(AddItemActivity.this, PhotoTakingActivity.class);
+                        intent.setType("image/*");
+
+                        startActivityForResult(intent, TAKE_PHOTO_REQUEST_CODE);
+                    }
+                });
+
                 // Build the custom dialog
                 //AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
 
@@ -339,6 +356,186 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
 
             }
 
+
+        });
+
+        Button showImagesButton = findViewById(R.id.show_images_button2);
+        showImagesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // showImagesButton.setOnClickListener(new View.OnClickListener() {
+                //@Override
+                //  public void onClick(View v) {
+                // Create an AlertDialog to display the list of selected images
+                AlertDialog.Builder builder = new AlertDialog.Builder(AddItemActivity.this);
+                builder.setTitle("Selected Images");
+                // Create a layout inflater to inflate a custom layout for the dialog
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dialog_show_images, null);
+                ViewPager viewPager = dialogView.findViewById(R.id.view_pager);
+                ImagePagerAdapter adapter = new ImagePagerAdapter(photoURLs);
+                viewPager.setAdapter(adapter);
+
+                // Set the custom view to the dialog
+                builder.setView(dialogView);
+                // Add a "Close" button to the dialog
+                builder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Close the dialog
+                        dialog.dismiss();
+                    }
+                });
+                // Show the dialog
+                builder.show();
+                Button deleteButton = dialogView.findViewById(R.id.delete_button);
+
+
+                deleteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // Handle delete action (implement as needed)
+                        // For example, you can delete the currently displayed image
+                        if (photoURLs.size() == 0) {
+                            return;
+                        }
+
+
+                        // : )
+
+                        // Get index of current photo in photoURL arraylist
+                        int currentItem = viewPager.getCurrentItem();
+                        Log.d("DELETE ITEM", "gonna delete item " + currentItem);
+                        // Save the URL as a string
+                        String URLDelete = photoURLs.get(currentItem);
+                        // Delete the entry for the photoURL arraylist
+                        photoURLs.remove(currentItem);
+
+                        // Create a new adapter with the updated photoURLs list
+                        ImagePagerAdapter newAdapter = new ImagePagerAdapter(photoURLs);
+
+                        // Set the new adapter to the ViewPager
+                        viewPager.setAdapter(newAdapter);
+
+                        // Notify the adapter about the change in the dataset
+                        newAdapter.notifyDataSetChanged();
+
+                        // Set the current item to the next item after deletion
+                        if (photoURLs.size() != 0) {
+                            int nextItem = currentItem % photoURLs.size();
+                            viewPager.setCurrentItem(nextItem);
+                        }
+                        else {
+                            int nextItem = 0;
+                            viewPager.setCurrentItem(nextItem);
+                        }
+
+                        // Use URL to delete from cloud storage
+                        StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(URLDelete);
+                        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                // File deleted successfully
+                                Log.e("firebasestorage", "onSuccess: deleted file");
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                // Uh-oh, an error occurred!
+                                Log.e("firebasestorage", "onFailure: did not delete file");
+                            }
+                        });
+                        // HAPPY TIMES ??
+
+
+
+
+//                        @Override
+//                        public void onClick(View v) {
+//                            // 1. Identify the index of the item to delete
+//                            int itemIndex = getIntent().getIntExtra("index", 0);
+//
+//                            // 2. Retrieve the item from dataList
+//                            if (itemIndex >= 0 && itemIndex < dataList.size()) {
+//                                Item itemToDelete = dataList.get(itemIndex);
+//
+//                                // 3. Delete the item from Firestore
+//                                user_collection.document(itemToDelete.getDocumentId()).delete()
+//                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                            @Override
+//                                            public void onSuccess(Void aVoid) {
+//                                                // 4. Delete the item from dataList
+//                                                dataList.remove(itemIndex);
+//                                                itemAdapter.notifyDataSetChanged();
+//
+//                                                // 5. Navigate back to MainActivity or perform other actions
+//                                                Toast.makeText(ItemViewActivity.this, "Item deleted successfully", Toast.LENGTH_SHORT).show();
+//                                                finish();
+//                                            }
+//                                        })
+//                                        .addOnFailureListener(new OnFailureListener() {
+//                                            @Override
+//                                            public void onFailure(@NonNull Exception e) {
+//                                                // Handle the failure to delete from Firestore
+//                                                Toast.makeText(ItemViewActivity.this, "Failed to delete item", Toast.LENGTH_SHORT).show();
+//                                            }
+//                                        });
+//                            }
+//                        }
+//                    });
+                        //   }
+                    }
+                });
+
+
+
+                // Load the current image URL into the ImageView using Picasso
+//                ImageView imageView = dialogView.findViewById(R.id.image_view);
+//                Log.d("Imageview", imageView.toString());
+//                for (int i = 0; i < listSize; i++) {
+//                    continue;
+//                }
+//                Picasso.get()
+//                        .load("https://i.imgur.com/DvpvklR.png")
+//                        .into(imageView, new Callback() {
+//                            @Override
+//                            public void onSuccess() {
+//                                // Image loaded successfully
+//                                Log.d("PICASSO", "Image loaded");
+//                            }
+//
+//                            @Override
+//                            public void onError(Exception e) {
+//                                // Handle error
+//                                e.printStackTrace();
+//                            }
+//                        });
+//                if (photoURLs != null && !photoURLs.isEmpty()) {
+//                    int currentImageIndex = 0;
+//
+//                    String URL = photoURLs.get(currentImageIndex);
+//                    Picasso.get()
+//                        .load(URL)
+//                        .into(imageView, new Callback() {
+//                            @Override
+//                            public void onSuccess() {
+//                                // Image loaded successfully
+//                                Log.d("PICASSO", "Image loaded");
+//                            }
+//
+//                            @Override
+//                            public void onError(Exception e) {
+//                                // Handle error
+//                                Log.d("PICASSO", "Image failed to load.");
+//                                e.printStackTrace();
+//                            }
+//                        });
+//                    // Move to the next image or loop back to the first image
+//                    // photoURLs.remove(currentImageIndex);
+//                    currentImageIndex = (currentImageIndex + 1) % photoURLs.size();
+//                }
+
+            }
 
         });
 
@@ -383,7 +580,6 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
 //                        itemInfo.getInt("serialNum")
 //                );
 
-
                 // Check if the data contains multiple images
                 ClipData clipData = data.getClipData();
                 if (clipData != null) {
@@ -392,56 +588,7 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
                         Uri uri = item.getUri();
                         imageURIs.add(uri);
 
-
-                        // Load the image from the Uri
-                        Bitmap imageBitmap = loadImageFromUri(uri);
-
-
-                        // Check for null before adding to the list
-                        if (imageBitmap != null && uri != null) {
-                            //currentItem.addPhoto(new Photo(uri, imageBitmap));
-                            selectedImages.add(new Photo(uri, imageBitmap));
-                        }
-
-                        // Defining the child of storageReference
-                        StorageReference ref
-                                = storageReference
-                                .child(
-                                        "images/"
-                                                + UUID.randomUUID().toString());
-                        // upload file 2 cloud storage :3
-                        UploadTask uploadTask = ref.putFile(uri);
-                        // Get the download URL
-                        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                            @Override
-                            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                                if (!task.isSuccessful()) {
-                                    throw task.getException();
-                                }
-
-                                // Continue with the task to get the download URL
-                                return ref.getDownloadUrl();
-                            }
-                        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Uri> task) {
-                                if (task.isSuccessful()) {
-                                    // The download URL of the image
-                                    Uri downloadUri = task.getResult();
-                                    String downloadUrl = downloadUri.toString();
-                                    Log.d("Download URL", downloadUrl);
-
-                                    // Now you can use downloadUrl as needed, e.g., store it in a database
-                                    photoURLs.add(downloadUrl);
-                                } else {
-                                    // Handle failures
-                                    Log.e("Download URL", "Failed to get download URL");
-                                }
-                            }
-                        });
-
-
-
+                        storeImageFromUri(uri);
                     }
                 } else {
                     // Single image selected
@@ -486,7 +633,14 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
                 //System.out.println("Number of photos in the array: " + numberOfPhotos);
             }
         }
-
+        else if (requestCode == TAKE_PHOTO_REQUEST_CODE && resultCode == RESULT_OK) {
+            ArrayList<Uri> uris = data.getParcelableArrayListExtra("capturedImages");
+            if (uris != null) {
+                for (int i = 0; i < uris.size(); i++) {
+                    storeImageFromUri(uris.get(i));
+                }
+            }
+        }
     }
 
     private Bitmap loadImageFromUri(Uri uri) {
@@ -501,6 +655,55 @@ public class AddItemActivity extends AppCompatActivity implements TagListener{
             Log.e("ImageLoading", "Error loading image from Uri: " + e.getMessage());
             return null;
         }
+    }
+
+    private void storeImageFromUri (Uri uri) {
+        // Load the image from the Uri
+        Bitmap imageBitmap = loadImageFromUri(uri);
+
+
+        // Check for null before adding to the list
+        if (imageBitmap != null && uri != null) {
+            //currentItem.addPhoto(new Photo(uri, imageBitmap));
+            selectedImages.add(new Photo(uri, imageBitmap));
+        }
+
+        // Defining the child of storageReference
+        StorageReference ref
+                = storageReference
+                .child(
+                        "images/"
+                                + UUID.randomUUID().toString());
+        // upload file 2 cloud storage :3
+        UploadTask uploadTask = ref.putFile(uri);
+        // Get the download URL
+        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+
+                // Continue with the task to get the download URL
+                return ref.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    // The download URL of the image
+                    Uri downloadUri = task.getResult();
+                    String downloadUrl = downloadUri.toString();
+                    Log.d("Download URL", downloadUrl);
+
+                    // Now you can use downloadUrl as needed, e.g., store it in a database
+                    photoURLs.add(downloadUrl);
+                } else {
+                    // Handle failures
+                    Log.e("Download URL", "Failed to get download URL");
+                }
+            }
+        });
     }
 
 
