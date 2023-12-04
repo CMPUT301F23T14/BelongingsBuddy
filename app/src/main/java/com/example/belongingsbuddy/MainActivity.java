@@ -498,6 +498,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 }
                 sortTypeTextView.setText("Estimated Value");
                 itemAdapter.notifyDataSetChanged();
+                break;
             case "tags":
                 if (isAscending) {
 //                    Toast.makeText(this, "SORT BY value ASC", Toast.LENGTH_SHORT).show();
