@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
         itemListView.setAdapter(itemAdapter);
 
         // initialize tag manager
-        tagManager = new TagManager(user_collection);
+        tagManager = new TagManager();
 
         totalTextView = findViewById(R.id.total);
         // LOAD Items from user's collection on FireStore and add those items to dataList
