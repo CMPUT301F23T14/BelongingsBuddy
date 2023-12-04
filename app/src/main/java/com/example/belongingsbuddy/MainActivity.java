@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
-public class MainActivity extends AppCompatActivity implements Listener{
+public class MainActivity extends AppCompatActivity implements Listener, TagListener{
     private ArrayList<Item> dataList;
     private ArrayList<Item> originalOrderDataList;
     private ListView itemListView;
@@ -136,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
         // initialize tag manager
         tagManager = new TagManager(user_collection);
 
+        totalTextView = findViewById(R.id.total);
         // LOAD Items from user's collection on FireStore and add those items to dataList
         user_collection.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -149,9 +150,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     dataList.clear();
                     for (QueryDocumentSnapshot doc: querySnapshots) {
                         String id = doc.getId();
-                        if (id == "userTags") {
-                            HashSet<Tag> userTags = new HashSet<>((List<Tag>)doc.getData().values().iterator().next());
-                            tagManager.setTags(userTags);
+                        Log.d("docid", id);
+                        if (id.equals("userTags")) {
+                            List<Map<String, Object>> tagMaps = (List<Map<String, Object>>) doc.get("tags");
+                            tagManager.setTags(tagManager.convertTagDatamap(tagMaps));
                         } else {
                             String comment = (String) doc.get("comment");
                             int day = ((Long) doc.get("day")).intValue();
@@ -166,40 +168,11 @@ public class MainActivity extends AppCompatActivity implements Listener{
                             List<String> photoURLs = (List<String>) doc.get("photoURLs");
                             ArrayList<Photo> photos = (ArrayList<Photo>) doc.get("photos");
                             String serialNumber = (String) doc.get("serialNumber");
-                            ArrayList<Tag> tags = (ArrayList<Tag>) doc.get("tags");
+                            List<Map<String, Object>> tags = (List<Map<String, Object>>) doc.get("tags");
                             String epoch = (String) doc.get("epoch");
                             Integer quantity = ((Long) doc.get("quantity")).intValue();
                             Item item = new Item(name, date, description, make, model, estimatedValue, comment, serialNumber, photos, epoch, id, quantity, photoURLs);
-                            tagManager.setItemTags(item, tags);
-                            if (item.getPhotoURLs() != null) {
-                                if (item.getPhotoURLs().size() > 0) {
-                                    Log.d("PHOTO URLS", item.getPhotoURLs().get(0));
-                                }
-                            }
-                            dataList.add(item);
-                        }
-                    }
-                    if (querySnapshots != null) {
-                        dataList.clear();
-                        for (QueryDocumentSnapshot doc : querySnapshots) {
-                            String id = doc.getId();
-                            String comment = (String) doc.get("comment");
-                            int day = ((Long) doc.get("day")).intValue();
-                            int month = ((Long) doc.get("month")).intValue();
-                            int year = ((Long) doc.get("year")).intValue();
-                            Date date = new Date(day, month, year);
-                            String description = (String) doc.get("description");
-                            Float estimatedValue = ((Double) doc.get("estimatedValue")).floatValue();
-                            String make = (String) doc.get("make");
-                            String model = (String) doc.get("model");
-                            String name = (String) doc.get("name");
-                            List<String> photoURLs = (List<String>) doc.get("photoURLs");
-                            ArrayList<Photo> photos = (ArrayList<Photo>) doc.get("photos");
-                            String serialNumber = (String) doc.get("serialNumber");
-                            ArrayList<Tag> tags = (ArrayList<Tag>) doc.get("tags");
-                            String epoch = (String) doc.get("epoch");
-                            Integer quantity = ((Long) doc.get("quantity")).intValue();
-                            Item item = new Item(name, date, description, make, model, estimatedValue, comment, serialNumber, tags, photos, epoch, id, quantity, photoURLs);
+                            tagManager.setItemTags(item, tagManager.convertTagDatamap(tags));
                             if (item.getPhotoURLs() != null) {
                                 if (item.getPhotoURLs().size() > 0) {
                                     Log.d("PHOTO URLS", item.getPhotoURLs().get(0));
@@ -217,8 +190,8 @@ public class MainActivity extends AppCompatActivity implements Listener{
                         totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
                     }
                 }
-            });
-        }
+            }
+        });
 
         // get ui objects for sort
         sortTypeLayout = findViewById(R.id.sort_type_layout);
@@ -256,7 +229,9 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 intent.putExtra("quantity", i.getQuantity());
                 intent.putExtra("comment", i.getComment());
                 intent.putExtra("index", position);
-                intent.putExtra("tags", tagManager.printItemTags(i, false));
+                intent.putExtra("manager", tagManager);
+                intent.putExtra("tagsList", new ArrayList<>(tagManager.getItemTags(i)));
+                intent.putExtra("tagsString", tagManager.printItemTags(i, false));
                 if (i.getPhotoURLs() != null) {
                     intent.putExtra("photoURLsize", i.getPhotoURLs().size());
                     for (int j = 0; j <i.getPhotoURLs().size(); j++) {
@@ -713,6 +688,8 @@ public class MainActivity extends AppCompatActivity implements Listener{
                         Log.d("PHOTO URL RECEIVED "+i, URL);
                         photoURLs.add(URL);
                     }
+                    ArrayList<Tag> selectedTags = (ArrayList<Tag>) data.getBundleExtra("BUNDLE").getSerializable("tagList");
+                    tagManager.setItemTags(item, selectedTags);
                     item.setPhotoURLs(photoURLs);
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup
@@ -772,5 +749,11 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
     public TagManager getTagManager() {
         return tagManager;
+    }
+
+    public void tagListen(ArrayList<Tag> tagList) {
+        tagManager.setTags(new HashSet<>(tagList));
+        Log.d("taglist2", tagList.toString());
+        tagManager.updateDatabaseTags(user_collection);
     }
 }

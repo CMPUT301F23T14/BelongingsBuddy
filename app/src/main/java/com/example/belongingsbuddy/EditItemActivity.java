@@ -52,7 +52,7 @@ import java.util.UUID;
  *  This class gets all the necessary input from the user and then returns that
  *  data to the calling activity (MainActivity)
  */
-public class EditItemActivity extends AppCompatActivity {
+public class EditItemActivity extends AppCompatActivity implements TagListener {
     private EditText name_text;
     private String name;
     private TextView date_text;
@@ -72,6 +72,7 @@ public class EditItemActivity extends AppCompatActivity {
     private EditText quantity_text;
     private Integer quantity;
     private ArrayList<String> photoURLs = new ArrayList<>();
+    private ArrayList<Tag> tags;
 
     StorageReference storageReference;
 
@@ -136,6 +137,9 @@ public class EditItemActivity extends AppCompatActivity {
         //comment
         comment_text = this.findViewById(R.id.edit_comment);
         comment_text.setText(itemInfo.getString("comment"));
+
+        //Tags
+        tags = (ArrayList<Tag>) itemInfo.getSerializable("tagsList");
 
         if (itemInfo.containsKey("selectedImages")) {
             selectedImages = itemInfo.getParcelableArrayList("selectedImages");
@@ -275,6 +279,11 @@ public class EditItemActivity extends AppCompatActivity {
                     returnIntent.putExtra("index", itemInfo.getInt("index"));
                     returnIntent.putExtra("selectedImages", selectedImages);
                     returnIntent.putExtra("url list size", photoURLs.size());
+
+                    Bundle args = new Bundle();
+                    args.putSerializable("tagList",tags);
+                    returnIntent.putExtra("BUNDLE",args);
+
                     for (int i = 0; i < photoURLs.size(); i++) {
                         returnIntent.putExtra("photoURL" + i, photoURLs.get(i));
                     }
@@ -367,6 +376,13 @@ public class EditItemActivity extends AppCompatActivity {
             }
 
 
+        });
+
+        //Tag Editor
+        Button addTags = findViewById(R.id.edit_tags_button);
+        addTags.setOnClickListener(v -> {
+            TagManager manager = (TagManager) itemInfo.getSerializable("manager");
+            manager.openTagSelector(this, getSupportFragmentManager(), tags);
         });
 
         Button showImagesButton = findViewById(R.id.show_images_button);
@@ -735,6 +751,16 @@ public class EditItemActivity extends AppCompatActivity {
         this.year = year;
         Toast.makeText(this, year.toString(), Toast.LENGTH_SHORT).show();
 
+    }
+
+    public void tagListen(ArrayList<Tag> tagList) {
+        String tagSequence = "";
+        for(Tag tagString: tagList) {
+            tagSequence += tagString + " ";
+        }
+        TextView editTags = findViewById(R.id.edit_tags);
+        editTags.setText(tagSequence);
+        tags = tagList;
     }
 
 //    private void showSelectedImages() {

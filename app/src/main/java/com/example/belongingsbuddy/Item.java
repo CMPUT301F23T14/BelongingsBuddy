@@ -33,8 +33,8 @@ public class Item implements Serializable {
     private Integer quantity;
     private ArrayList<Photo> photos;
     private List<String> photoURLs;
-    private String epoch;
-    private int id;
+    private final String epoch;
+    private final int id;
 
     /**
      * Constructor for the Item class (without a provided serial number)
@@ -212,6 +212,8 @@ public class Item implements Serializable {
 
     public String getEpoch() {return epoch;}
 
+    public int getId() {return this.id;}
+
     public ArrayList<Photo> getPhotos() {
         return photos;
     }
@@ -261,7 +263,7 @@ public class Item implements Serializable {
         docData.put("photos", this.getPhotos());
         docData.put("quantity", this.getQuantity());
         docData.put("serialNumber", this.getSerialNumber());
-        docData.put("tags", manager.getItemTags(this));
+        docData.put("tags", manager.returnTagDatamap(manager.getItemTags(this)));
         docData.put("epoch", this.getEpoch());
         collection.document(Integer.toString(hashCode())).set(docData);
     }
@@ -282,7 +284,7 @@ public class Item implements Serializable {
         docData.put("photos", this.getPhotos());
         docData.put("quantity", this.getQuantity());
         docData.put("serialNumber", this.getSerialNumber());
-        docData.put("tags", manager.getItemTags(this));
+        docData.put("tags", manager.returnTagDatamap(manager.getItemTags(this)));
         collection.document(Integer.toString(hashCode())).update(docData);
     }
     @Override
