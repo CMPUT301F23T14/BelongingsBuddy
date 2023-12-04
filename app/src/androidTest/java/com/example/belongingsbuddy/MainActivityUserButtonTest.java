@@ -21,11 +21,26 @@ public class MainActivityUserButtonTest {
     @Rule
     public ActivityScenarioRule<MainActivity> main_scenario = new ActivityScenarioRule<>(MainActivity.class);
 
+    /**
+     * test functionality of the user sign out button
+     */
     @Test
     public void testUserButton() {
         onView(withId(R.id.username)).perform(click());
         onView(withText("CANCEL")).perform(click());
         onView(withId(R.id.username)).perform(click());
         onView(withText("SIGN OUT")).perform(click());
+    }
+
+    /**
+     * test functionality of select all buttons
+     */
+    @Test
+    public void testSelectAll() {
+        onView(withId(R.id.select_all_button)).perform(click());
+        onView(withId(R.id.checkbox)).perform(click());
+        onView(withId(R.id.cancel_button)).perform(click());
+        onView(withId(R.id.select_all_button)).perform(click());
+        onView(withId(R.id.delete_button_multiple)).perform(click());
     }
 }

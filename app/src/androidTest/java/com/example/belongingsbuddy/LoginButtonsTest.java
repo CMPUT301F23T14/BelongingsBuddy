@@ -74,27 +74,27 @@ public class LoginButtonsTest {
      *  check if the back button on the login activity where the user inputs the username (email) and password
      *  changes screen visibility and clears inputs properly
      */
-//    @Test
-//    public void testBackButton() {
-//        onView(withId(R.id.create_button)).perform(click());
-//        for (int i = 0; i < 1; i++) {
-//            onView(withId(R.id.username_input)).perform(ViewActions.typeText("test@gmail.com"));
-//            onView(withId(R.id.password_input)).perform(typeText("test_password"));
-//            onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard());
-//            onView(withId(R.id.back_button)).perform(click());
-//            onView(withId(R.id.login_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-//            onView(withId(R.id.create_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-//            onView(withId(R.id.back_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-//            onView(withId(R.id.login_confirm)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-//            onView(withId(R.id.sign_up_confirm)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-//            onView(withId(R.id.username_input)).check(matches(withText("")));
-//            onView(withId(R.id.password_input)).check(matches(withText("")));
-//            onView(withId(R.id.username_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-//            onView(withId(R.id.password_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-//            onView(withId(R.id.login_button)).perform(click());
-//        }
-//
-//    }
+    @Test
+    public void testBackButton() {
+        onView(withId(R.id.create_button)).perform(click());
+        for (int i = 0; i < 1; i++) {
+            onView(withId(R.id.username_input)).perform(ViewActions.typeText("test@gmail.com"));
+            onView(withId(R.id.password_input)).perform(typeText("test_password"));
+            onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard());
+            onView(withId(R.id.back_button)).perform(click());
+            onView(withId(R.id.login_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+            onView(withId(R.id.create_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+            onView(withId(R.id.back_button)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+            onView(withId(R.id.login_confirm)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+            onView(withId(R.id.sign_up_confirm)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+            onView(withId(R.id.username_input)).check(matches(withText("")));
+            onView(withId(R.id.password_input)).check(matches(withText("")));
+            onView(withId(R.id.username_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+            onView(withId(R.id.password_input)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+            onView(withId(R.id.login_button)).perform(click());
+        }
+
+    }
 
 
     /**
