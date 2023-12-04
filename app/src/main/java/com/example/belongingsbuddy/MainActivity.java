@@ -344,6 +344,8 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
                 hideMultiSelectButtons();
             }
         });
+
+        selectAllButton.setVisibility(View.INVISIBLE);
     }
 
     private void hideMultiSelectButtons() {
@@ -412,6 +414,8 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
         addButton.setVisibility(View.VISIBLE);
         cancelButton.setVisibility(View.GONE);
         deleteButton.setVisibility(View.GONE);
+
+        selectAllButton.setVisibility(View.INVISIBLE);
     }
     private Photo createPlaceholderPhoto() {
         // Create a placeholder image
