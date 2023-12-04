@@ -638,7 +638,6 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     if (user_collection != null) {
                         user_collection.document(Integer.toString(i.hashCode())).delete();
                     }
-                    Toast.makeText(this, Integer.toString(i.hashCode()), Toast.LENGTH_SHORT).show();
                     itemAdapter.notifyDataSetChanged();
                     // update datalist backup
                     originalOrderDataList.clear();
