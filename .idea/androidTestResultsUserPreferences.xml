@@ -395,6 +395,19 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="-254493238">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Pixel_4_API_UpsideDownCakePrivacySandbox" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="-82242949">
           <value>
             <AndroidTestResultsTableState>

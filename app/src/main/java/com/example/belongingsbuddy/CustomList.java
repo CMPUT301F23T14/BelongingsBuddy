@@ -2,6 +2,7 @@ package com.example.belongingsbuddy;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.ColorSpace;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,15 @@ public class CustomList extends ArrayAdapter<Item> {
         selectedItems.clear();
         notifyDataSetChanged();
     }
+
+    /**
+     * Getter for multiSelectMode
+     * @return multiSelectMode of type boolean
+     */
+    public boolean isMultiSelectMode() {
+        return multiSelectMode;
+    }
+
     public ArrayList<Item> getSelectedItems() {
         return selectedItems;
     }
@@ -130,6 +140,9 @@ public class CustomList extends ArrayAdapter<Item> {
         notifyDataSetChanged();
     }
 
+    /**
+     * takes all of the items in data list and adds them to the selected item list
+     */
     public void selectAll() {
         selectedItems.clear();
         selectedItems.addAll(items);
