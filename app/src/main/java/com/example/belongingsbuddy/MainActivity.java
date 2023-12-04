@@ -161,40 +161,41 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
                             if (id.equals("userTags")) {
                                 List<Map<String, Object>> tagMaps = (List<Map<String, Object>>) doc.get("tags");
                                 tagManager.setTags(tagManager.convertTagDatamap(tagMaps));
-                            } 
-                            String comment = (String) doc.get("comment");
-                            int day = ((Long) doc.get("day")).intValue();
-                            int month = ((Long) doc.get("month")).intValue();
-                            int year = ((Long) doc.get("year")).intValue();
-                            Date date = new Date(day, month, year);
-                            String description = (String) doc.get("description");
-                            Float estimatedValue = ((Double) doc.get("estimatedValue")).floatValue();
-                            String make = (String) doc.get("make");
-                            String model = (String) doc.get("model");
-                            String name = (String) doc.get("name");
-                            List<String> photoURLs = (List<String>) doc.get("photoURLs");
-                            ArrayList<Photo> photos = (ArrayList<Photo>) doc.get("photos");
-                            String serialNumber = (String) doc.get("serialNumber");
-                            List<Map<String, Object>> tags = (List<Map<String, Object>>) doc.get("tags");
-                            String epoch = (String) doc.get("epoch");
-                            Integer quantity = ((Long) doc.get("quantity")).intValue();
-                            Item item = new Item(name, date, description, make, model, estimatedValue, comment, serialNumber, photos, epoch, id, quantity, photoURLs);
-                            tagManager.setItemTags(item, tagManager.convertTagDatamap(tags));
-                            if (item.getPhotoURLs() != null) {
-                                if (item.getPhotoURLs().size() > 0) {
-                                    Log.d("PHOTO URLS", item.getPhotoURLs().get(0));
+                            } else {
+                                String comment = (String) doc.get("comment");
+                                int day = ((Long) doc.get("day")).intValue();
+                                int month = ((Long) doc.get("month")).intValue();
+                                int year = ((Long) doc.get("year")).intValue();
+                                Date date = new Date(day, month, year);
+                                String description = (String) doc.get("description");
+                                Float estimatedValue = ((Double) doc.get("estimatedValue")).floatValue();
+                                String make = (String) doc.get("make");
+                                String model = (String) doc.get("model");
+                                String name = (String) doc.get("name");
+                                List<String> photoURLs = (List<String>) doc.get("photoURLs");
+                                ArrayList<Photo> photos = (ArrayList<Photo>) doc.get("photos");
+                                String serialNumber = (String) doc.get("serialNumber");
+                                List<Map<String, Object>> tags = (List<Map<String, Object>>) doc.get("tags");
+                                String epoch = (String) doc.get("epoch");
+                                Integer quantity = ((Long) doc.get("quantity")).intValue();
+                                Item item = new Item(name, date, description, make, model, estimatedValue, comment, serialNumber, photos, epoch, id, quantity, photoURLs);
+                                tagManager.setItemTags(item, tagManager.convertTagDatamap(tags));
+                                if (item.getPhotoURLs() != null) {
+                                    if (item.getPhotoURLs().size() > 0) {
+                                        Log.d("PHOTO URLS", item.getPhotoURLs().get(0));
+                                    }
                                 }
+                                dataList.add(item);
                             }
-                            dataList.add(item);
+                            itemAdapter.notifyDataSetChanged();
+    
+                            // setup backup
+                            originalOrderDataList.clear();
+                            originalOrderDataList.addAll(dataList);
+    
+                            // set total
+                            totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
                         }
-                        itemAdapter.notifyDataSetChanged();
-
-                        // setup backup
-                        originalOrderDataList.clear();
-                        originalOrderDataList.addAll(dataList);
-
-                        // set total
-                        totalTextView.setText(String.format("$%.2f", sumItems(dataList)));
                     }
                 }
             }
