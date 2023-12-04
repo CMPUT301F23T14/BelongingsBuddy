@@ -223,6 +223,14 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
              */
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // if sort not closed
+                if (sortTypeLayout.getVisibility() == View.VISIBLE) {
+                    cleanupSort();
+                }
+                // if filter already pressed redo filter
+                if (filterTypeLayout.getVisibility() == View.VISIBLE) {
+                    cleanupFilter();
+                }
                 // get the Item being clicked
                 Item i = itemAdapter.getItem(position);
                 //Log.d("tag", i.getEpoch());
@@ -254,9 +262,16 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
         // ADD ITEM implementation:
         final Button addButton = findViewById(R.id.add_item);
         addButton.setOnClickListener(v -> {
+            // if sort not closed
+            if (sortTypeLayout.getVisibility() == View.VISIBLE) {
+                cleanupSort();
+            }
+            // if filter already pressed redo filter
+            if (filterTypeLayout.getVisibility() == View.VISIBLE) {
+                cleanupFilter();
+            }
             ScanOrManual dialog = new ScanOrManual();
             dialog.show(getSupportFragmentManager(), "Add Item:");
-
         });
 
         // click listener sort type rollback
@@ -429,21 +444,11 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
     public void onFilterOkPressed(String[] keywords, String[] makes, ArrayList<Tag> tags, Date startDate, Date endDate) {
         // if sort not closed
         if (sortTypeLayout.getVisibility() == View.VISIBLE) {
-            // hide selected filters
-            sortTypeLayout.setVisibility(View.GONE);
-            // rollback to original ordering
-            dataList.clear();
-            dataList.addAll(originalOrderDataList);
-            itemAdapter.notifyDataSetChanged();
+            cleanupSort();
         }
         // if filter already pressed redo filter
         if (filterTypeLayout.getVisibility() == View.VISIBLE) {
-            // hide selected filters
-            filterTypeLayout.setVisibility(View.GONE);
-            // rollback to original ordering
-            dataList.clear();
-            dataList.addAll(originalOrderDataList);
-            itemAdapter.notifyDataSetChanged();
+            cleanupFilter();
         }
 
         // Create a list of predicates based on conditions
@@ -500,14 +505,10 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
      */
     @Override
     public void onSortOKPressed(String sortType, Boolean isAscending) {
+
         // if filter not closed
         if (filterTypeLayout.getVisibility() == View.VISIBLE) {
-            // hide selected filters
-            filterTypeLayout.setVisibility(View.GONE);
-            // rollback to original ordering
-            dataList.clear();
-            dataList.addAll(originalOrderDataList);
-            itemAdapter.notifyDataSetChanged();
+            cleanupFilter();
         }
         sortTypeLayout.setVisibility(View.VISIBLE);
         switch (sortType) {
@@ -797,5 +798,22 @@ public class MainActivity extends AppCompatActivity implements Listener, TagList
         tagManager.setTags(new HashSet<>(tagList));
         Log.d("taglist2", tagList.toString());
         tagManager.updateDatabaseTags(user_collection);
+    }
+
+    public void cleanupSort() {
+        // hide selected filters
+        sortTypeLayout.setVisibility(View.GONE);
+        // rollback to original ordering
+        dataList.clear();
+        dataList.addAll(originalOrderDataList);
+        itemAdapter.notifyDataSetChanged();
+    }
+    public void cleanupFilter() {
+        // hide selected filters
+        filterTypeLayout.setVisibility(View.GONE);
+        // rollback to original ordering
+        dataList.clear();
+        dataList.addAll(originalOrderDataList);
+        itemAdapter.notifyDataSetChanged();
     }
 }
