@@ -2,25 +2,38 @@ package com.example.belongingsbuddy;
 
 import java.io.Serializable;
 
+/**
+ * Tag class which encapsulates a string
+ */
 public class Tag implements Serializable {
     //String Name Associated with Tag
     private String tagName;
 
-    //Constructor
+    /**
+     * Constructor for Tag Class
+     * @param tagName The string associated with the tag
+     */
     public Tag(String tagName) {
         this.tagName = tagName;
     }
 
-    //Getters and setters
+    /**
+     * Getter method for the tag name
+     * @return The tag name
+     */
     public String getTagName() {
         return tagName;
     }
 
+    /**
+     * Setter method for the tag name
+     * @param tagName The string to set the tag name to
+     */
     public void setTagName(String tagName) {
         this.tagName = tagName;
     }
 
-    //Comparator override to comapre tag strings instead of objects
+    //Comparator override to compare tag strings instead of objects
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -104,6 +104,7 @@ public class CreateTagActivity extends DialogFragment {
         return dialog;
     }
 
+    //Set the calling activity
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
