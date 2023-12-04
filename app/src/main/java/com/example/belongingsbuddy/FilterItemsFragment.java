@@ -42,7 +42,6 @@ public class FilterItemsFragment extends DialogFragment implements TagListener {
     com.example.belongingsbuddy.Date endDateAsDate;
     String[] keywords = {};
     String[] makes = {};
-    String[] tags = {};
     ArrayList<Tag> selectedTagsArray = new ArrayList<>();
 
     // so we can communicate with main activity
@@ -81,7 +80,6 @@ public class FilterItemsFragment extends DialogFragment implements TagListener {
         TextView selectedDate = view.findViewById(R.id.filter_selected_dates);
         EditText selectedKeywords = view.findViewById(R.id.filter_selected_keywords);
         EditText selectedMakes = view.findViewById(R.id.filter_selected_makes);
-        TextView selectedTags = view.findViewById(R.id.filter_selected_tags);
 
         // click listeners for buttons
         // date
@@ -131,7 +129,7 @@ public class FilterItemsFragment extends DialogFragment implements TagListener {
         Button filterTags = view.findViewById(R.id.add_filter_tags_button);
         filterTags.setOnClickListener(v -> {
                 TagManager manager = listener.getTagManager();
-                manager.openTagSelector(this, getFragmentManager(), selectedTagsArray);
+                manager.openTagSelector(this, getParentFragmentManager(), selectedTagsArray);
             });
 
         // ok
